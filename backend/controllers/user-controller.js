@@ -1,92 +1,85 @@
 import { UserModel } from "../models/user-model.js";
 
 //Returns all users in database
-const getAllUsers = async (req, res) => {
-    try {
-        const data = await UserModel.find({});
-
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+const getAllUsers = async () => {
+  try {
+    const data = await UserModel.find({});
+    return data;
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 };
 
-const getUserById = async (req, res) => {
-    try {
-        const { id } = req.params;
+const getUserById = async (id) => {
+  try {
+    const data = await UserModel.findById(id);
 
-        const data = await UserModel.findById(id);
-        if (data) {
-            res.status(200).json(data);
-        } else {
-            res.status(404).json({ message: "Uživatel nebyl nalezen" });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (!data) {
+      const error = new Error("Uživatel nebyl nalezen");
+      error.statusCode = 404;
+      throw error;
     }
+
+    return data;
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 };
 
-const createUser = async (req, res) => {
-    try {
-        const { username, firstName, secondName, password, email, role } =
-            req.body;
+const createUser = async (user) => {
+  try {
+    const existingData = await UserModel.findOne({ email: user.email });
 
-        const existingData = await UserModel.findOne({ email });
-        if (existingData) {
-            return res
-                .status(400)
-                .json({ message: "Uživatel s tímto e-mailem již existuje" });
-        }
-
-        const newData = await UserModel.create({
-            username,
-            firstName,
-            secondName,
-            password,
-            email,
-            role,
-        });
-
-        res.status(200).json(newData);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (existingData) {
+      const error = new Error("Uživatel s tímto e-mailem již existuje");
+      error.statusCode = 400;
+      throw error;
     }
+
+    const newData = await UserModel.create(user);
+
+    return newData;
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 };
 
-const deleteUser = async (req, res) => {
-    try {
-        const { id } = req.params;
+const deleteUser = async (id) => {
+  try {
+    const data = await UserModel.findByIdAndDelete(id);
 
-        const data = await UserModel.findByIdAndDelete(id);
-
-        if (!data) {
-            res.status(404).json({ message: "Uživatel nebyl nalezen" });
-        }
-
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (!data) {
+      const error = new Error("Uživatel nebyl nalezen");
+      error.statusCode = 404;
+      throw error;
     }
+
+    return data;
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 };
 
-const updateUser = async (req, res) => {
-    try {
-        const { id } = req.params;
+const updateUser = async (id, newData) => {
+  try {
+    const updatedData = await UserModel.findByIdAndUpdate(id, newData, {
+      new: true,
+    });
 
-        const newData = req.body;
-
-        const updatedData = await UserModel.findByIdAndUpdate(id, newData, {
-            new: true,
-        });
-
-        if (!updatedData) {
-            return res.status(404).json({ message: "Uživatel nebyl nalezen" });
-        }
-
-        res.status(200).json(updatedData);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (!updatedData) {
+      const error = new Error("Uživatel nebyl nalezen");
+      error.statusCode = 404;
+      throw error;
     }
+    return updatedData;
+  } catch (error) {
+    error.statusCode = error.statusCode || 500;
+    throw error;
+  }
 };
 
 export { getAllUsers, getUserById, createUser, deleteUser, updateUser };
