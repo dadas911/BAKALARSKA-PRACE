@@ -1,19 +1,19 @@
 import express from "express";
 
 import {
-    getAllAccounts,
-    getAccountById,
-    createAccount,
-    deleteAccount,
-    updateAccount,
-} from "../controllers/family-account-controller.js";
+    handleGetAllAccounts,
+    handleGetAccountById,
+    handleCreateAccount,
+    handleDeleteAccount,
+    handleUpdateAccount,
+} from "../handlers/family-account-handler.js";
 
 const router = express.Router();
 
-router.route("/").get(getAllAccounts);
-router.route("/:id").get(getAccountById);
-router.route("/").post(createAccount);
-router.route("/:id").delete(deleteAccount);
-router.route("/:id").put(updateAccount);
+router.route("/").get(handleGetAllAccounts);
+router.route("/:id").get(handleGetAccountById);
+router.route("/").post(handleCreateAccount);
+router.route("/:id").delete(handleDeleteAccount);
+router.route("/:id").put(handleUpdateAccount);
 
 export default router;

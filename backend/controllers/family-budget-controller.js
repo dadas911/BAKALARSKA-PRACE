@@ -1,82 +1,70 @@
 import { FamilyBudgetModel } from "../models/family-budget-model.js";
 
 //Returns all users in database
-const getAllFamilyBudgets = async (req, res) => {
+const getAllFamilyBudgets = async () => {
     try {
         const data = await FamilyBudgetModel.find({});
-
-        res.status(200).json(data);
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const getFamilyBudgetById = async (req, res) => {
+const getFamilyBudgetById = async (id) => {
     try {
-        const { id } = req.params;
-
         const data = await FamilyBudgetModel.findById(id);
-        if (data) {
-            res.status(200).json(data);
-        } else {
-            res.status(404).json({ message: "Rodinný rozpočet nebyl nalezen" });
+        if (!data) {
+            const error = new Error("Rodinný rozpočet nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
         }
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const createFamilyBudget = async (req, res) => {
+const createFamilyBudget = async (budget) => {
     try {
-        const { name, month, year, familyIncome, account } = req.body;
-
         const existingData = await FamilyBudgetModel.findOne({
-            month,
-            year,
-            account,
+            month: budget.month,
+            year: budget.year,
+            account: budget.account,
         });
         if (existingData) {
-            return res.status(400).json({
-                message: "Rodinný rozpočet pro účet v tomto datu již existuje",
-            });
+            const error = new Error(
+                "Rodinný rozpočet pro účet v tomto datu již existuje"
+            );
+            error.statusCode = 400;
+            throw error;
         }
-
-        const newData = await FamilyBudgetModel.create({
-            name,
-            month,
-            year,
-            familyIncome,
-            account,
-        });
-
-        res.status(200).json(newData);
+        const newData = await FamilyBudgetModel.create(budget);
+        return newData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const deleteFamilyBudget = async (req, res) => {
+const deleteFamilyBudget = async (id) => {
     try {
-        const { id } = req.params;
-
         const data = await FamilyBudgetModel.findByIdAndDelete(id);
-
         if (!data) {
-            res.status(404).json({ message: "Rodinný rozpočet nebyl nalezen" });
+            const error = new Error("Rodinný rozpočet nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
         }
-
-        res.status(200).json(data);
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const updateFamilyBudget = async (req, res) => {
+const updateFamilyBudget = async (id, newData) => {
     try {
-        const { id } = req.params;
-
-        const newData = req.body;
-
         const updatedData = await FamilyBudgetModel.findByIdAndUpdate(
             id,
             newData,
@@ -84,16 +72,15 @@ const updateFamilyBudget = async (req, res) => {
                 new: true,
             }
         );
-
         if (!updatedData) {
-            return res
-                .status(404)
-                .json({ message: "Rodinný rozpočet nebyl nalezen" });
+            const error = new Error("Rodinný rozpočet nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
         }
-
-        res.status(200).json(updatedData);
+        return updatedData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 

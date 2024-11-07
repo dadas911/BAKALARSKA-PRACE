@@ -1,75 +1,69 @@
 import { FamilyAccountModel } from "../models/family-account-model.js";
 
-const getAllAccounts = async (req, res) => {
+const getAllAccounts = async () => {
     try {
         const data = await FamilyAccountModel.find({});
-
-        res.status(200).json(data);
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const getAccountById = async (req, res) => {
+const getAccountById = async (id) => {
     try {
-        const { id } = req.params;
-
         const data = await FamilyAccountModel.findById(id);
-        if (data) {
-            res.status(200).json(data);
-        } else {
-            res.status(404).json({ message: "Účet nebyl nalezen" });
+        if (!data) {
+            const error = new Error("Účet nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
         }
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const createAccount = async (req, res) => {
+const createAccount = async (account) => {
     try {
-        const { name, owner, users } = req.body;
-        const existingData = await FamilyAccountModel.findOne({ owner });
-
-        if (existingData) {
-            return res
-                .status(400)
-                .json({ message: "Účet s tímto vlastníkem již existuje" });
-        }
-
-        const newData = await FamilyAccountModel.create({
-            name,
-            owner,
-            users,
+        const existingData = await FamilyAccountModel.findOne({
+            owner: account.owner,
         });
 
-        res.status(200).json(newData);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const deleteAccount = async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        const data = await FamilyAccountModel.findByIdAndDelete(id);
-
-        if (!data) {
-            res.status(404).json({ message: "Účet nebyl nalezen" });
+        if (existingData) {
+            const error = new Error("Účet s tímto vlastníkem již existuje");
+            error.statusCode = 400;
+            throw error;
         }
 
-        res.status(200).json(data);
+        const newData = await FamilyAccountModel.create(account);
+        return newData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const updateAccount = async (req, res) => {
+const deleteAccount = async (id) => {
     try {
-        const { id } = req.params;
+        const deletedData = await FamilyAccountModel.findByIdAndDelete(id);
 
-        const newData = req.body;
+        if (!deletedData) {
+            const error = new Error("Účet nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
+        }
 
+        return deletedData;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
+const updateAccount = async (id, newData) => {
+    try {
         const updatedData = await FamilyAccountModel.findByIdAndUpdate(
             id,
             newData,
@@ -77,12 +71,15 @@ const updateAccount = async (req, res) => {
         );
 
         if (!updatedData) {
-            return res.status(404).json({ message: "Účet nebyl nalezen" });
+            const error = new Error("Účet nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
         }
 
-        res.status(200).json(updatedData);
+        return updatedData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 

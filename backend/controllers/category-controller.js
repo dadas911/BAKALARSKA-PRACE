@@ -1,89 +1,78 @@
 import { CategoryModel } from "../models/category-model.js";
 
 //Returns all users in database
-const getAllCategories = async (req, res) => {
+const getAllCategories = async () => {
     try {
         const data = await CategoryModel.find({});
-
-        res.status(200).json(data);
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const getCategoryById = async (req, res) => {
+const getCategoryById = async (id) => {
     try {
-        const { id } = req.params;
-
         const data = await CategoryModel.findById(id);
-        if (data) {
-            res.status(200).json(data);
-        } else {
-            res.status(404).json({ message: "Kategorie nebyla nalezena" });
+        if (!data) {
+            const error = new Error("Kategorie nebyla nalezena");
+            error.statusCode = 404;
+            throw error;
         }
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const createCategory = async (req, res) => {
+const createCategory = async (category) => {
     try {
-        const { name } = req.body;
-
         const existingData = await CategoryModel.findOne({
-            name,
+            name: category.name,
         });
         if (existingData) {
-            return res.status(400).json({
-                message: "Kategorie s tímto jménem již existuje",
-            });
+            const error = new Error("Kategorie s tímto jménem již existuje");
+            error.statusCode = 400;
+            throw error;
         }
-
-        const newData = await CategoryModel.create({
-            name,
-        });
-
-        res.status(200).json(newData);
+        const newData = await CategoryModel.create(category);
+        return newData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const deleteCategory = async (req, res) => {
+const deleteCategory = async (id) => {
     try {
-        const { id } = req.params;
-
-        const data = await CategoryModel.findByIdAndDelete(id);
-
-        if (!data) {
-            res.status(404).json({ message: "Kategorie nebyla nalezena" });
+        const deletedData = await CategoryModel.findByIdAndDelete(id);
+        if (!deletedData) {
+            const error = new Error("Kategorie nebyla nalezena");
+            error.statusCode = 404;
+            throw error;
         }
-
-        res.status(200).json(data);
+        return deletedData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const updateCategory = async (req, res) => {
+const updateCategory = async (id, newData) => {
     try {
-        const { id } = req.params;
-
-        const newData = req.body;
-
         const updatedData = await CategoryModel.findByIdAndUpdate(id, newData, {
             new: true,
         });
-
         if (!updatedData) {
-            return res
-                .status(404)
-                .json({ message: "Kategorie nebyla nalezena" });
+            const error = new Error("Kategorie nebyla nalezena");
+            error.statusCode = 404;
+            throw error;
         }
-
-        res.status(200).json(updatedData);
+        return updatedData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 

@@ -1,87 +1,81 @@
 import { SpendingsModel } from "../models/spendings-model.js";
 
-const getAllSpendings = async (req, res) => {
+const getAllSpendings = async () => {
     try {
         const data = await SpendingsModel.find({});
-
-        res.status(200).json(data);
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const getSpendingsById = async (req, res) => {
+const getSpendingsById = async (id) => {
     try {
-        const { id } = req.params;
-
         const data = await SpendingsModel.findById(id);
-        if (data) {
-            res.status(200).json(data);
-        } else {
-            res.status(404).json({ message: "Výdaje nebyly nalezeny" });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const createSpendings = async (req, res) => {
-    try {
-        const { name, totalAmount, spendAmount, budget, category } = req.body;
-
-        const newData = await SpendingsModel.create({
-            name,
-            totalAmount,
-            spendAmount,
-            budget,
-            category,
-        });
-
-        res.status(200).json(newData);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const deleteSpendings = async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        const data = await SpendingsModel.findByIdAndDelete(id);
 
         if (!data) {
-            res.status(404).json({ message: "Výdaje nebyly nalezeny" });
+            const error = new Error("Výdaje nebyly nalezeny");
+            error.statusCode = 404;
+            throw error;
         }
 
-        res.status(200).json(data);
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const updateSpendings = async (req, res) => {
+const createSpendings = async (spending) => {
     try {
-        const { id } = req.params;
+        const newData = await SpendingsModel.create(spending);
+        return newData;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
 
-        const newData = req.body;
+const deleteSpendings = async (id) => {
+    try {
+        const deletedData = await SpendingsModel.findByIdAndDelete(id);
 
+        if (!deletedData) {
+            const error = new Error("Výdaje nebyly nalezeny");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return deletedData;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
+const updateSpendings = async (id, newData) => {
+    try {
         const updatedData = await SpendingsModel.findByIdAndUpdate(
             id,
             newData,
-            {
-                new: true,
-            }
+            { new: true }
         );
 
         if (!updatedData) {
-            return res.status(404).json({ message: "Výdaje nebyly nalezeny" });
+            const error = new Error("Výdaje nebyly nalezeny");
+            error.statusCode = 404;
+            throw error;
         }
 
-        res.status(200).json(updatedData);
+        return updatedData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
+
+//Helper function to recalculate spentAmount
 
 export {
     getAllSpendings,

@@ -1,19 +1,18 @@
 import express from "express";
 
 import {
-    getAllFamilyBudgets,
-    getFamilyBudgetById,
-    createFamilyBudget,
-    deleteFamilyBudget,
-    updateFamilyBudget,
-} from "../controllers/family-budget-controller.js";
-
+    handleGetAllFamilyBudgets,
+    handleGetFamilyBudgetById,
+    handleCreateFamilyBudget,
+    handleDeleteFamilyBudget,
+    handleUpdateFamilyBudget,
+} from "../handlers/family-budget-handler.js";
 const router = express.Router();
 
-router.route("/").get(getAllFamilyBudgets);
-router.route("/:id").get(getFamilyBudgetById);
-router.route("/").post(createFamilyBudget);
-router.route("/:id").delete(deleteFamilyBudget);
-router.route("/:id").put(updateFamilyBudget);
+router.route("/").get(handleGetAllFamilyBudgets);
+router.route("/:id").get(handleGetFamilyBudgetById);
+router.route("/").post(handleCreateFamilyBudget);
+router.route("/:id").delete(handleDeleteFamilyBudget);
+router.route("/:id").put(handleUpdateFamilyBudget);
 
 export default router;

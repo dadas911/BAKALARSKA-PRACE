@@ -1,19 +1,19 @@
 import express from "express";
 
 import {
-    getAllTransactions,
-    getTransactionById,
-    createTransaction,
-    deleteTransaction,
-    updateTransaction,
-} from "../controllers/transaction-controller.js";
+    handleGetAllTransactions,
+    handleGetTransactionById,
+    handleCreateTransaction,
+    handleDeleteTransaction,
+    handleUpdateTransaction,
+} from "../handlers/transaction-handler.js";
 
 const router = express.Router();
 
-router.route("/").get(getAllTransactions);
-router.route("/:id").get(getTransactionById);
-router.route("/").post(createTransaction);
-router.route("/:id").delete(deleteTransaction);
-router.route("/:id").put(updateTransaction);
+router.route("/").get(handleGetAllTransactions);
+router.route("/:id").get(handleGetTransactionById);
+router.route("/").post(handleCreateTransaction);
+router.route("/:id").delete(handleDeleteTransaction);
+router.route("/:id").put(handleUpdateTransaction);
 
 export default router;

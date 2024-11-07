@@ -1,72 +1,61 @@
 import { TransactionModel } from "../models/transaction-model.js";
 
-const getAllTransactions = async (req, res) => {
+const getAllTransactions = async () => {
     try {
         const data = await TransactionModel.find({});
-
-        res.status(200).json(data);
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const getTransactionById = async (req, res) => {
+const getTransactionById = async (id) => {
     try {
-        const { id } = req.params;
-
         const data = await TransactionModel.findById(id);
-        if (data) {
-            res.status(200).json(data);
-        } else {
-            res.status(404).json({ message: "Transakce nebyla nalezena" });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const createTransaction = async (req, res) => {
-    try {
-        const { name, amount, date, description, personalBudget, category } =
-            req.body;
-
-        const newData = await TransactionModel.create({
-            name,
-            amount,
-            date,
-            description,
-            personalBudget,
-            category,
-        });
-
-        res.status(200).json(newData);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const deleteTransaction = async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        const data = await TransactionModel.findByIdAndDelete(id);
 
         if (!data) {
-            res.status(404).json({ message: "Transakce nebyla nalezena" });
+            const error = new Error("Transakce nebyla nalezena");
+            error.statusCode = 404;
+            throw error;
         }
 
-        res.status(200).json(data);
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const updateTransaction = async (req, res) => {
+const createTransaction = async (transaction) => {
     try {
-        const { id } = req.params;
+        const newData = await TransactionModel.create(transaction);
+        return newData;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
 
-        const newData = req.body;
+const deleteTransaction = async (id) => {
+    try {
+        const deletedData = await TransactionModel.findByIdAndDelete(id);
 
+        if (!deletedData) {
+            const error = new Error("Transakce nebyla nalezena");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return deletedData;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
+const updateTransaction = async (id, newData) => {
+    try {
         const updatedData = await TransactionModel.findByIdAndUpdate(
             id,
             newData,
@@ -74,14 +63,15 @@ const updateTransaction = async (req, res) => {
         );
 
         if (!updatedData) {
-            return res
-                .status(404)
-                .json({ message: "Transakce nebyla nalezena" });
+            const error = new Error("Transakce nebyla nalezena");
+            error.statusCode = 404;
+            throw error;
         }
 
-        res.status(200).json(updatedData);
+        return updatedData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 

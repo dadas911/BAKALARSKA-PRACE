@@ -1,103 +1,85 @@
 import { PersonalBudgetModel } from "../models/personal-budget-model.js";
 
 //Returns all users in database
-const getAllPersonalBudgets = async (req, res) => {
+const getAllPersonalBudgets = async () => {
     try {
         const data = await PersonalBudgetModel.find({});
-
-        res.status(200).json(data);
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const getPersonalBudgetById = async (req, res) => {
+const getPersonalBudgetById = async (id) => {
     try {
-        const { id } = req.params;
-
         const data = await PersonalBudgetModel.findById(id);
-        if (data) {
-            res.status(200).json(data);
-        } else {
-            res.status(404).json({ message: "Osobní rozpočet nebyl nalezen" });
+        if (!data) {
+            const error = new Error("Osobní rozpočet nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
         }
+        return data;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const createPersonalBudget = async (req, res) => {
+const createPersonalBudget = async (budget) => {
     try {
-        const { name, month, year, personalIncome, flexibility, weight, user } =
-            req.body;
-
         const existingData = await PersonalBudgetModel.findOne({
-            year,
-            month,
-            user,
+            year: budget.year,
+            month: budget.month,
+            user: budget.user,
         });
         if (existingData) {
-            return res.status(400).json({
-                message:
-                    "Osobní rozpočet pro uživatele v tomto datu již existuje",
-            });
+            const error = new Error(
+                "Osobní rozpočet pro uživatele v tomto datu již existuje"
+            );
+            error.statusCode = 400;
+            throw error;
         }
-
-        const newData = await PersonalBudgetModel.create({
-            name,
-            month,
-            year,
-            personalIncome,
-            flexibility,
-            weight,
-            user,
-        });
-
-        res.status(200).json(newData);
+        const newData = await PersonalBudgetModel.create(budget);
+        return newData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const deletePersonalBudget = async (req, res) => {
+const deletePersonalBudget = async (id) => {
     try {
-        const { id } = req.params;
-
-        const data = await PersonalBudgetModel.findByIdAndDelete(id);
-
-        if (!data) {
-            res.status(404).json({ message: "Osobní rozpočet nebyl nalezen" });
+        const deletedData = await PersonalBudgetModel.findByIdAndDelete(id);
+        if (!deletedData) {
+            const error = new Error("Osobní rozpočet nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
         }
-
-        res.status(200).json(data);
+        return deletedData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
-const updatePersonalBudget = async (req, res) => {
+const updatePersonalBudget = async (id, newData) => {
     try {
-        const { id } = req.params;
-
-        const newData = req.body;
-
+        console.log("Received data: " + newData);
         const updatedData = await PersonalBudgetModel.findByIdAndUpdate(
             id,
             newData,
-            {
-                new: true,
-            }
+            { new: true }
         );
-
         if (!updatedData) {
-            return res
-                .status(404)
-                .json({ message: "Osobní rozpočet nebyl nalezen" });
+            const error = new Error("Osobní rozpočet nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
         }
-
-        res.status(200).json(updatedData);
+        return updatedData;
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        error.statusCode = error.statusCode || 500;
+        throw error;
     }
 };
 
