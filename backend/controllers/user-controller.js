@@ -11,6 +11,7 @@ const getAllUsers = async () => {
     }
 };
 
+//Returns one user by id
 const getUserById = async (id) => {
     try {
         const data = await UserModel.findById(id);
@@ -28,6 +29,7 @@ const getUserById = async (id) => {
     }
 };
 
+//Creates new user in database
 const createUser = async (user) => {
     try {
         const existingData = await UserModel.findOne({ email: user.email });
