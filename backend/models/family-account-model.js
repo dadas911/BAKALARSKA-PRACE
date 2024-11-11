@@ -9,7 +9,7 @@ const FamilyAccountSchema = new mongoose.Schema({
     },
     users: {
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-        default: null,
+        default: [],
     },
     familyBudget: {
         type: mongoose.Schema.Types.ObjectId,

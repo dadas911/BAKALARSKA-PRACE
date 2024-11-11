@@ -18,7 +18,7 @@ const PersonalBudgetSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Transaction",
-            default: null,
+            default: [],
         },
     ],
 });
