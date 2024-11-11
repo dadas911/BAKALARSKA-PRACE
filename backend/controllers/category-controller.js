@@ -28,14 +28,6 @@ const getCategoryById = async (id) => {
 
 const createCategory = async (category) => {
     try {
-        const existingData = await CategoryModel.findOne({
-            name: category.name,
-        });
-        if (existingData) {
-            const error = new Error("Kategorie s tímto jménem již existuje");
-            error.statusCode = 400;
-            throw error;
-        }
         const newData = await CategoryModel.create(category);
         return newData;
     } catch (error) {

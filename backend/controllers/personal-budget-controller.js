@@ -65,7 +65,6 @@ const deletePersonalBudget = async (id) => {
 
 const updatePersonalBudget = async (id, newData) => {
     try {
-        console.log("Received data: " + newData);
         const updatedData = await PersonalBudgetModel.findByIdAndUpdate(
             id,
             newData,

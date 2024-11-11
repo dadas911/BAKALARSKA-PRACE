@@ -8,6 +8,10 @@ const FamilyBudgetSchema = new mongoose.Schema({
         ref: "FamilyAccount",
         required: true,
     },
+    categories: {
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
+        default: [],
+    },
 });
 
 export const FamilyBudgetModel = BudgetModel.discriminator(

@@ -1,4 +1,4 @@
-export interface PersoanlBudget {
+export interface PersonalBudget {
     _id?: string;
     name: string;
     month: number;

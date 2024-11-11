@@ -12,6 +12,7 @@ import {
 } from "../controllers/transaction-controller.js";
 import { getAccountById } from "../controllers/family-account-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
+import { updatePersonalBudget } from "../controllers/personal-budget-controller.js";
 
 const handleGetAllTransactions = async (req, res) => {
     try {
@@ -47,6 +48,15 @@ const handleCreateTransaction = async (req, res) => {
 
         await modifySpentAmountHelper(personalBudget, amount, category);
 
+        //Add transaction._id to budget
+        //Add new spending to the budget
+        let budget = await getBudgetById(personalBudget);
+        if (!budget) {
+            res.status(404).json({ message: "Rozpočet nebyl nalezen" });
+        }
+        budget.transactions.push(newData._id);
+        await updatePersonalBudget(personalBudget, budget);
+
         res.status(200).json(newData);
     } catch (error) {
         res.status(error.statusCode || 500).json({ message: error.message });
@@ -64,6 +74,15 @@ const handleDeleteTransaction = async (req, res) => {
             -deletedData.amount,
             deletedData.category.toString()
         );
+
+        //Spending is in some budget -> delete it from there
+        if (deletedData.personalBudget) {
+            let budget = await getBudgetById(deletedData.personalBudget);
+            budget.transactions = budget.transactions.filter(
+                (transaction_id) => transaction_id.toString() !== id
+            );
+            await updatePersonalBudget(budget._id, budget);
+        }
 
         res.status(200).json(deletedData);
     } catch (error) {

@@ -6,7 +6,7 @@ import {
     handleCreateSpendings,
     handleDeleteSpendings,
     handleUpdateSpendings,
-} from "../handlers/spedings-handler.js";
+} from "../handlers/spendings-handler.js";
 
 const router = express.Router();
 

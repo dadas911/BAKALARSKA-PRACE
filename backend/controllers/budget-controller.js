@@ -28,7 +28,6 @@ const getBudgetById = async (id) => {
 
 const updateBudget = async (id, newData) => {
     try {
-        console.log("Received data: " + newData);
         const updatedData = await BudgetModel.findByIdAndUpdate(id, newData, {
             new: true,
         });

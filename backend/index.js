@@ -27,10 +27,10 @@ app.get("/", (req, res) => {
 //Routes setup
 app.use("/api/users", userRouter);
 app.use("/api/family-accounts", familyAccountRouter);
-app.use("/api/personal-budget", personalBudgetRouter);
-app.use("/api/family-budget", familyBudgetRouter);
-app.use("/api/category", categoryRouter);
-app.use("/api/transaction", transactionRouter);
+app.use("/api/personal-budgets", personalBudgetRouter);
+app.use("/api/family-budgets", familyBudgetRouter);
+app.use("/api/categories", categoryRouter);
+app.use("/api/transactions", transactionRouter);
 app.use("/api/spendings", spendingsRouter);
 
 const startServer = async () => {

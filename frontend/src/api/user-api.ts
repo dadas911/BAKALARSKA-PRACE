@@ -13,7 +13,7 @@ export async function getAllUsers(): Promise<User[] | null> {
     }
 }
 
-export async function getUser(id: string): Promise<User | null> {
+export async function getUserById(id: string): Promise<User | null> {
     try {
         const response = await axios.get(`${URL_API}/users/${id}`);
 
