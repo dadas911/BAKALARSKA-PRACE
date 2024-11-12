@@ -4,6 +4,7 @@ import {
     createUser,
     updateUser,
     deleteUser,
+    getUserByEmail,
 } from "../controllers/user-controller.js";
 
 import {
@@ -11,6 +12,8 @@ import {
     updateAccount,
 } from "../controllers/family-account-controller.js";
 import { deletePersonalBudget } from "../controllers/personal-budget-controller.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const handleGetAllUsers = async (req, res) => {
     try {
@@ -33,7 +36,7 @@ const handleGetUserById = async (req, res) => {
 
 const handleCreateUser = async (req, res) => {
     try {
-        const {
+        let {
             username,
             firstName,
             secondName,
@@ -42,6 +45,9 @@ const handleCreateUser = async (req, res) => {
             role,
             familyAccount,
         } = req.body;
+
+        const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS));
+        password = await bcrypt.hash(password, salt);
 
         const newData = await createUser({
             username,
@@ -106,10 +112,42 @@ const handleUpdateUser = async (req, res) => {
     }
 };
 
+const handleLoginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const data = await getUserByEmail(email);
+        const checkPassword = await bcrypt.compare(password, data.password);
+
+        if (checkPassword) {
+            const payload = {
+                _id: data._id,
+                username: data.username,
+                firstName: data.firstName,
+                secondName: data.secondName,
+                email: data.email,
+                password: data.password,
+                role: data.role,
+                familyAccount: data.familyAccount,
+                personalBudget: data.personalBudget,
+            };
+            const token = jwt.sign(payload, process.env.SECRET_KEY, {
+                expiresIn: "1h",
+            });
+            res.status(200).json(token);
+        } else {
+            res.status(401).json({ message: "Nesprávné heslo" });
+        }
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
 export {
     handleGetAllUsers,
     handleGetUserById,
     handleCreateUser,
     handleDeleteUser,
     handleUpdateUser,
+    handleLoginUser,
 };

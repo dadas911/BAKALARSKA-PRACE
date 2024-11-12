@@ -84,4 +84,29 @@ const updateUser = async (id, newData) => {
     }
 };
 
-export { getAllUsers, getUserById, createUser, deleteUser, updateUser };
+//Returns one user by id
+const getUserByEmail = async (email) => {
+    try {
+        const data = await await UserModel.findOne({ email: email });
+
+        if (!data) {
+            const error = new Error("Uživatel nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return data;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
+export {
+    getAllUsers,
+    getUserById,
+    createUser,
+    deleteUser,
+    updateUser,
+    getUserByEmail,
+};

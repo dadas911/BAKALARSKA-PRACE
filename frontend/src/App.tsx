@@ -1,6 +1,5 @@
 import "./App.css";
 import Landing from "./pages/Landing";
-import Login from "./pages/Login";
 import Home from "./pages/Home";
 import PersonalBudget from "./pages/PersonalBudget";
 import FamilyBudget from "./pages/FamilyBudget";
@@ -8,14 +7,28 @@ import Transactions from "./pages/Transactions";
 import User from "./pages/User";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
+import { useLayoutEffect } from "react";
+import axios from "axios";
 
 function App() {
+    useLayoutEffect(() => {
+        async function setToken() {
+            const token = sessionStorage.getItem("User");
+            if (token) {
+                axios.defaults.headers.common[
+                    "Authorization"
+                ] = `Bearer ${token}`;
+            }
+        }
+
+        setToken();
+    }, []);
+
     return (
         <Router>
             <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route element={<Layout />}>
-                    <Route path="/login" element={<Login />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/familybudget" element={<FamilyBudget />} />
                     <Route

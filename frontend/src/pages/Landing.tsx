@@ -1,8 +1,36 @@
+import Registration from "../components/Registration";
+import Login from "../components/Login";
+import { useState } from "react";
+
 const Landing = () => {
+    const [displayLogin, setDisplayLogin] = useState<boolean>(true);
+
     return (
-        <div>
-            <h1>Landing</h1>
-        </div>
+        <>
+            {!displayLogin ? (
+                <>
+                    <Login />
+                    <button
+                        onClick={() => {
+                            setDisplayLogin(!displayLogin);
+                        }}
+                    >
+                        Vytvořit nový účet
+                    </button>
+                </>
+            ) : (
+                <>
+                    <Registration />
+                    <button
+                        onClick={() => {
+                            setDisplayLogin(!displayLogin);
+                        }}
+                    >
+                        Přihlásit se k účtu
+                    </button>
+                </>
+            )}
+        </>
     );
 };
 
