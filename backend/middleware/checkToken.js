@@ -11,9 +11,7 @@ const checkToken = (req, res, next) => {
 
     try {
         const token = authHeader.replace("Bearer ", "");
-
         const decodedUser = jwt.verify(token, process.env.SECRET_KEY);
-
         req.user = decodedUser;
 
         next();

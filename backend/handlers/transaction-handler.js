@@ -1,4 +1,7 @@
-import { getBudgetById } from "../controllers/budget-controller.js";
+import {
+    getBudgetById,
+    updateBudget,
+} from "../controllers/budget-controller.js";
 import {
     getSpendingsById,
     updateSpendings,
@@ -46,7 +49,7 @@ const handleCreateTransaction = async (req, res) => {
             category,
         });
 
-        await modifySpentAmountHelper(personalBudget, amount, category);
+        await modifyBalanceAndSpendingsHelper(personalBudget, amount, category);
 
         //Add transaction._id to budget
         //Add new spending to the budget
@@ -69,7 +72,7 @@ const handleDeleteTransaction = async (req, res) => {
 
         const deletedData = await deleteTransaction(id);
 
-        await modifySpentAmountHelper(
+        await modifyBalanceAndSpendingsHelper(
             deletedData.personalBudget,
             -deletedData.amount,
             deletedData.category.toString()
@@ -97,7 +100,7 @@ const handleUpdateTransaction = async (req, res) => {
         const oldData = await getTransactionById(id);
         const updatedData = await updateTransaction(id, newData);
 
-        await modifySpentAmountHelper(
+        await modifyBalanceAndSpendingsHelper(
             updatedData.personalBudget,
             updatedData.amount - oldData.amount,
             updatedData.category.toString()
@@ -109,13 +112,26 @@ const handleUpdateTransaction = async (req, res) => {
     }
 };
 
-//Functions that modifies relevant spendings by transaction.amount
-const modifySpentAmountHelper = async (personalBudgetId, amount, category) => {
+//Functions that modifies relevant spendings + budget balance by transaction.amount
+const modifyBalanceAndSpendingsHelper = async (
+    personalBudgetId,
+    amount,
+    category
+) => {
     //Update spentAmount in spendings - personal budget
     const pBudget = await getBudgetById(personalBudgetId);
     if (!pBudget) {
         res.status(404).json({ message: "Rozpočet nebyl nalezen" });
     }
+
+    //Add amount to income or expense of Personal Budget
+    if (amount > 0) {
+        pBudget.income += amount;
+    } else {
+        pBudget.expense += amount;
+    }
+
+    await updateBudget(pBudget._id, pBudget);
 
     let personalSpending = null;
 
@@ -128,7 +144,7 @@ const modifySpentAmountHelper = async (personalBudgetId, amount, category) => {
     }
 
     if (personalSpending) {
-        personalSpending.spentAmount += amount;
+        personalSpending.spentAmount += Math.abs(amount);
         await updateSpendings(personalSpending._id, personalSpending);
     }
 
@@ -142,6 +158,15 @@ const modifySpentAmountHelper = async (personalBudgetId, amount, category) => {
             res.status(404).json({ message: "Rozpočet nebyl nalezen" });
         }
 
+        //Add amount to income or expense of Family Budget
+        if (amount > 0) {
+            fBudget.income += amount;
+        } else {
+            fBudget.expense += amount;
+        }
+
+        await updateBudget(fBudget._id, fBudget);
+
         let familySpending = null;
 
         for (const spending_id of fBudget.spendings) {
@@ -153,7 +178,7 @@ const modifySpentAmountHelper = async (personalBudgetId, amount, category) => {
         }
 
         if (familySpending) {
-            familySpending.spentAmount += amount;
+            familySpending.spentAmount += Math.abs(amount);
             await updateSpendings(familySpending._id, familySpending);
         }
     }

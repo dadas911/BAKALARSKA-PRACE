@@ -28,13 +28,22 @@ const handleGetPersonalBudgetById = async (req, res) => {
 
 const handleCreatePersonalBudget = async (req, res) => {
     try {
-        const { name, month, year, personalIncome, flexibility, weight, user } =
-            req.body;
+        const {
+            name,
+            month,
+            year,
+            income,
+            expense,
+            flexibility,
+            weight,
+            user,
+        } = req.body;
         const newData = await createPersonalBudget({
             name,
             month,
             year,
-            personalIncome,
+            income,
+            expense,
             flexibility,
             weight,
             user,
@@ -77,10 +86,27 @@ const handleUpdatePersonalBudget = async (req, res) => {
     }
 };
 
+const handleGetPersonalBudgetBalance = async (req, res) => {
+    try {
+        const user = await getUserById(req.user._id);
+        const personalBudget = await getPersonalBudgetById(user.personalBudget);
+        const response = {
+            balance: personalBudget.income + personalBudget.expense,
+            income: personalBudget.income,
+            expense: personalBudget.expense,
+        };
+
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
 export {
     handleGetAllPersonalBudgets,
     handleGetPersonalBudgetById,
     handleCreatePersonalBudget,
     handleDeletePersonalBudget,
     handleUpdatePersonalBudget,
+    handleGetPersonalBudgetBalance,
 };

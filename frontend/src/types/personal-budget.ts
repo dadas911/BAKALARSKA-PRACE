@@ -3,8 +3,9 @@ export interface PersonalBudget {
     name: string;
     month: number;
     year: number;
+    income: number;
+    expense: number;
     spendings: string[];
-    personalIncome: number;
     flexibility: number;
     weight: Record<string, number>;
     user: string;

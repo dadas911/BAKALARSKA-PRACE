@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 import { BudgetModel } from "./budget-model.js";
 
 const PersonalBudgetSchema = new mongoose.Schema({
-    personalIncome: { type: Number, required: true },
-    flexibility: { type: Number, required: true },
+    flexibility: { type: Number, default: 1 },
     weight: {
         type: Map,
         of: Number,

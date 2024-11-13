@@ -3,8 +3,9 @@ export interface FamilyBudget {
     name: string;
     month: number;
     year: number;
+    income: number;
+    expense: number;
     spendings: string[];
-    familyIncome: number;
     account: string;
     categories: string[];
 }

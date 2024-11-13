@@ -31,12 +31,13 @@ const handleGetFamilyBudgetById = async (req, res) => {
 
 const handleCreateFamilyBudget = async (req, res) => {
     try {
-        const { name, month, year, familyIncome, account } = req.body;
+        const { name, month, year, income, expense, account } = req.body;
         const newData = await createFamilyBudget({
             name,
             month,
             year,
-            familyIncome,
+            income,
+            expense,
             account,
         });
 
