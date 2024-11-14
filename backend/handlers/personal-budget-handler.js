@@ -5,6 +5,7 @@ import {
     deletePersonalBudget,
     updatePersonalBudget,
 } from "../controllers/personal-budget-controller.js";
+import { getBudgetByIdAndDate } from "../controllers/budget-controller.js";
 import { getUserById, updateUser } from "../controllers/user-controller.js";
 
 const handleGetAllPersonalBudgets = async (req, res) => {
@@ -86,19 +87,30 @@ const handleUpdatePersonalBudget = async (req, res) => {
     }
 };
 
-const handleGetPersonalBudgetBalance = async (req, res) => {
+const handleGetPersonalBudgetByMonth = async (req, res) => {
     try {
+        const { month, year } = req.body;
         const user = await getUserById(req.user._id);
-        const personalBudget = await getPersonalBudgetById(user.personalBudget);
-        const response = {
-            balance: personalBudget.income + personalBudget.expense,
-            income: personalBudget.income,
-            expense: personalBudget.expense,
-        };
+        const personalBudget = await getBudgetByIdAndDate(
+            user.personalBudget,
+            month,
+            year
+        );
 
-        res.status(200).json(response);
+        res.status(200).json(personalBudget);
     } catch (error) {
         res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
+const handleHasPersonalBudget = async (req, res) => {
+    try {
+        const user = await getUserById(req.user._id);
+        const result = !!user.personalBudget;
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(error.statusCode || 500).json(data);
     }
 };
 
@@ -108,5 +120,6 @@ export {
     handleCreatePersonalBudget,
     handleDeletePersonalBudget,
     handleUpdatePersonalBudget,
-    handleGetPersonalBudgetBalance,
+    handleGetPersonalBudgetByMonth,
+    handleHasPersonalBudget,
 };

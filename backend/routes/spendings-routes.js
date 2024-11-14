@@ -6,14 +6,20 @@ import {
     handleCreateSpendings,
     handleDeleteSpendings,
     handleUpdateSpendings,
+    handleGetPersonalSpendingsByMonth,
+    handleGetFamilySpendingsByMonth,
 } from "../handlers/spendings-handler.js";
+
+import checkToken from "../middleware/checkToken.js";
 
 const router = express.Router();
 
-router.route("/").get(handleGetAllSpendings);
-router.route("/:id").get(handleGetSpendingsById);
-router.route("/").post(handleCreateSpendings);
-router.route("/:id").delete(handleDeleteSpendings);
-router.route("/:id").put(handleUpdateSpendings);
+router.route("/personal").post(checkToken, handleGetPersonalSpendingsByMonth);
+router.route("/family").post(checkToken, handleGetFamilySpendingsByMonth);
+router.route("/").get(checkToken, handleGetAllSpendings);
+router.route("/:id").get(checkToken, handleGetSpendingsById);
+router.route("/").post(checkToken, handleCreateSpendings);
+router.route("/:id").delete(checkToken, handleDeleteSpendings);
+router.route("/:id").put(checkToken, handleUpdateSpendings);
 
 export default router;

@@ -11,7 +11,7 @@ const NavigationBar = () => {
     }
 
     return (
-        <div className="navbar">
+        <div className="navbar" style={{ backgroundColor: "grey" }}>
             {pageList.map((page) => {
                 return (
                     <Link to={page.path} className="nav-link" key={page.name}>

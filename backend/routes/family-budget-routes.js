@@ -6,13 +6,19 @@ import {
     handleCreateFamilyBudget,
     handleDeleteFamilyBudget,
     handleUpdateFamilyBudget,
+    handleGetFamilyBudgetByMonth,
+    handleHasFamilyBudget,
 } from "../handlers/family-budget-handler.js";
+import checkToken from "../middleware/checkToken.js";
+
 const router = express.Router();
 
-router.route("/").get(handleGetAllFamilyBudgets);
-router.route("/:id").get(handleGetFamilyBudgetById);
-router.route("/").post(handleCreateFamilyBudget);
-router.route("/:id").delete(handleDeleteFamilyBudget);
-router.route("/:id").put(handleUpdateFamilyBudget);
+router.route("/family").post(checkToken, handleGetFamilyBudgetByMonth);
+router.route("/check").get(checkToken, handleHasFamilyBudget);
+router.route("/").get(checkToken, handleGetAllFamilyBudgets);
+router.route("/:id").get(checkToken, handleGetFamilyBudgetById);
+router.route("/").post(checkToken, handleCreateFamilyBudget);
+router.route("/:id").delete(checkToken, handleDeleteFamilyBudget);
+router.route("/:id").put(checkToken, handleUpdateFamilyBudget);
 
 export default router;

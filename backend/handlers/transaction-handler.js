@@ -1,6 +1,7 @@
 import {
     getBudgetById,
     updateBudget,
+    getBudgetByIdAndDate,
 } from "../controllers/budget-controller.js";
 import {
     getSpendingsById,
@@ -112,6 +113,26 @@ const handleUpdateTransaction = async (req, res) => {
     }
 };
 
+const handleGetTransactionsByMonth = async (req, res) => {
+    try {
+        const { month, year } = req.body;
+        const user = await getUserById(req.user._id);
+        const pBudget = await getBudgetByIdAndDate(
+            user.personalBudget,
+            month,
+            year
+        );
+        const transactions = await Promise.all(
+            pBudget.transactions.map(async (id) => {
+                return await getTransactionById(id);
+            })
+        );
+        res.status(200).json(transactions);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
 //Functions that modifies relevant spendings + budget balance by transaction.amount
 const modifyBalanceAndSpendingsHelper = async (
     personalBudgetId,
@@ -190,4 +211,5 @@ export {
     handleCreateTransaction,
     handleDeleteTransaction,
     handleUpdateTransaction,
+    handleGetTransactionsByMonth,
 };

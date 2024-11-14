@@ -71,3 +71,20 @@ export async function updateTransaction(
         return null;
     }
 }
+
+export async function getTransactionsByMonth(
+    month: number,
+    year: number
+): Promise<Transaction[] | null> {
+    try {
+        const response = await axios.post(`${URL_API}/transactions/personal`, {
+            month: month,
+            year: year,
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return null;
+    }
+}

@@ -26,6 +26,25 @@ const getBudgetById = async (id) => {
     }
 };
 
+const getBudgetByIdAndDate = async (id, month, year) => {
+    try {
+        const data = await BudgetModel.findOne({
+            _id: id,
+            month: month,
+            year: year,
+        });
+        if (!data) {
+            const error = new Error("Rozpočet nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
+        }
+        return data;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
 const updateBudget = async (id, newData) => {
     try {
         const updatedData = await BudgetModel.findByIdAndUpdate(id, newData, {
@@ -43,4 +62,4 @@ const updateBudget = async (id, newData) => {
     }
 };
 
-export { getAllBudgets, getBudgetById, updateBudget };
+export { getAllBudgets, getBudgetById, updateBudget, getBudgetByIdAndDate };

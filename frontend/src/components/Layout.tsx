@@ -16,7 +16,9 @@ const Layout = () => {
     return (
         <>
             <NavigationBar />
-            <Outlet />
+            <div style={{ paddingTop: "10%" }}>
+                <Outlet />
+            </div>
         </>
     );
 };

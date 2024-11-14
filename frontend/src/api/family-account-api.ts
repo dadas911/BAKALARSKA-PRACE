@@ -68,3 +68,13 @@ export async function updateFamilyAccount(
         return null;
     }
 }
+
+export async function getHasFamilyAccount(): Promise<boolean> {
+    try {
+        const response = await axios.get(`${URL_API}/family-accounts/check`);
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return false;
+    }
+}

@@ -9,7 +9,10 @@ import {
 import {
     getBudgetById,
     updateBudget,
+    getBudgetByIdAndDate,
 } from "../controllers/budget-controller.js";
+import { getUserById } from "../controllers/user-controller.js";
+import { getAccountById } from "../controllers/family-account-controller.js";
 
 const handleGetAllSpendings = async (req, res) => {
     try {
@@ -86,10 +89,56 @@ const handleUpdateSpendings = async (req, res) => {
     }
 };
 
+const handleGetPersonalSpendingsByMonth = async (req, res) => {
+    try {
+        const { month, year } = req.body;
+        const user = await getUserById(req.user._id);
+        const pBudget = await getBudgetByIdAndDate(
+            user.personalBudget,
+            month,
+            year
+        );
+
+        const spendings = await Promise.all(
+            pBudget.spendings.map(async (id) => {
+                return await getSpendingsById(id);
+            })
+        );
+        res.status(200).json(spendings);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
+const handleGetFamilySpendingsByMonth = async (req, res) => {
+    try {
+        const { month, year } = req.body;
+        const user = await getUserById(req.user._id);
+        const familyAccount = await getAccountById(user.familyAccount);
+        const fBudget = await getBudgetByIdAndDate(
+            familyAccount.familyBudget,
+            month,
+            year
+        );
+
+        const spendings = await Promise.all(
+            fBudget.spendings.map(async (id) => {
+                return await getSpendingsById(id);
+            })
+        );
+
+        res.status(200).json(spendings);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
 export {
     handleGetAllSpendings,
     handleGetSpendingsById,
     handleCreateSpendings,
     handleDeleteSpendings,
     handleUpdateSpendings,
+    handleGetPersonalSpendingsByMonth,
+    handleGetFamilySpendingsByMonth,
 };

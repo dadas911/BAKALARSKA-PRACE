@@ -64,3 +64,37 @@ export async function updateSpendings(
         return null;
     }
 }
+
+export async function getPersonalSpendingsByMonth(
+    month: number,
+    year: number
+): Promise<Spendings[] | null> {
+    try {
+        const response = await axios.post(`${URL_API}/spendings/personal`, {
+            month: month,
+            year: year,
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return null;
+    }
+}
+
+export async function getFamilySpendingsByMonth(
+    month: number,
+    year: number
+): Promise<Spendings[] | null> {
+    try {
+        const response = await axios.post(`${URL_API}/spendings/family`, {
+            month: month,
+            year: year,
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return null;
+    }
+}

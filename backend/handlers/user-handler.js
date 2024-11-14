@@ -132,7 +132,7 @@ const handleLoginUser = async (req, res) => {
                 personalBudget: data.personalBudget,
             };
             const token = jwt.sign(payload, process.env.SECRET_KEY, {
-                expiresIn: "1h",
+                expiresIn: "12h",
             });
             res.status(200).json(token);
         } else {

@@ -9,6 +9,8 @@ import {
     deleteFamilyBudget,
     updateFamilyBudget,
 } from "../controllers/family-budget-controller.js";
+import { getUserById } from "../controllers/user-controller.js";
+import { getBudgetByIdAndDate } from "../controllers/budget-controller.js";
 
 const handleGetAllFamilyBudgets = async (req, res) => {
     try {
@@ -78,10 +80,41 @@ const handleUpdateFamilyBudget = async (req, res) => {
     }
 };
 
+const handleGetFamilyBudgetByMonth = async (req, res) => {
+    try {
+        const { month, year } = req.body;
+        const user = await getUserById(req.user._id);
+        const familyAccount = await getAccountById(user.familyAccount);
+        const familyBudget = await getBudgetByIdAndDate(
+            familyAccount.familyBudget,
+            month,
+            year
+        );
+
+        res.status(200).json(familyBudget);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
+const handleHasFamilyBudget = async (req, res) => {
+    try {
+        const user = await getUserById(req.user._id);
+        const familyAccount = await getAccountById(user.familyAccount);
+        const result = !!familyAccount.familyBudget;
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(error.statusCode || 500).json(data);
+    }
+};
+
 export {
     handleGetAllFamilyBudgets,
     handleGetFamilyBudgetById,
     handleCreateFamilyBudget,
     handleDeleteFamilyBudget,
     handleUpdateFamilyBudget,
+    handleGetFamilyBudgetByMonth,
+    handleHasFamilyBudget,
 };

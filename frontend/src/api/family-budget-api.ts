@@ -68,3 +68,31 @@ export async function updateFamilyBudget(
         return null;
     }
 }
+
+export async function getFamilyBudgetByMonth(
+    month: number,
+    year: number
+): Promise<FamilyBudget | null> {
+    try {
+        const response = await axios.post(`${URL_API}/family-budgets/family`, {
+            month: month,
+            year: year,
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return null;
+    }
+}
+
+export async function getHasFamilyBudget(): Promise<boolean> {
+    try {
+        const response = await axios.get(`${URL_API}/family-budgets/check`);
+
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return false;
+    }
+}

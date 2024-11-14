@@ -66,10 +66,22 @@ const handleUpdateAccount = async (req, res) => {
     }
 };
 
+const handleHasFamilyAccount = async (req, res) => {
+    try {
+        const user = await getUserById(req.user._id);
+        const result = !!user.familyAccount;
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(error.statusCode || 500).json(data);
+    }
+};
+
 export {
     handleGetAllAccounts,
     handleGetAccountById,
     handleCreateAccount,
     handleDeleteAccount,
     handleUpdateAccount,
+    handleHasFamilyAccount,
 };
