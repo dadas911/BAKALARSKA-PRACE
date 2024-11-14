@@ -7,6 +7,8 @@ import {
 } from "../api/family-budget-api";
 import { getFamilySpendingsByMonth } from "../api/spendings-api";
 import { getHasFamilyAccount } from "../api/family-account-api";
+import { Category } from "../types/category";
+import { createCategory, getAllFamilyCategories } from "../api/category-api";
 
 const Family = () => {
     const [hasFamilyAccount, setHasFamilyAccount] = useState<boolean>(false);
@@ -14,6 +16,15 @@ const Family = () => {
 
     const [familyBudget, setFamilyBudget] = useState<FamilyBudget | null>(null);
     const [familySpendings, setFamilySpendings] = useState<Spendings[] | null>(
+        null
+    );
+
+    const [newCategory, setNewCategory] = useState<Category>({
+        name: "",
+        isGlobal: false,
+        isExpense: true,
+    });
+    const [familyCategories, setFamilyCategories] = useState<Category[] | null>(
         null
     );
 
@@ -35,9 +46,11 @@ const Family = () => {
             if (familyBudgetStatus) {
                 const budget = await getFamilyBudgetByMonth(month, year);
                 const spendings = await getFamilySpendingsByMonth(month, year);
+                const category = await getAllFamilyCategories();
 
                 setFamilyBudget(budget);
                 setFamilySpendings(spendings);
+                setFamilyCategories(category);
             }
         }
     };
@@ -59,6 +72,26 @@ const Family = () => {
     const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setYear(Number(e.target.value));
     };
+
+    function handleCategoryChange(
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) {
+        const { name, value } = e.target;
+        setNewCategory({
+            ...newCategory,
+            [name]: name === "isExpense" ? value === "true" : value, // Převod na boolean pro isExpense
+        });
+    }
+    async function handleCategorySubmit(e: React.FormEvent) {
+        e.preventDefault();
+        console.log("Nová kategorie: " + JSON.stringify(newCategory));
+        let response = await createCategory(newCategory);
+        if (response) {
+            alert("Kategorie byla úspěšně vytvořena");
+        } else {
+            alert("Chyba při vytváření kategorie");
+        }
+    }
 
     if (loading) {
         return <h2>Načítání...</h2>;
@@ -137,6 +170,35 @@ const Family = () => {
             ) : (
                 <p>Výdaje nejsou k dispozici.</p>
             )}
+
+            {familyCategories ? (
+                <div>
+                    <h3>Rodinné kategorie</h3>
+                    {familyCategories.map((category) => (
+                        <p key={category._id}>
+                            Name: {category.name}, typ:{" "}
+                            {category.isExpense ? "Výdaj" : "Příjem"}
+                        </p>
+                    ))}
+                </div>
+            ) : (
+                <p>Transakce nejsou k dispozici.</p>
+            )}
+
+            <form onSubmit={handleCategorySubmit}>
+                <input
+                    placeholder={"Name"}
+                    onChange={handleCategoryChange}
+                    name="name"
+                    required
+                    maxLength={20}
+                />
+                <select name="isExpense">
+                    <option value="true">Výdaj</option>
+                    <option value="false">Příjem</option>
+                </select>
+                <button type="submit">Vytvořit kategorii</button>
+            </form>
         </div>
     );
 };

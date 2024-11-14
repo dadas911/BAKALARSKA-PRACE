@@ -4,11 +4,11 @@ export const pageList = [
         path: "/home",
     },
     {
-        name: "Family",
+        name: "Family Budget",
         path: "/familybudget",
     },
     {
-        name: "Personal",
+        name: "Personal Budget",
         path: "/personalbudget",
     },
     /*{

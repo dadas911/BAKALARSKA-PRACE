@@ -4,9 +4,13 @@ import {
     createCategory,
     updateCategory,
     deleteCategory,
+    getAllGlobalCategories,
+    getAllFamilyCategories,
 } from "../controllers/category-controller.js";
 import { getBudgetById } from "../controllers/budget-controller.js";
 import { updateFamilyBudget } from "../controllers/family-budget-controller.js";
+import { getUserById } from "../controllers/user-controller.js";
+import { getAccountById } from "../controllers/family-account-controller.js";
 
 const handleGetAllCategories = async (req, res) => {
     try {
@@ -79,10 +83,25 @@ const handleUpdateCategory = async (req, res) => {
     }
 };
 
+const handleGetAllFamilyCategories = async (req, res) => {
+    try {
+        const user = await getUserById(req.user._id);
+        const familyAccount = await getAccountById(user.familyAccount);
+        const globalCategories = await getAllGlobalCategories();
+        const familyCategories = await getAllFamilyCategories(
+            familyAccount.familyBudget
+        );
+        res.status(200).json(globalCategories.concat(familyCategories));
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
 export {
     handleGetAllCategories,
     handleGetCategoryById,
     handleCreateCategory,
     handleDeleteCategory,
     handleUpdateCategory,
+    handleGetAllFamilyCategories,
 };

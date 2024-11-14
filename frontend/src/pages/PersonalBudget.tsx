@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import { Spendings } from "../types/spendings";
 import { Transaction } from "../types/transaction";
 import { getPersonalSpendingsByMonth } from "../api/spendings-api";
-import { getTransactionsByMonth } from "../api/transaction-api";
+import { createTransaction, getTransactionsByMonth } from "../api/transaction-api";
 import { PersonalBudget } from "../types/personal-budget";
 import {
     getPersonalBudgetByMonth,
     getHasPersonalBudget,
 } from "../api/personal-budget-api";
+import { Category } from "../types/category";
+import { getHasFamilyBudget } from "../api/family-budget-api";
+import { getAllFamilyCategories } from "../api/category-api";
 
 const Personal = () => {
     const [hasPersonalBudget, setHasPersonalBudget] = useState<boolean>(false);
@@ -21,12 +24,24 @@ const Personal = () => {
     const [personalTransactions, setPersonalTransactions] = useState<
         Transaction[] | null
     >(null);
+    const [familyCategories, setFamilyCategories] = useState<Category[] | null>(
+        null
+    );
+
+    const [newTransaction, setNewTransaction] = useState<Transaction>({
+        name: "",
+        amount: 0,
+        date: new Date(),
+        description: "",
+        category: "",
+    });
+
     const [loading, setLoading] = useState(true);
 
-    const date = new Date();
+    const currDate = new Date();
 
-    const [month, setMonth] = useState<number>(date.getMonth() + 1);
-    const [year, setYear] = useState<number>(date.getFullYear());
+    const [month, setMonth] = useState<number>(currDate.getMonth() + 1);
+    const [year, setYear] = useState<number>(currDate.getFullYear());
 
     const getPersonalBudgetInfo = async () => {
         const personalBudgetStatus = await getHasPersonalBudget();
@@ -40,6 +55,12 @@ const Personal = () => {
             setPersonalBudget(budget);
             setPersonalSpendings(spendings);
             setPersonalTransactions(transactions);
+
+            const hasFamilyBudget = await getHasFamilyBudget();
+            if (hasFamilyBudget) {
+                const category = await getAllFamilyCategories();
+                setFamilyCategories(category);
+            }
         }
     };
 
@@ -60,6 +81,19 @@ const Personal = () => {
     const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setYear(Number(e.target.value));
     };
+
+    function handleTransactionChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setNewTransaction({ ...newTransaction, [e.target.name]: e.target.value });
+    }
+
+    async function handleTransactionSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        let response = await createTransaction(newTransaction);
+        if (response) {
+            alert("Transakce byla úspěšně vytvořena");
+        } else {
+            alert("Chyba při vytváření transakce");
+        
 
     if (loading) {
         return (
@@ -150,6 +184,53 @@ const Personal = () => {
             ) : (
                 <p>Transakce nejsou k dispozici.</p>
             )}
+
+            <form onSubmit={handleTransactionSubmit}>
+                <input
+                    placeholder={"Name"}
+                    onChange={handleTransactionChange}
+                    name="name"
+                    required
+                    maxLength={20}
+                />
+                <input
+                    placeholder={"Amount"}
+                    onChange={handleTransactionChange}
+                    name="amount"
+                    required
+                    maxLength={20}
+                />
+                <input
+                    placeholder={"Second name"}
+                    onChange={handleTransactionChange}
+                    name="secondName"
+                    required
+                    maxLength={20}
+                />
+                <input
+                    placeholder={"E-mail"}
+                    onChange={handleTransactionChange}
+                    name="email"
+                    required
+                    maxLength={20}
+                />
+                Role:
+                <select name="role">
+                    <option value="živitel">Živitel</option>
+                    <option value="člen domácnosti">Člen domácnosti</option>
+                    <option value="student">Student</option>
+                    <option value="senior">Senior</option>
+                </select>
+                <input
+                    placeholder={"Password"}
+                    onChange={handleChange}
+                    name="password"
+                    required
+                    maxLength={20}
+                    type="password"
+                />
+                <button type="submit">Vytvořit účet</button>
+            </form>
         </div>
     );
 };

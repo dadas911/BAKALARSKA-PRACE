@@ -68,10 +68,32 @@ const updateCategory = async (id, newData) => {
     }
 };
 
+const getAllGlobalCategories = async () => {
+    try {
+        const data = await CategoryModel.find({ isGlobal: true });
+        return data;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
+const getAllFamilyCategories = async (account) => {
+    try {
+        const data = await CategoryModel.find({ familyBudget: account });
+        return data;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
 export {
     getAllCategories,
     getCategoryById,
     createCategory,
     deleteCategory,
     updateCategory,
+    getAllGlobalCategories,
+    getAllFamilyCategories,
 };

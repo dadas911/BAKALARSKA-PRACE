@@ -64,3 +64,14 @@ export async function updateCategory(
         return null;
     }
 }
+
+export async function getAllFamilyCategories(): Promise<Category[] | null> {
+    try {
+        const response = await axios.get(`${URL_API}/categories/family`);
+
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return null;
+    }
+}
