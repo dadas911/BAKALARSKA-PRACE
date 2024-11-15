@@ -75,7 +75,7 @@ export async function updateTransaction(
 export async function getTransactionsByMonth(
     month: number,
     year: number
-): Promise<Transaction[] | null> {
+): Promise<Transaction[]> {
     try {
         const response = await axios.post(`${URL_API}/transactions/personal`, {
             month: month,
@@ -85,6 +85,6 @@ export async function getTransactionsByMonth(
         return response.data;
     } catch (error) {
         console.error("Chyba při volání API:", error);
-        return null;
+        return [];
     }
 }

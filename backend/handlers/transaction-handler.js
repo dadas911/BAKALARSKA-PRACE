@@ -17,6 +17,7 @@ import {
 import { getAccountById } from "../controllers/family-account-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
 import { updatePersonalBudget } from "../controllers/personal-budget-controller.js";
+import { getCategoryById } from "../controllers/category-controller.js";
 
 const handleGetAllTransactions = async (req, res) => {
     try {
@@ -39,8 +40,14 @@ const handleGetTransactionById = async (req, res) => {
 
 const handleCreateTransaction = async (req, res) => {
     try {
-        const { name, amount, date, description, personalBudget, category } =
-            req.body;
+        let { name, amount, date, description, category } = req.body;
+        const user = await getUserById(req.user._id);
+        const personalBudget = user.personalBudget;
+        const cat = await getCategoryById(category);
+        if (cat.isExpense) {
+            amount = -amount;
+        }
+
         const newData = await createTransaction({
             name,
             amount,
@@ -147,9 +154,9 @@ const modifyBalanceAndSpendingsHelper = async (
 
     //Add amount to income or expense of Personal Budget
     if (amount > 0) {
-        pBudget.income += amount;
+        pBudget.income += Number(amount);
     } else {
-        pBudget.expense += amount;
+        pBudget.expense += Number(amount);
     }
 
     await updateBudget(pBudget._id, pBudget);
@@ -181,9 +188,9 @@ const modifyBalanceAndSpendingsHelper = async (
 
         //Add amount to income or expense of Family Budget
         if (amount > 0) {
-            fBudget.income += amount;
+            fBudget.income += Number(amount);
         } else {
-            fBudget.expense += amount;
+            fBudget.expense += Number(amount);
         }
 
         await updateBudget(fBudget._id, fBudget);

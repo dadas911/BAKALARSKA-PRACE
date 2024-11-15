@@ -13,6 +13,8 @@ import {
 } from "../controllers/budget-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
 import { getAccountById } from "../controllers/family-account-controller.js";
+import { getPersonalBudgetById } from "../controllers/personal-budget-controller.js";
+import { getTransactionById } from "../controllers/transaction-controller.js";
 
 const handleGetAllSpendings = async (req, res) => {
     try {
@@ -35,7 +37,37 @@ const handleGetSpendingsById = async (req, res) => {
 
 const handleCreateSpendings = async (req, res) => {
     try {
-        const { name, totalAmount, spentAmount, budget, category } = req.body;
+        let { name, totalAmount, spentAmount, category, isPersonal } = req.body;
+        const user = await getUserById(req.user._id);
+        //Spendings belongs to personal budget
+        let budget = "";
+        if (isPersonal) {
+            budget = user.personalBudget;
+            //Check for already existing transactions in same category
+            const pBudget = await getPersonalBudgetById(user.personalBudget);
+            for (const transactionId of pBudget.transactions) {
+                const transaction = await getTransactionById(transactionId);
+                if (transaction.category == category) {
+                    spentAmount += Math.abs(transaction.amount);
+                }
+            }
+        }
+        //Spendings belongs to family account
+        else {
+            const account = await getAccountById(user.familyAccount);
+            budget = account.familyBudget;
+            for (const userId of account.users) {
+                const user = await getUserById(userId);
+                const pBudget = await getBudgetById(user.personalBudget);
+                for (const transactionId of pBudget.transactions) {
+                    const transaction = await getTransactionById(transactionId);
+                    if (transaction.category == category) {
+                        spentAmount += Math.abs(transaction.amount);
+                    }
+                }
+            }
+        }
+
         const newData = await createSpendings({
             name,
             totalAmount,

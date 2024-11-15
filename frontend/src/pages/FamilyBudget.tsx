@@ -5,7 +5,10 @@ import {
     getFamilyBudgetByMonth,
     getHasFamilyBudget,
 } from "../api/family-budget-api";
-import { getFamilySpendingsByMonth } from "../api/spendings-api";
+import {
+    createSpendings,
+    getFamilySpendingsByMonth,
+} from "../api/spendings-api";
 import { getHasFamilyAccount } from "../api/family-account-api";
 import { Category } from "../types/category";
 import { createCategory, getAllFamilyCategories } from "../api/category-api";
@@ -15,18 +18,23 @@ const Family = () => {
     const [hasFamilyBudget, setHasFamilyBudget] = useState<boolean>(false);
 
     const [familyBudget, setFamilyBudget] = useState<FamilyBudget | null>(null);
-    const [familySpendings, setFamilySpendings] = useState<Spendings[] | null>(
-        null
-    );
+    const [familySpendings, setFamilySpendings] = useState<Spendings[]>([]);
 
     const [newCategory, setNewCategory] = useState<Category>({
         name: "",
         isGlobal: false,
         isExpense: true,
     });
-    const [familyCategories, setFamilyCategories] = useState<Category[] | null>(
-        null
-    );
+
+    const [newSpendings, setNewSpendings] = useState<Spendings>({
+        name: "",
+        totalAmount: 0,
+        spentAmount: 0,
+        category: "",
+        isPersonal: false,
+    });
+
+    const [familyCategories, setFamilyCategories] = useState<Category[]>([]);
 
     const [loading, setLoading] = useState(true);
 
@@ -73,6 +81,25 @@ const Family = () => {
         setYear(Number(e.target.value));
     };
 
+    function handleSpendingsChange(
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) {
+        setNewSpendings({
+            ...newSpendings,
+            [e.target.name]: e.target.value,
+        });
+    }
+
+    async function handleSpendingsSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        let response = await createSpendings(newSpendings);
+        if (response) {
+            setFamilySpendings((prevSpendings) => [...prevSpendings, response]);
+        } else {
+            alert("Chyba při vytváření výdaje");
+        }
+    }
+
     function handleCategoryChange(
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) {
@@ -84,10 +111,12 @@ const Family = () => {
     }
     async function handleCategorySubmit(e: React.FormEvent) {
         e.preventDefault();
-        console.log("Nová kategorie: " + JSON.stringify(newCategory));
         let response = await createCategory(newCategory);
         if (response) {
-            alert("Kategorie byla úspěšně vytvořena");
+            setFamilyCategories((prevCategories) => [
+                ...prevCategories,
+                response,
+            ]);
         } else {
             alert("Chyba při vytváření kategorie");
         }
@@ -156,7 +185,7 @@ const Family = () => {
                 <p>Shrnutí rodinného účtu není k dispozici.</p>
             )}
 
-            {familySpendings ? (
+            {familySpendings.length > 0 ? (
                 <div>
                     <h3>Výdaje</h3>
                     {familySpendings.map((spending) => (
@@ -171,7 +200,46 @@ const Family = () => {
                 <p>Výdaje nejsou k dispozici.</p>
             )}
 
-            {familyCategories ? (
+            <h4>Vytvořit nový plán výdaje</h4>
+            <form onSubmit={handleSpendingsSubmit}>
+                <input
+                    placeholder={"Name"}
+                    onChange={handleSpendingsChange}
+                    name="name"
+                    required
+                    maxLength={50}
+                />
+                <input
+                    placeholder={"Total amount"}
+                    onChange={handleSpendingsChange}
+                    name="totalAmount"
+                    required
+                    type="number"
+                    maxLength={10}
+                />
+                Kategorie:
+                {familyCategories.length > 0 ? (
+                    <select
+                        name="category"
+                        defaultValue="DEFAULT"
+                        onChange={handleSpendingsChange}
+                    >
+                        <option hidden disabled value="DEFAULT">
+                            Vyberte kategorii
+                        </option>
+                        {familyCategories.map((category) => (
+                            <option key={category._id} value={category._id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    <p>Žádné kategorie k dispozici.</p>
+                )}
+                <button type="submit">Přidat výdaje</button>
+            </form>
+
+            {familyCategories.length > 0 ? (
                 <div>
                     <h3>Rodinné kategorie</h3>
                     {familyCategories.map((category) => (

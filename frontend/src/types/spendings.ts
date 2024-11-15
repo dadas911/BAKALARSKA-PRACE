@@ -3,6 +3,7 @@ export interface Spendings {
     name: string;
     totalAmount: number;
     spentAmount: number;
-    budget: string;
+    budget?: string;
     category: string;
+    isPersonal?: boolean;
 }

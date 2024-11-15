@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { Spendings } from "../types/spendings";
 import { Transaction } from "../types/transaction";
-import { getPersonalSpendingsByMonth } from "../api/spendings-api";
-import { createTransaction, getTransactionsByMonth } from "../api/transaction-api";
+import {
+    createSpendings,
+    getPersonalSpendingsByMonth,
+} from "../api/spendings-api";
+import {
+    createTransaction,
+    getTransactionsByMonth,
+} from "../api/transaction-api";
 import { PersonalBudget } from "../types/personal-budget";
 import {
     getPersonalBudgetByMonth,
@@ -18,15 +24,11 @@ const Personal = () => {
     const [personalBudget, setPersonalBudget] = useState<PersonalBudget | null>(
         null
     );
-    const [personalSpendings, setPersonalSpendings] = useState<
-        Spendings[] | null
-    >(null);
+    const [personalSpendings, setPersonalSpendings] = useState<Spendings[]>([]);
     const [personalTransactions, setPersonalTransactions] = useState<
-        Transaction[] | null
-    >(null);
-    const [familyCategories, setFamilyCategories] = useState<Category[] | null>(
-        null
-    );
+        Transaction[]
+    >([]);
+    const [familyCategories, setFamilyCategories] = useState<Category[]>([]);
 
     const [newTransaction, setNewTransaction] = useState<Transaction>({
         name: "",
@@ -34,6 +36,14 @@ const Personal = () => {
         date: new Date(),
         description: "",
         category: "",
+    });
+
+    const [newSpendings, setNewSpendings] = useState<Spendings>({
+        name: "",
+        totalAmount: 0,
+        spentAmount: 0,
+        category: "",
+        isPersonal: true,
     });
 
     const [loading, setLoading] = useState(true);
@@ -82,18 +92,49 @@ const Personal = () => {
         setYear(Number(e.target.value));
     };
 
-    function handleTransactionChange(e: React.ChangeEvent<HTMLInputElement>) {
-        setNewTransaction({ ...newTransaction, [e.target.name]: e.target.value });
+    function handleTransactionChange(
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) {
+        setNewTransaction({
+            ...newTransaction,
+            [e.target.name]: e.target.value,
+        });
     }
 
     async function handleTransactionSubmit(e: React.FormEvent) {
         e.preventDefault();
         let response = await createTransaction(newTransaction);
         if (response) {
-            alert("Transakce byla úspěšně vytvořena");
+            setPersonalTransactions((prevTransactions) => [
+                ...prevTransactions,
+                response,
+            ]);
         } else {
             alert("Chyba při vytváření transakce");
-        
+        }
+    }
+
+    function handleSpendingsChange(
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) {
+        setNewSpendings({
+            ...newSpendings,
+            [e.target.name]: e.target.value,
+        });
+    }
+
+    async function handleSpendingsSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        let response = await createSpendings(newSpendings);
+        if (response) {
+            setPersonalSpendings((prevSpendings) => [
+                ...prevSpendings,
+                response,
+            ]);
+        } else {
+            alert("Chyba při vytváření výdaje");
+        }
+    }
 
     if (loading) {
         return (
@@ -155,9 +196,9 @@ const Personal = () => {
                 <p>Shrnutí osobního účtu není k dispozici.</p>
             )}
 
-            {personalSpendings ? (
+            {personalSpendings.length > 0 ? (
                 <div>
-                    <h3>Výdaje</h3>
+                    <h3>Plány výdajů</h3>
                     {personalSpendings.map((spending) => (
                         <p key={spending._id}>
                             Name: {spending.name}, TotalAmount:{" "}
@@ -170,69 +211,137 @@ const Personal = () => {
                 <p>Výdaje nejsou k dispozici.</p>
             )}
 
-            {personalTransactions ? (
+            <h4>Vytvořit nový plán výdaje</h4>
+            <form onSubmit={handleSpendingsSubmit}>
+                <input
+                    placeholder={"Name"}
+                    onChange={handleSpendingsChange}
+                    name="name"
+                    required
+                    maxLength={50}
+                />
+                <input
+                    placeholder={"Total amount"}
+                    onChange={handleSpendingsChange}
+                    name="totalAmount"
+                    required
+                    type="number"
+                    maxLength={10}
+                />
+                Kategorie:
+                {familyCategories.length > 0 ? (
+                    <select
+                        name="category"
+                        defaultValue="DEFAULT"
+                        onChange={handleSpendingsChange}
+                    >
+                        <option hidden disabled value="DEFAULT">
+                            Vyberte kategorii
+                        </option>
+                        {familyCategories.map((category) => (
+                            <option key={category._id} value={category._id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    <p>Žádné kategorie k dispozici.</p>
+                )}
+                <button type="submit">Přidat výdaje</button>
+            </form>
+
+            {personalTransactions.length > 0 ? (
                 <div>
                     <h3>Transakce</h3>
-                    {personalTransactions.map((transaction) => (
-                        <p key={transaction._id}>
-                            Name: {transaction.name}, Amount:{" "}
-                            {transaction.amount}, Description:{" "}
-                            {transaction.description}
-                        </p>
-                    ))}
+                    {personalTransactions.map((transaction) => {
+                        const categoryName =
+                            familyCategories?.find(
+                                (category) =>
+                                    category._id === transaction.category
+                            )?.name || "Neznámá kategorie";
+
+                        return (
+                            <p key={transaction._id}>
+                                Name: {transaction.name}, Amount:{" "}
+                                {transaction.amount}, Description:{" "}
+                                {transaction.description}, Kategorie:{" "}
+                                {categoryName}
+                            </p>
+                        );
+                    })}
                 </div>
             ) : (
                 <p>Transakce nejsou k dispozici.</p>
             )}
 
+            <h4>Vytvořit novou transakci</h4>
             <form onSubmit={handleTransactionSubmit}>
                 <input
                     placeholder={"Name"}
                     onChange={handleTransactionChange}
                     name="name"
                     required
-                    maxLength={20}
+                    maxLength={50}
                 />
                 <input
                     placeholder={"Amount"}
                     onChange={handleTransactionChange}
                     name="amount"
                     required
-                    maxLength={20}
+                    type="number"
+                    maxLength={10}
                 />
                 <input
-                    placeholder={"Second name"}
+                    placeholder={"Date"}
                     onChange={handleTransactionChange}
-                    name="secondName"
+                    name="date"
                     required
+                    type="date"
+                    min={
+                        currDate.getFullYear() +
+                        "-" +
+                        String(currDate.getMonth() + 1).padStart(2, "0") +
+                        "-01"
+                    }
+                    max={
+                        currDate.getFullYear() +
+                        "-" +
+                        String(currDate.getMonth() + 1).padStart(2, "0") +
+                        "-" +
+                        String(currDate.getDate()).padStart(2, "0")
+                    }
                     maxLength={20}
                 />
                 <input
-                    placeholder={"E-mail"}
+                    placeholder={"Description"}
                     onChange={handleTransactionChange}
-                    name="email"
+                    name="description"
                     required
-                    maxLength={20}
+                    type="text"
+                    maxLength={150}
                 />
-                Role:
-                <select name="role">
-                    <option value="živitel">Živitel</option>
-                    <option value="člen domácnosti">Člen domácnosti</option>
-                    <option value="student">Student</option>
-                    <option value="senior">Senior</option>
-                </select>
-                <input
-                    placeholder={"Password"}
-                    onChange={handleChange}
-                    name="password"
-                    required
-                    maxLength={20}
-                    type="password"
-                />
-                <button type="submit">Vytvořit účet</button>
+                Kategorie:
+                {familyCategories.length > 0 ? (
+                    <select
+                        name="category"
+                        defaultValue="DEFAULT"
+                        onChange={handleTransactionChange}
+                    >
+                        <option hidden disabled value="DEFAULT">
+                            Vyberte kategorii
+                        </option>
+                        {familyCategories.map((category) => (
+                            <option key={category._id} value={category._id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    <p>Žádné kategorie k dispozici.</p>
+                )}
+                <button type="submit">Přidat transakci</button>
             </form>
         </div>
     );
 };
-
 export default Personal;

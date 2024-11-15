@@ -68,7 +68,7 @@ export async function updateSpendings(
 export async function getPersonalSpendingsByMonth(
     month: number,
     year: number
-): Promise<Spendings[] | null> {
+): Promise<Spendings[]> {
     try {
         const response = await axios.post(`${URL_API}/spendings/personal`, {
             month: month,
@@ -78,14 +78,14 @@ export async function getPersonalSpendingsByMonth(
         return response.data;
     } catch (error) {
         console.error("Chyba při volání API:", error);
-        return null;
+        return [];
     }
 }
 
 export async function getFamilySpendingsByMonth(
     month: number,
     year: number
-): Promise<Spendings[] | null> {
+): Promise<Spendings[]> {
     try {
         const response = await axios.post(`${URL_API}/spendings/family`, {
             month: month,
@@ -95,6 +95,6 @@ export async function getFamilySpendingsByMonth(
         return response.data;
     } catch (error) {
         console.error("Chyba při volání API:", error);
-        return null;
+        return [];
     }
 }

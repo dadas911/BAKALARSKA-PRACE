@@ -65,13 +65,13 @@ export async function updateCategory(
     }
 }
 
-export async function getAllFamilyCategories(): Promise<Category[] | null> {
+export async function getAllFamilyCategories(): Promise<Category[]> {
     try {
         const response = await axios.get(`${URL_API}/categories/family`);
 
         return response.data;
     } catch (error) {
         console.error("Chyba při volání API:", error);
-        return null;
+        return [];
     }
 }
