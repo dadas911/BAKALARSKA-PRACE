@@ -25,6 +25,17 @@ export async function getUserById(id: string): Promise<User | null> {
     }
 }
 
+export async function getUserInfo(): Promise<User | null> {
+    try {
+        const response = await axios.get(`${URL_API}/users/info`);
+
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return null;
+    }
+}
+
 export async function createUser(
     user: User
 ): Promise<{ success: boolean; data: User | string }> {

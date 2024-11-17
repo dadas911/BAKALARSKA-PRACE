@@ -9,6 +9,29 @@ const Account = () => {
     const [familyAccount, setFamilyAccount] = useState<FamilyAccount | null>(
         null
     );
+    const [loading, setLoading] = useState(true);
+
+    const getUserInfo = async () => {
+        const userData = await getUserInfo();
+    };
+
+    useEffect(() => {
+        const getData = async () => {
+            setLoading(true);
+            await getUserInfo();
+            setLoading(false);
+        };
+
+        getData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div>
+                <h2>Načítání...</h2>
+            </div>
+        );
+    }
 
     return (
         <>
