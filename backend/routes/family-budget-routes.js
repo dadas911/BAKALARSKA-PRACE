@@ -14,7 +14,6 @@ import checkToken from "../middleware/checkToken.js";
 const router = express.Router();
 
 router.route("/family").post(checkToken, handleGetFamilyBudgetByMonth);
-router.route("/check").get(checkToken, handleHasFamilyBudget);
 router.route("/").get(checkToken, handleGetAllFamilyBudgets);
 router.route("/:id").get(checkToken, handleGetFamilyBudgetById);
 router.route("/").post(checkToken, handleCreateFamilyBudget);

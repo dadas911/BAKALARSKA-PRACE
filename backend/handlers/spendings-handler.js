@@ -125,11 +125,7 @@ const handleGetPersonalSpendingsByMonth = async (req, res) => {
     try {
         const { month, year } = req.body;
         const user = await getUserById(req.user._id);
-        const pBudget = await getBudgetByIdAndDate(
-            user.personalBudget,
-            month,
-            year
-        );
+        const pBudget = await getBudgetByIdAndDate(user, month, year, true);
 
         const spendings = await Promise.all(
             pBudget.spendings.map(async (id) => {
@@ -146,11 +142,11 @@ const handleGetFamilySpendingsByMonth = async (req, res) => {
     try {
         const { month, year } = req.body;
         const user = await getUserById(req.user._id);
-        const familyAccount = await getAccountById(user.familyAccount);
         const fBudget = await getBudgetByIdAndDate(
-            familyAccount.familyBudget,
+            user.familyAccount,
             month,
-            year
+            year,
+            false
         );
 
         const spendings = await Promise.all(

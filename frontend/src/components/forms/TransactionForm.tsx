@@ -6,11 +6,13 @@ import { Transaction } from "../../types/transaction";
 interface TransactionFormProps {
     familyCategories: Category[];
     onAddTransaction: (transaction: Transaction) => void;
+    refresh: () => void;
 }
 
 const TransactionForm: React.FC<TransactionFormProps> = ({
     familyCategories,
     onAddTransaction,
+    refresh,
 }) => {
     const defaultTransaction = {
         name: "",
@@ -40,6 +42,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         if (response) {
             onAddTransaction(response);
             setNewTransaction(defaultTransaction);
+            refresh();
         } else {
             alert("Chyba při vytváření transakce");
         }

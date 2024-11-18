@@ -8,7 +8,10 @@ import {
     getAllFamilyCategories,
 } from "../controllers/category-controller.js";
 import { getBudgetById } from "../controllers/budget-controller.js";
-import { updateFamilyBudget } from "../controllers/family-budget-controller.js";
+import {
+    getFamilyBudgetById,
+    updateFamilyBudget,
+} from "../controllers/family-budget-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
 import { getAccountById } from "../controllers/family-account-controller.js";
 
@@ -92,12 +95,15 @@ const handleGetAllFamilyCategories = async (req, res) => {
     try {
         const user = await getUserById(req.user._id);
         const globalCategories = await getAllGlobalCategories();
-        const familyCategories = [];
-        if (req.user.familyAccount) {
+        let familyCategories = [];
+        if (user.familyAccount) {
             const familyAccount = await getAccountById(user.familyAccount);
-            const familyCategories = await getAllFamilyCategories(
-                familyAccount.familyBudget
-            );
+            if (familyAccount.familyBudget) {
+                const fBudget = await getFamilyBudgetById(
+                    familyAccount.familyBudget
+                );
+                familyCategories = await getAllFamilyCategories(fBudget);
+            }
         }
 
         res.status(200).json(globalCategories.concat(familyCategories));

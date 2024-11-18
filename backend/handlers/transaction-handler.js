@@ -124,11 +124,7 @@ const handleGetTransactionsByMonth = async (req, res) => {
     try {
         const { month, year } = req.body;
         const user = await getUserById(req.user._id);
-        const pBudget = await getBudgetByIdAndDate(
-            user.personalBudget,
-            month,
-            year
-        );
+        const pBudget = await getBudgetByIdAndDate(user, month, year, true);
         const transactions = await Promise.all(
             pBudget.transactions.map(async (id) => {
                 return await getTransactionById(id);

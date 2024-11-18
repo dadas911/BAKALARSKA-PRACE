@@ -5,7 +5,7 @@ export interface FamilyBudget {
     year: number;
     income: number;
     expense: number;
-    spendings: string[];
-    account: string;
-    categories: string[];
+    spendings?: string[];
+    account?: string;
+    categories?: string[];
 }

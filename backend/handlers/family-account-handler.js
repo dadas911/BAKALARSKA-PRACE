@@ -5,7 +5,12 @@ import {
     deleteAccount,
     updateAccount,
 } from "../controllers/family-account-controller.js";
-import { getUserById, updateUser } from "../controllers/user-controller.js";
+import {
+    getUserByEmail,
+    getUserById,
+    updateUser,
+    getUsersByAccount,
+} from "../controllers/user-controller.js";
 
 const handleGetAllAccounts = async (req, res) => {
     try {
@@ -26,9 +31,20 @@ const handleGetAccountById = async (req, res) => {
     }
 };
 
+const handleGetAccount = async (req, res) => {
+    try {
+        const user = await getUserById(req.user._id);
+        const data = await getAccountById(user.familyAccount);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
 const handleCreateAccount = async (req, res) => {
     try {
-        const { name, owner, users } = req.body;
+        const { name } = req.body;
+        const owner = req.user._id;
+        const users = [req.user._id];
         const newData = await createAccount({ name, owner, users });
 
         //Add account_id to owner
@@ -73,7 +89,68 @@ const handleHasFamilyAccount = async (req, res) => {
 
         res.status(200).json(result);
     } catch (error) {
-        res.status(error.statusCode || 500).json(data);
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
+const handleAddUserToAccount = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const sender = await getUserById(req.user._id);
+        const user = await getUserByEmail(email);
+        if (user.familyAccount) {
+            res.status(404).json({
+                message: "Uživatel je již členem rodinného účtu",
+            });
+        }
+
+        const familyAccount = await getAccountById(req.user.familyAccount);
+        familyAccount.users.push(user._id);
+
+        user.familyAccount = sender.familyAccount;
+        await updateAccount(familyAccount._id, familyAccount);
+        await updateUser(user._id, user);
+        const result = true;
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
+const handleDeleteUserFromAccount = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await getUserByEmail(email);
+        if (!user.familyAccount) {
+            res.status(404).json({
+                message: "Uživatel není členem žádného rodinného účtu",
+            });
+        }
+
+        const familyAccount = await getAccountById(req.user.familyAccount);
+        familyAccount.users = familyAccount.users.filter(
+            (id) => id !== user._id
+        );
+
+        user.familyAccount = null;
+        await updateAccount(familyAccount._id, familyAccount);
+        await updateUser(user._id, user);
+        const result = true;
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
+const handleGetAllAccountUsers = async (req, res) => {
+    try {
+        const user = await getUserById(req.user._id);
+        const data = await getUsersByAccount(user.familyAccount);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
     }
 };
 
@@ -84,4 +161,8 @@ export {
     handleDeleteAccount,
     handleUpdateAccount,
     handleHasFamilyAccount,
+    handleGetAccount,
+    handleAddUserToAccount,
+    handleDeleteUserFromAccount,
+    handleGetAllAccountUsers,
 };

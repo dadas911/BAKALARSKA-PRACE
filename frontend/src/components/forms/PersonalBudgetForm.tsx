@@ -80,7 +80,6 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Personal budget: " + JSON.stringify(newPersonalBudget));
         const response = await createPersonalBudget(newPersonalBudget);
         if (response) {
             onCreateBudget(response);

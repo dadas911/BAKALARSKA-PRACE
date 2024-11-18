@@ -162,6 +162,7 @@ const Personal = () => {
             <TransactionForm
                 familyCategories={familyCategories}
                 onAddTransaction={handleAddTransaction}
+                refresh={handleRefresh}
             />
         </div>
     );

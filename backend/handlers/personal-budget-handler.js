@@ -91,7 +91,8 @@ const handleGetPersonalBudgetByMonth = async (req, res) => {
         const personalBudget = await getBudgetByIdAndDate(
             req.user._id,
             month,
-            year
+            year,
+            true
         );
 
         res.status(200).json(personalBudget);

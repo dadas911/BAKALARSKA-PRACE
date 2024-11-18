@@ -38,7 +38,7 @@ const Home = () => {
     const [year, setYear] = useState<number>(date.getFullYear());
 
     const getPersonalBudgetInfo = async () => {
-        const personalBudgetStatus = await getHasPersonalBudget();
+        const personalBudgetStatus = await getHasPersonalBudget(month, year);
         setHasPersonalBudget(personalBudgetStatus);
 
         if (personalBudgetStatus) {
@@ -54,7 +54,7 @@ const Home = () => {
         setHasFamilyAccount(familyAccountStatus);
 
         if (familyAccountStatus) {
-            const familyBudgetStatus = await getHasFamilyBudget();
+            const familyBudgetStatus = await getHasFamilyBudget(month, year);
             setHasFamilyBudget(familyBudgetStatus);
 
             if (familyBudgetStatus) {

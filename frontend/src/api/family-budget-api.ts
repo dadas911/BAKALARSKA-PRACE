@@ -86,11 +86,21 @@ export async function getFamilyBudgetByMonth(
     }
 }
 
-export async function getHasFamilyBudget(): Promise<boolean> {
+export async function getHasFamilyBudget(
+    month: number,
+    year: number
+): Promise<boolean> {
     try {
-        const response = await axios.get(`${URL_API}/family-budgets/check`);
+        const response = await axios.post(`${URL_API}/family-budgets/family`, {
+            month: month,
+            year: year,
+        });
 
-        return response.data;
+        if (response) {
+            return true;
+        }
+
+        return false;
     } catch (error) {
         console.error("Chyba při volání API:", error);
         return false;

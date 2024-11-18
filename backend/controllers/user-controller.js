@@ -84,13 +84,30 @@ const updateUser = async (id, newData) => {
     }
 };
 
-//Returns one user by id
 const getUserByEmail = async (email) => {
     try {
-        const data = await await UserModel.findOne({ email: email });
+        const data = await UserModel.findOne({ email: email });
 
         if (!data) {
             const error = new Error("Uživatel nebyl nalezen");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return data;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
+//Returns one user by id
+const getUsersByAccount = async (account) => {
+    try {
+        const data = await UserModel.find({ familyAccount: account });
+
+        if (!data) {
+            const error = new Error("Nebyli nalezeni žádní uživatelé");
             error.statusCode = 404;
             throw error;
         }
@@ -109,4 +126,5 @@ export {
     deleteUser,
     updateUser,
     getUserByEmail,
+    getUsersByAccount,
 };

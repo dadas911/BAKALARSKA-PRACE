@@ -10,7 +10,7 @@ const BudgetBalance: React.FC<BudgetBalanceProps> = ({
     expense,
 }) => (
     <div>
-        <h2>Shrnutí rodinného rozpočtu</h2>
+        <h2>Shrnutí rozpočtu</h2>
         <h3>{name}</h3>
         <p>
             <b>Zůstatek:</b> {income + expense}, <b>Příjem:</b> {income},{" "}

@@ -34,7 +34,7 @@ const handleGetUserById = async (req, res) => {
     }
 };
 
-const handleGetUserInfo = async (req, res) => {
+const handleGetUser = async (req, res) => {
     try {
         const data = await getUserById(req.user._id);
         res.status(200).json(data);
@@ -159,5 +159,5 @@ export {
     handleDeleteUser,
     handleUpdateUser,
     handleLoginUser,
-    handleGetUserInfo,
+    handleGetUser,
 };

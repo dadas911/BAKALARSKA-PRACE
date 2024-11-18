@@ -33,7 +33,9 @@ const handleGetFamilyBudgetById = async (req, res) => {
 
 const handleCreateFamilyBudget = async (req, res) => {
     try {
-        const { name, month, year, income, expense, account } = req.body;
+        const { name, month, year, income, expense } = req.body;
+        const user = await getUserById(req.user._id);
+        const account = user.familyAccount;
         const newData = await createFamilyBudget({
             name,
             month,
@@ -42,16 +44,21 @@ const handleCreateFamilyBudget = async (req, res) => {
             expense,
             account,
         });
+        const currDate = new Date();
+        const currMonth = currDate.getMonth() + 1;
+        const currYear = currDate.getFullYear();
 
-        //Add budget._id to FamilyAccount
-        let familyAccount = await getAccountById(account);
-        if (!familyAccount) {
-            res.status(404).json({
-                message: "Vlastník rozpočtu nebyl nalezen",
-            });
+        //Add budget._id to FamilyAccount if its current month and year
+        if (currMonth === month && currYear === year) {
+            let familyAccount = await getAccountById(account);
+            if (!familyAccount) {
+                res.status(404).json({
+                    message: "Vlastník rozpočtu nebyl nalezen",
+                });
+            }
+            familyAccount.familyBudget = newData._id;
+            await updateAccount(account, familyAccount);
         }
-        familyAccount.familyBudget = newData._id;
-        await updateAccount(account, familyAccount);
 
         res.status(200).json(newData);
     } catch (error) {
@@ -84,11 +91,11 @@ const handleGetFamilyBudgetByMonth = async (req, res) => {
     try {
         const { month, year } = req.body;
         const user = await getUserById(req.user._id);
-        const familyAccount = await getAccountById(user.familyAccount);
         const familyBudget = await getBudgetByIdAndDate(
-            familyAccount.familyBudget,
+            user.familyAccount,
             month,
-            year
+            year,
+            false
         );
 
         res.status(200).json(familyBudget);

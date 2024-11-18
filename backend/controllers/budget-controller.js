@@ -1,4 +1,6 @@
 import { BudgetModel } from "../models/budget-model.js";
+import { FamilyBudgetModel } from "../models/family-budget-model.js";
+import { PersonalBudgetModel } from "../models/personal-budget-model.js";
 
 //Returns all users in database
 const getAllBudgets = async () => {
@@ -26,18 +28,31 @@ const getBudgetById = async (id) => {
     }
 };
 
-const getBudgetByIdAndDate = async (user, month, year) => {
+const getBudgetByIdAndDate = async (id, month, year, isPersonalBudget) => {
     try {
-        const data = await BudgetModel.findOne({
-            user: user,
-            month: month,
-            year: year,
-        });
+        let data = null;
+        if (isPersonalBudget) {
+            data = await PersonalBudgetModel.findOne({
+                user: id,
+                month: month,
+                year: year,
+            });
+            //console.log("Personal data: " + JSON.stringify(data));
+        } else {
+            data = await FamilyBudgetModel.findOne({
+                account: id,
+                month: month,
+                year: year,
+            });
+            //console.log("Family data: " + JSON.stringify(data));
+        }
+
         if (!data) {
             const error = new Error("Rozpočet nebyl nalezen");
             error.statusCode = 404;
             throw error;
         }
+
         return data;
     } catch (error) {
         error.statusCode = error.statusCode || 500;

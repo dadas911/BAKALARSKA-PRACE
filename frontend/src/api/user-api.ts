@@ -25,7 +25,7 @@ export async function getUserById(id: string): Promise<User | null> {
     }
 }
 
-export async function getUserInfo(): Promise<User | null> {
+export async function getUser(): Promise<User | null> {
     try {
         const response = await axios.get(`${URL_API}/users/info`);
 

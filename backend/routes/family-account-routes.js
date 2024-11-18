@@ -7,6 +7,10 @@ import {
     handleDeleteAccount,
     handleUpdateAccount,
     handleHasFamilyAccount,
+    handleGetAccount,
+    handleAddUserToAccount,
+    handleGetAllAccountUsers,
+    handleDeleteUserFromAccount,
 } from "../handlers/family-account-handler.js";
 
 import checkToken from "../middleware/checkToken.js";
@@ -14,6 +18,10 @@ import checkToken from "../middleware/checkToken.js";
 const router = express.Router();
 
 router.route("/check").get(checkToken, handleHasFamilyAccount);
+router.route("/users").get(checkToken, handleGetAllAccountUsers);
+router.route("/add").post(checkToken, handleAddUserToAccount);
+router.route("/remove").post(checkToken, handleDeleteUserFromAccount);
+router.route("/info").get(checkToken, handleGetAccount);
 router.route("/").get(checkToken, handleGetAllAccounts);
 router.route("/:id").get(checkToken, handleGetAccountById);
 router.route("/").post(checkToken, handleCreateAccount);

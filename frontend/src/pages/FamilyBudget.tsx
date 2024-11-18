@@ -6,9 +6,13 @@ import {
     getHasFamilyBudget,
 } from "../api/family-budget-api";
 import { getFamilySpendingsByMonth } from "../api/spendings-api";
-import { getHasFamilyAccount } from "../api/family-account-api";
+import {
+    getFamilyAccount,
+    getHasFamilyAccount,
+} from "../api/family-account-api";
 import { Category } from "../types/category";
 import { getAllFamilyCategories } from "../api/category-api";
+import { FamilyAccount } from "../types/family-account";
 import DatePicker from "../components/common/DatePicker";
 import Loading from "../components/common/Loading";
 import FamilyCategory from "../components/family/FamilyCategory";
@@ -16,11 +20,18 @@ import SpendingsForm from "../components/forms/SpendingsForm";
 import CategoryForm from "../components/forms/CategoryForm";
 import BudgetBalance from "../components/budget/BudgetBalance";
 import BudgetSpendings from "../components/budget/Spendings";
+import FamilyBudgetForm from "../components/forms/FamilyBudgetForm";
+import FamilyAccountForm from "../components/forms/FamilyAccountForm";
 
 const Family = () => {
+    const [refresh, setRefresh] = useState(false);
+
     const [hasFamilyAccount, setHasFamilyAccount] = useState<boolean>(false);
     const [hasFamilyBudget, setHasFamilyBudget] = useState<boolean>(false);
 
+    const [familyAccount, setFamilyAccount] = useState<FamilyAccount | null>(
+        null
+    );
     const [familyBudget, setFamilyBudget] = useState<FamilyBudget | null>(null);
     const [familySpendings, setFamilySpendings] = useState<Spendings[]>([]);
 
@@ -38,19 +49,25 @@ const Family = () => {
         setHasFamilyAccount(familyAccountStatus);
 
         if (familyAccountStatus) {
-            const familyBudgetStatus = await getHasFamilyBudget();
+            const familyAccount = await getFamilyAccount();
+            setFamilyAccount(familyAccount);
+            const familyBudgetStatus = await getHasFamilyBudget(month, year);
             setHasFamilyBudget(familyBudgetStatus);
 
             if (familyBudgetStatus) {
                 const budget = await getFamilyBudgetByMonth(month, year);
                 const spendings = await getFamilySpendingsByMonth(month, year);
-                const category = await getAllFamilyCategories();
 
                 setFamilyBudget(budget);
                 setFamilySpendings(spendings);
-                setFamilyCategories(category);
             }
+            const category = await getAllFamilyCategories();
+            setFamilyCategories(category);
         }
+    };
+
+    const handleRefresh = () => {
+        setRefresh((prev) => !prev);
     };
 
     useEffect(() => {
@@ -61,7 +78,7 @@ const Family = () => {
         };
 
         getData();
-    }, [month, year, hasFamilyAccount, hasFamilyBudget]);
+    }, [month, year, refresh]);
 
     const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setMonth(Number(e.target.value));
@@ -79,23 +96,35 @@ const Family = () => {
         setFamilyCategories((prevCategory) => [...prevCategory, newCategory]);
     };
 
+    const handleCreateFamilyBudget = (newFamilyBudget: FamilyBudget) => {
+        setFamilyBudget(newFamilyBudget);
+    };
+
+    const handleCreateFamilyAccount = (newFamilyAccount: FamilyAccount) => {
+        setFamilyAccount(newFamilyAccount);
+    };
+
     if (loading) {
         return <Loading />;
     }
 
     if (!hasFamilyAccount) {
         return (
-            <div>
-                <h2>Tento účet nemá rodinný účet</h2>
-            </div>
+            <FamilyAccountForm
+                onCreateAccount={handleCreateFamilyAccount}
+                refresh={handleRefresh}
+            />
         );
     }
 
     if (!hasFamilyBudget) {
         return (
-            <div>
-                <h2>Rodinný účet pro tento měsíc není vytvořený</h2>
-            </div>
+            <FamilyBudgetForm
+                month={month}
+                year={year}
+                onCreateBudget={handleCreateFamilyBudget}
+                refresh={handleRefresh}
+            />
         );
     }
 
