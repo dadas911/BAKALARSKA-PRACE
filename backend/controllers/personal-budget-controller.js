@@ -1,6 +1,5 @@
 import { PersonalBudgetModel } from "../models/personal-budget-model.js";
 
-//Returns all users in database
 const getAllPersonalBudgets = async () => {
     try {
         const data = await PersonalBudgetModel.find({});

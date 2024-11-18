@@ -29,16 +29,9 @@ const handleGetPersonalBudgetById = async (req, res) => {
 
 const handleCreatePersonalBudget = async (req, res) => {
     try {
-        const {
-            name,
-            month,
-            year,
-            income,
-            expense,
-            flexibility,
-            weight,
-            user,
-        } = req.body;
+        const user = req.user._id;
+        const { name, month, year, income, expense, flexibility, weight } =
+            req.body;
         const newData = await createPersonalBudget({
             name,
             month,
@@ -49,16 +42,21 @@ const handleCreatePersonalBudget = async (req, res) => {
             weight,
             user,
         });
+        const currDate = new Date();
+        const currMonth = currDate.getMonth() + 1;
+        const currYear = currDate.getFullYear();
 
-        //Add budget._id to User
-        let budgetOwner = await getUserById(user);
-        if (!budgetOwner) {
-            res.status(404).json({
-                message: "Vlastník rozpočtu nebyl nalezen",
-            });
+        //Add budget._id to User if its current month and year
+        if (currMonth === month && currYear === year) {
+            let budgetOwner = await getUserById(user);
+            if (!budgetOwner) {
+                res.status(404).json({
+                    message: "Vlastník rozpočtu nebyl nalezen",
+                });
+            }
+            budgetOwner.personalBudget = newData._id;
+            await updateUser(user, budgetOwner);
         }
-        budgetOwner.personalBudget = newData._id;
-        await updateUser(user, budgetOwner);
 
         res.status(200).json(newData);
     } catch (error) {
@@ -90,9 +88,8 @@ const handleUpdatePersonalBudget = async (req, res) => {
 const handleGetPersonalBudgetByMonth = async (req, res) => {
     try {
         const { month, year } = req.body;
-        const user = await getUserById(req.user._id);
         const personalBudget = await getBudgetByIdAndDate(
-            user.personalBudget,
+            req.user._id,
             month,
             year
         );
@@ -103,17 +100,6 @@ const handleGetPersonalBudgetByMonth = async (req, res) => {
     }
 };
 
-const handleHasPersonalBudget = async (req, res) => {
-    try {
-        const user = await getUserById(req.user._id);
-        const result = !!user.personalBudget;
-
-        res.status(200).json(result);
-    } catch (error) {
-        res.status(error.statusCode || 500).json(data);
-    }
-};
-
 export {
     handleGetAllPersonalBudgets,
     handleGetPersonalBudgetById,
@@ -121,5 +107,4 @@ export {
     handleDeletePersonalBudget,
     handleUpdatePersonalBudget,
     handleGetPersonalBudgetByMonth,
-    handleHasPersonalBudget,
 };

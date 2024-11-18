@@ -3,10 +3,9 @@ import Landing from "./pages/Landing";
 import Home from "./pages/Home";
 import PersonalBudget from "./pages/PersonalBudget";
 import FamilyBudget from "./pages/FamilyBudget";
-import Transactions from "./pages/Transactions";
 import User from "./pages/User";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
+import Layout from "./components/layout/Layout";
 import { useLayoutEffect } from "react";
 import axios from "axios";
 
@@ -35,7 +34,6 @@ function App() {
                         path="/personalbudget"
                         element={<PersonalBudget />}
                     />
-                    <Route path="/transactions" element={<Transactions />} />
                     <Route path="/user" element={<User />} />
                 </Route>
             </Routes>

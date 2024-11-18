@@ -93,11 +93,21 @@ export async function getPersonalBudgetByMonth(
     }
 }
 
-export async function getHasPersonalBudget(): Promise<boolean> {
+export async function getHasPersonalBudget(
+    month: number,
+    year: number
+): Promise<boolean> {
     try {
-        const response = await axios.get(`${URL_API}/personal-budgets/check`);
+        const response = await axios.post(
+            `${URL_API}/personal-budgets/personal`,
+            { month: month, year: year }
+        );
 
-        return response.data;
+        if (response) {
+            return true;
+        }
+
+        return false;
     } catch (error) {
         console.error("Chyba při volání API:", error);
         return false;

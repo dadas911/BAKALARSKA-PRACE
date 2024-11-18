@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { getUserById } from "../api/user-api";
-import { getFamilyAccountById } from "../api/family-account-api";
 import { User } from "../types/user";
 import { FamilyAccount } from "../types/family-account";
 

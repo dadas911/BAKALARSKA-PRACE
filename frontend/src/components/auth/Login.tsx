@@ -1,6 +1,6 @@
-import { loginUser } from "../api/user-api";
+import { loginUser } from "../../api/user-api";
 import { useState } from "react";
-import { UserLogin } from "../types/user-login";
+import { UserLogin } from "../../types/user-login";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 

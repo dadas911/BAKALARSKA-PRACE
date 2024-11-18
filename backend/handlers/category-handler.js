@@ -91,11 +91,15 @@ const handleUpdateCategory = async (req, res) => {
 const handleGetAllFamilyCategories = async (req, res) => {
     try {
         const user = await getUserById(req.user._id);
-        const familyAccount = await getAccountById(user.familyAccount);
         const globalCategories = await getAllGlobalCategories();
-        const familyCategories = await getAllFamilyCategories(
-            familyAccount.familyBudget
-        );
+        const familyCategories = [];
+        if (req.user.familyAccount) {
+            const familyAccount = await getAccountById(user.familyAccount);
+            const familyCategories = await getAllFamilyCategories(
+                familyAccount.familyBudget
+            );
+        }
+
         res.status(200).json(globalCategories.concat(familyCategories));
     } catch (error) {
         res.status(error.statusCode || 500).json({ message: error.message });

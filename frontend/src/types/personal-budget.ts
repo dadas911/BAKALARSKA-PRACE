@@ -8,6 +8,6 @@ export interface PersonalBudget {
     spendings: string[];
     flexibility: number;
     weight: Record<string, number>;
-    user: string;
+    user?: string;
     transactions?: string[];
 }

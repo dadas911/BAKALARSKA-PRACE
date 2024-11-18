@@ -1,5 +1,5 @@
-import Registration from "../components/Registration";
-import Login from "../components/Login";
+import Registration from "../components/auth/Registration";
+import Login from "../components/auth/Login";
 import { useState } from "react";
 
 const Landing = () => {

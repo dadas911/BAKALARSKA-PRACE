@@ -1,6 +1,6 @@
-import { createUser } from "../api/user-api";
+import { createUser } from "../../api/user-api";
 import { useState } from "react";
-import { User } from "../types/user";
+import { User } from "../../types/user";
 
 const Registration = () => {
     const [user, setUser] = useState<User>({

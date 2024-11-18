@@ -26,10 +26,10 @@ const getBudgetById = async (id) => {
     }
 };
 
-const getBudgetByIdAndDate = async (id, month, year) => {
+const getBudgetByIdAndDate = async (user, month, year) => {
     try {
         const data = await BudgetModel.findOne({
-            _id: id,
+            user: user,
             month: month,
             year: year,
         });

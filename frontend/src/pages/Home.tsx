@@ -13,28 +13,27 @@ import {
 } from "../api/family-budget-api";
 import { getFamilySpendingsByMonth } from "../api/spendings-api";
 import { getHasFamilyAccount } from "../api/family-account-api";
+import DatePicker from "../components/common/DatePicker";
+import BudgetBalance from "../components/budget/BudgetBalance";
+import BudgetSpendings from "../components/budget/Spendings";
+import Loading from "../components/common/Loading";
 
 const Home = () => {
     const [hasPersonalBudget, setHasPersonalBudget] = useState<boolean>(false);
     const [personalBudget, setPersonalBudget] = useState<PersonalBudget | null>(
         null
     );
-    const [personalSpendings, setPersonalSpendings] = useState<
-        Spendings[] | null
-    >(null);
+    const [personalSpendings, setPersonalSpendings] = useState<Spendings[]>([]);
 
     const [hasFamilyAccount, setHasFamilyAccount] = useState<boolean>(false);
     const [hasFamilyBudget, setHasFamilyBudget] = useState<boolean>(false);
 
     const [familyBudget, setFamilyBudget] = useState<FamilyBudget | null>(null);
-    const [familySpendings, setFamilySpendings] = useState<Spendings[] | null>(
-        null
-    );
+    const [familySpendings, setFamilySpendings] = useState<Spendings[]>([]);
 
     const [loading, setLoading] = useState(true);
 
     const date = new Date();
-
     const [month, setMonth] = useState<number>(date.getMonth() + 1);
     const [year, setYear] = useState<number>(date.getFullYear());
 
@@ -87,115 +86,72 @@ const Home = () => {
     };
 
     if (loading) {
-        return (
-            <div>
-                <h2>Načítání...</h2>
-            </div>
-        );
+        return <Loading />;
     }
 
     return (
         <div>
-            <div>
-                <label htmlFor="month">Vyberte měsíc:</label>
-                <select id="month" value={month} onChange={handleMonthChange}>
-                    <option value={1}>Leden</option>
-                    <option value={2}>Únor</option>
-                    <option value={3}>Březen</option>
-                    <option value={4}>Duben</option>
-                    <option value={5}>Květen</option>
-                    <option value={6}>Červen</option>
-                    <option value={7}>Červenec</option>
-                    <option value={8}>Srpen</option>
-                    <option value={9}>Září</option>
-                    <option value={10}>Říjen</option>
-                    <option value={11}>Listopad</option>
-                    <option value={12}>Prosinec</option>
-                </select>
-            </div>
-
-            <div>
-                <label htmlFor="year">Vyberte rok:</label>
-                <select id="year" value={year} onChange={handleYearChange}>
-                    <option value={2024}>2024</option>
-                    <option value={2023}>2023</option>
-                    <option value={2022}>2022</option>
-                </select>
-            </div>
+            <DatePicker
+                month={month}
+                year={year}
+                onMonthChange={handleMonthChange}
+                onYearChange={handleYearChange}
+            />
             <h1>Přehled osobních financí</h1>
             {hasPersonalBudget ? (
                 <>
                     {personalBudget ? (
-                        <div>
-                            <h2>Shrnutí osobního rozpočtu</h2>
-                            <h3>{personalBudget.name}</h3>
-                            <p>
-                                Zůstatek:{" "}
-                                {personalBudget.income + personalBudget.expense}
-                                , Příjem: {personalBudget.income}, Výdaje:{" "}
-                                {personalBudget.expense}
-                            </p>
-                        </div>
+                        <BudgetBalance
+                            name={personalBudget.name}
+                            income={personalBudget.income}
+                            expense={personalBudget.expense}
+                        />
                     ) : (
-                        <p>Shrnutí osobního účtu není k dispozici.</p>
+                        <h3>Shrnutí osobního účtu není k dispozici.</h3>
                     )}
 
-                    {personalSpendings ? (
-                        <div>
-                            <h3>Výdaje</h3>
-                            {personalSpendings.map((spending) => (
-                                <p key={spending._id}>
-                                    Name: {spending.name}, TotalAmount:{" "}
-                                    {spending.totalAmount}, SpentAmount:{" "}
-                                    {spending.spentAmount}
-                                </p>
-                            ))}
-                        </div>
+                    {personalSpendings.length > 0 ? (
+                        <BudgetSpendings spendings={personalSpendings} />
                     ) : (
-                        <p>Výdaje nejsou k dispozici.</p>
+                        <h3>Výdaje nejsou k dispozici.</h3>
                     )}
                 </>
             ) : (
                 <div>
-                    <h2>Osobní rozpočet pro tento měsíc není k dispozici</h2>
+                    <h3>Osobní rozpočet pro tento měsíc není k dispozici</h3>
                 </div>
             )}
-            <h1>Přehled rodinných financí</h1>
-            {hasFamilyBudget ? (
-                <>
-                    {familyBudget ? (
-                        <div>
-                            <h2>Shrnutí rodinného rozpočtu</h2>
-                            <h3>{familyBudget.name}</h3>
-                            <p>
-                                Zůstatek:{" "}
-                                {familyBudget.income + familyBudget.expense},
-                                Příjem: {familyBudget.income}, Výdaje:{" "}
-                                {familyBudget.expense}
-                            </p>
-                        </div>
-                    ) : (
-                        <p>Shrnutí rodinného účtu není k dispozici.</p>
-                    )}
 
-                    {familySpendings ? (
-                        <div>
-                            <h3>Výdaje</h3>
-                            {familySpendings.map((spending) => (
-                                <p key={spending._id}>
-                                    Name: {spending.name}, TotalAmount:{" "}
-                                    {spending.totalAmount}, SpentAmount:{" "}
-                                    {spending.spentAmount}
-                                </p>
-                            ))}
-                        </div>
-                    ) : (
-                        <p>Výdaje nejsou k dispozici.</p>
-                    )}
-                </>
+            <h1>Přehled rodinných financí</h1>
+            {hasFamilyAccount ? (
+                hasFamilyBudget ? (
+                    <>
+                        {familyBudget ? (
+                            <BudgetBalance
+                                name={familyBudget.name}
+                                income={familyBudget.income}
+                                expense={familyBudget.expense}
+                            />
+                        ) : (
+                            <h3>Shrnutí rodinného účtu není k dispozici.</h3>
+                        )}
+
+                        {familySpendings.length > 0 ? (
+                            <BudgetSpendings spendings={familySpendings} />
+                        ) : (
+                            <h3>Výdaje nejsou k dispozici.</h3>
+                        )}
+                    </>
+                ) : (
+                    <div>
+                        <h3>
+                            Rodinný rozpočet pro tento měsíc není k dispozici
+                        </h3>
+                    </div>
+                )
             ) : (
                 <div>
-                    <h2>Rodinný rozpočet pro tento měsíc není k dispozici</h2>
+                    <h3>K tomuto účtu není přiřazený žádný rodinný účet</h3>
                 </div>
             )}
         </div>
