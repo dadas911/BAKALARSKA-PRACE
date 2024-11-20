@@ -31,23 +31,30 @@ const Login = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
-                placeholder={"E-mail"}
+                placeholder="E-mail"
                 onChange={handleChange}
                 name="email"
                 required
-                maxLength={20}
+                maxLength={50}
+                className="border border-gray-300 p-3 rounded focus:outline-green-500"
             />
             <input
-                placeholder={"Password"}
+                placeholder="Heslo"
                 onChange={handleChange}
                 name="password"
                 required
-                maxLength={20}
+                maxLength={50}
                 type="password"
+                className="border border-gray-300 p-3 rounded focus:outline-green-500"
             />
-            <button type="submit">Přihlásit</button>
+            <button
+                type="submit"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+            >
+                Přihlásit
+            </button>
         </form>
     );
 };

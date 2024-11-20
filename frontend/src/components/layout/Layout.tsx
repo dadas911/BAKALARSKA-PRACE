@@ -2,6 +2,7 @@ import NavigationBar from "./NavigationBar";
 import { Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import Header from "./Header";
 
 const Layout = () => {
     let user = sessionStorage.getItem("User");
@@ -14,12 +15,13 @@ const Layout = () => {
     }, [user]);
 
     return (
-        <>
+        <div className="flex flex-row bg-neutral-200 h-screen w-screen overflow-x-hidden">
             <NavigationBar />
-            <div style={{ paddingTop: "10%" }}>
-                <Outlet />
+            <div className="flex-1 ml-60">
+                <Header />
+                <div className="p-4">{<Outlet />}</div>
             </div>
-        </>
+        </div>
     );
 };
 

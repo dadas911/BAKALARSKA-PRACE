@@ -93,10 +93,9 @@ export async function getHasFamilyAccount(): Promise<boolean> {
 
 export async function addUserToAccount(email: String): Promise<boolean> {
     try {
-        const response = await axios.post(
-            `${URL_API}/family-accounts/add`,
-            email
-        );
+        const response = await axios.post(`${URL_API}/family-accounts/add`, {
+            email: email,
+        });
         return response.data;
     } catch (error) {
         console.error("Chyba při volání API:", error);

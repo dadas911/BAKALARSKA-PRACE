@@ -90,14 +90,16 @@ const Home = () => {
     }
 
     return (
-        <div>
+        <div className="flex flex-col gap-4">
             <DatePicker
                 month={month}
                 year={year}
                 onMonthChange={handleMonthChange}
                 onYearChange={handleYearChange}
             />
-            <h1>Přehled osobních financí</h1>
+            <h2 className="text-3xl font-semibold text-neutral-700 text-center">
+                Přehled osobních financí
+            </h2>
             {hasPersonalBudget ? (
                 <>
                     {personalBudget ? (
@@ -107,22 +109,30 @@ const Home = () => {
                             expense={personalBudget.expense}
                         />
                     ) : (
-                        <h3>Shrnutí osobního účtu není k dispozici.</h3>
+                        <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                            Shrnutí osobního účtu není k dispozici.
+                        </h3>
                     )}
 
                     {personalSpendings.length > 0 ? (
                         <BudgetSpendings spendings={personalSpendings} />
                     ) : (
-                        <h3>Výdaje nejsou k dispozici.</h3>
+                        <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                            Výdaje nejsou k dispozici.
+                        </h3>
                     )}
                 </>
             ) : (
                 <div>
-                    <h3>Osobní rozpočet pro tento měsíc není k dispozici</h3>
+                    <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                        Osobní rozpočet pro tento měsíc není k dispozici
+                    </h3>
                 </div>
             )}
 
-            <h1>Přehled rodinných financí</h1>
+            <h2 className="text-3xl font-semibold text-neutral-700 text-center">
+                Přehled rodinných financí
+            </h2>
             {hasFamilyAccount ? (
                 hasFamilyBudget ? (
                     <>
@@ -133,25 +143,31 @@ const Home = () => {
                                 expense={familyBudget.expense}
                             />
                         ) : (
-                            <h3>Shrnutí rodinného účtu není k dispozici.</h3>
+                            <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                                Shrnutí rodinného účtu není k dispozici.
+                            </h3>
                         )}
 
                         {familySpendings.length > 0 ? (
                             <BudgetSpendings spendings={familySpendings} />
                         ) : (
-                            <h3>Výdaje nejsou k dispozici.</h3>
+                            <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                                Výdaje nejsou k dispozici.
+                            </h3>
                         )}
                     </>
                 ) : (
                     <div>
-                        <h3>
+                        <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
                             Rodinný rozpočet pro tento měsíc není k dispozici
                         </h3>
                     </div>
                 )
             ) : (
                 <div>
-                    <h3>K tomuto účtu není přiřazený žádný rodinný účet</h3>
+                    <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                        K tomuto účtu není přiřazený žádný rodinný účet
+                    </h3>
                 </div>
             )}
         </div>

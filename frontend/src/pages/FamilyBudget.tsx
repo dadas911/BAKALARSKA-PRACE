@@ -129,7 +129,7 @@ const Family = () => {
     }
 
     return (
-        <div>
+        <div className="flex flex-col gap-4">
             <DatePicker
                 month={month}
                 year={year}
@@ -147,28 +147,34 @@ const Family = () => {
                     {familySpendings.length > 0 ? (
                         <BudgetSpendings spendings={familySpendings} />
                     ) : (
-                        <h3>Výdaje nejsou k dispozici.</h3>
+                        <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                            Výdaje nejsou k dispozici.
+                        </h3>
                     )}
                 </>
             ) : (
-                <h3>Shrnutí rodinného účtu není k dispozici.</h3>
+                <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                    Shrnutí rodinného účtu není k dispozici.
+                </h3>
             )}
 
-            <h4>Vytvořit nový plán výdaje</h4>
+            {/* <h4>Vytvořit nový plán výdaje</h4>
             <SpendingsForm
                 familyCategories={familyCategories}
                 isPersonal={false}
                 onAddSpendings={handleAddSpendings}
-            />
+            />*/}
 
             {familyCategories.length > 0 ? (
                 <FamilyCategory familyCategories={familyCategories} />
             ) : (
-                <h3>Transakce nejsou k dispozici.</h3>
+                <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                    Transakce nejsou k dispozici.
+                </h3>
             )}
 
-            <h4>Vytvořit novou kategorii</h4>
-            <CategoryForm onAddCategory={handleAddCategory} />
+            {/* <h4>Vytvořit novou kategorii</h4>
+            <CategoryForm onAddCategory={handleAddCategory} /> */}
         </div>
     );
 };

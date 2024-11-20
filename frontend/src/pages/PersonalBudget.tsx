@@ -114,7 +114,7 @@ const Personal = () => {
     }
 
     return (
-        <div>
+        <div className="flex flex-col gap-4">
             <DatePicker
                 month={month}
                 year={year}
@@ -132,22 +132,23 @@ const Personal = () => {
                     {personalSpendings.length > 0 ? (
                         <BudgetSpendings spendings={personalSpendings} />
                     ) : (
-                        <p>Výdaje nejsou k dispozici.</p>
+                        <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                            Výdaje nejsou k dispozici.
+                        </h3>
                     )}
                 </>
             ) : (
-                <p>
-                    Shrnutí osobního účtu není k dispozici. Has personal budget:{" "}
-                    {hasPersonalBudget}
-                </p>
+                <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                    Shrnutí osobního účtu není k dispozici.
+                </h3>
             )}
 
-            <h4>Vytvořit nový plán výdaje</h4>
+            {/* <h4>Vytvořit nový plán výdaje</h4>
             <SpendingsForm
                 familyCategories={familyCategories}
                 isPersonal={true}
                 onAddSpendings={handleAddSpendings}
-            />
+            /> */}
 
             {personalTransactions.length > 0 ? (
                 <Transactions
@@ -155,15 +156,17 @@ const Personal = () => {
                     familyCategories={familyCategories}
                 />
             ) : (
-                <p>Transakce nejsou k dispozici.</p>
+                <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
+                    Transakce nejsou k dispozici.
+                </h3>
             )}
 
-            <h4>Vytvořit novou transakci</h4>
+            {/* <h4>Vytvořit novou transakci</h4>
             <TransactionForm
                 familyCategories={familyCategories}
                 onAddTransaction={handleAddTransaction}
                 refresh={handleRefresh}
-            />
+            /> */}
         </div>
     );
 };

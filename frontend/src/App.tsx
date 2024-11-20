@@ -8,6 +8,7 @@ import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import { useLayoutEffect } from "react";
 import axios from "axios";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
     useLayoutEffect(() => {
@@ -35,19 +36,11 @@ function App() {
                         element={<PersonalBudget />}
                     />
                     <Route path="/user" element={<User />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                 </Route>
             </Routes>
         </Router>
     );
 }
-
-//Pages
-// Landing
-// Login
-// Home
-// FamilyBudget
-// PersonalBudget
-// Transactions
-// User
 
 export default App;
