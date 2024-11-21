@@ -1,54 +1,61 @@
 import { useState } from "react";
 import { Category } from "../../types/category";
-import { createCategory } from "../../api/category-api";
 
-interface CategoryFormProps {
+const CategoryForm = ({
+    onAddCategory,
+    initialCategory,
+}: {
     onAddCategory: (category: Category) => void;
-}
+    initialCategory?: Category;
+}) => {
+    const defaultCategory = { name: "", isExpense: true, isGlobal: false };
+    const [category, setCategory] = useState<Category>(
+        initialCategory || defaultCategory
+    );
 
-const CategoryForm: React.FC<CategoryFormProps> = ({ onAddCategory }) => {
-    const defaultCategory = {
-        name: "",
-        isGlobal: false,
-        isExpense: true,
-    };
-    const [newCategory, setNewCategory] = useState<Category>(defaultCategory);
-
-    function handleCategoryChange(
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) {
-        const { name, value } = e.target;
-        setNewCategory({
-            ...newCategory,
-            [name]: name === "isExpense" ? value === "true" : value,
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type } = e.target;
+        setCategory({
+            ...category,
+            [name]: type === "checkbox" ? e.target.checked : value,
         });
-    }
-    async function handleCategorySubmit(e: React.FormEvent) {
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const response = await createCategory(newCategory);
-        if (response) {
-            onAddCategory(response);
-            setNewCategory(defaultCategory);
-        } else {
-            alert("Chyba při vytváření kategorie");
-        }
-    }
+        onAddCategory(category);
+    };
 
     return (
-        <form onSubmit={handleCategorySubmit}>
-            <input
-                placeholder={"Name"}
-                onChange={handleCategoryChange}
-                name="name"
-                required
-                value={newCategory.name}
-                maxLength={20}
-            />
-            <select name="isExpense">
-                <option value="true">Výdaj</option>
-                <option value="false">Příjem</option>
-            </select>
-            <button type="submit">Vytvořit kategorii</button>
+        <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Název</label>
+                <input
+                    type="text"
+                    name="name"
+                    value={category.name}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded"
+                />
+            </div>
+            <div className="mb-4">
+                <label className="inline-flex items-center">
+                    <input
+                        type="checkbox"
+                        name="isExpense"
+                        checked={category.isExpense}
+                        onChange={handleInputChange}
+                        className="form-checkbox"
+                    />
+                    <span className="ml-2">Výdaj</span>
+                </label>
+            </div>
+            <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+                {initialCategory ? "Upravit kategorii" : "Přidat kategorii"}
+            </button>
         </form>
     );
 };

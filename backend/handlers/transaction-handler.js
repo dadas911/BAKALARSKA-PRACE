@@ -44,8 +44,14 @@ const handleCreateTransaction = async (req, res) => {
         const user = await getUserById(req.user._id);
         const personalBudget = user.personalBudget;
         const cat = await getCategoryById(category);
+
         if (cat.isExpense) {
             amount = -amount;
+        }
+
+        let isIncome = true;
+        if (amount < 0) {
+            isIncome = false;
         }
 
         const newData = await createTransaction({
@@ -57,7 +63,12 @@ const handleCreateTransaction = async (req, res) => {
             category,
         });
 
-        await modifyBalanceAndSpendingsHelper(personalBudget, amount, category);
+        await modifyBalanceAndSpendingsHelper(
+            personalBudget,
+            amount,
+            category,
+            isIncome
+        );
 
         //Add transaction._id to budget
         //Add new spending to the budget
@@ -79,16 +90,22 @@ const handleDeleteTransaction = async (req, res) => {
         const { id } = req.params;
 
         const deletedData = await deleteTransaction(id);
+        let isIncome = true;
+        if (deletedData.amount < 0) {
+            isIncome = false;
+        }
 
         await modifyBalanceAndSpendingsHelper(
             deletedData.personalBudget,
             -deletedData.amount,
-            deletedData.category.toString()
+            deletedData.category.toString(),
+            isIncome
         );
 
         //Spending is in some budget -> delete it from there
         if (deletedData.personalBudget) {
             let budget = await getBudgetById(deletedData.personalBudget);
+
             budget.transactions = budget.transactions.filter(
                 (transaction_id) => transaction_id.toString() !== id
             );
@@ -108,10 +125,16 @@ const handleUpdateTransaction = async (req, res) => {
         const oldData = await getTransactionById(id);
         const updatedData = await updateTransaction(id, newData);
 
+        let isIncome = true;
+        if (updatedData.amount < 0) {
+            isIncome = false;
+        }
+
         await modifyBalanceAndSpendingsHelper(
             updatedData.personalBudget,
             updatedData.amount - oldData.amount,
-            updatedData.category.toString()
+            updatedData.category.toString(),
+            isIncome
         );
 
         res.status(200).json(updatedData);
@@ -140,7 +163,8 @@ const handleGetTransactionsByMonth = async (req, res) => {
 const modifyBalanceAndSpendingsHelper = async (
     personalBudgetId,
     amount,
-    category
+    category,
+    isIncome
 ) => {
     //Update spentAmount in spendings - personal budget
     const pBudget = await getBudgetById(personalBudgetId);
@@ -149,7 +173,7 @@ const modifyBalanceAndSpendingsHelper = async (
     }
 
     //Add amount to income or expense of Personal Budget
-    if (amount > 0) {
+    if (isIncome) {
         pBudget.income += Number(amount);
     } else {
         pBudget.expense += Number(amount);
@@ -183,7 +207,7 @@ const modifyBalanceAndSpendingsHelper = async (
         }
 
         //Add amount to income or expense of Family Budget
-        if (amount > 0) {
+        if (isIncome) {
             fBudget.income += Number(amount);
         } else {
             fBudget.expense += Number(amount);

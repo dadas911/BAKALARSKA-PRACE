@@ -40,17 +40,37 @@ const FamilyAccountForm: React.FC<FamilyAccountFormProps> = ({
     };
 
     return (
-        <form onSubmit={handleFamilyAccountSubmit}>
-            <h3>Vytvořit nový rodinný účet</h3>
-            Název rozpočtu:
-            <input
-                type="text"
-                name="name"
-                value={newFamilyAccount.name}
-                onChange={handleFamilyAccountChange}
-                required
-            />
-            <button type="submit">Vytvořit účet</button>
+        <form
+            onSubmit={handleFamilyAccountSubmit}
+            className="max-w-lg mx-auto p-4 bg-white rounded-lg shadow-lg"
+        >
+            <h3 className="text-xl font-semibold mb-6 text-center">
+                Vytvořit nový rodinný účet
+            </h3>
+            <div className="mb-4">
+                <label
+                    htmlFor="name"
+                    className="block text-sm font-medium mb-1"
+                >
+                    Název rozpočtu:
+                </label>
+                <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    value={newFamilyAccount.name}
+                    onChange={handleFamilyAccountChange}
+                    required
+                    className="w-full px-3 py-2 border rounded"
+                    placeholder="Zadejte název rodinného účtu"
+                />
+            </div>
+            <button
+                type="submit"
+                className="w-full bg-green-500 text-white py-2 rounded-lg mt-4 hover:bg-green-600 transition"
+            >
+                Vytvořit účet
+            </button>
         </form>
     );
 };

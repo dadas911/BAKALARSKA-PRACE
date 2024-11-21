@@ -7,6 +7,7 @@ interface BudgetBalanceProps {
     name: String;
     income: number;
     expense: number;
+    isPersonal: boolean;
 }
 
 const itemClass =
@@ -19,10 +20,11 @@ const BudgetBalance: React.FC<BudgetBalanceProps> = ({
     name,
     income,
     expense,
+    isPersonal,
 }) => (
     <div className="w-full">
         <h3 className="text-2xl font-semibold text-neutral-700 text-center mb-4">
-            Shrnutí rozpočtu
+            Shrnutí {isPersonal ? "osobního" : "rodinného"} rozpočtu
         </h3>
         <div className="flex gap-4 w-full">
             <div className={itemClass}>

@@ -11,12 +11,16 @@ import {
     getHasFamilyAccount,
 } from "../api/family-account-api";
 import { Category } from "../types/category";
-import { getAllFamilyCategories } from "../api/category-api";
+import {
+    createCategory,
+    deleteCategory,
+    getAllFamilyCategories,
+    updateCategory,
+} from "../api/category-api";
 import { FamilyAccount } from "../types/family-account";
 import DatePicker from "../components/common/DatePicker";
 import Loading from "../components/common/Loading";
 import FamilyCategory from "../components/family/FamilyCategory";
-import SpendingsForm from "../components/forms/SpendingsForm";
 import CategoryForm from "../components/forms/CategoryForm";
 import BudgetBalance from "../components/budget/BudgetBalance";
 import BudgetSpendings from "../components/budget/Spendings";
@@ -40,9 +44,13 @@ const Family = () => {
     const [loading, setLoading] = useState(true);
 
     const date = new Date();
-
     const [month, setMonth] = useState<number>(date.getMonth() + 1);
     const [year, setYear] = useState<number>(date.getFullYear());
+
+    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    const [updatingCategory, setUpdatingCategory] = useState<Category | null>(
+        null
+    );
 
     const getFamilyBudgetInfo = async () => {
         const familyAccountStatus = await getHasFamilyAccount();
@@ -63,6 +71,49 @@ const Family = () => {
             }
             const category = await getAllFamilyCategories();
             setFamilyCategories(category);
+        }
+    };
+
+    const handleOpenCategoryModal = (category?: Category) => {
+        setUpdatingCategory(category || null);
+        setIsCategoryModalOpen(true);
+    };
+
+    const handleCloseCategoryModal = () => {
+        setUpdatingCategory(null);
+        setIsCategoryModalOpen(false);
+    };
+
+    const handleAddCategory = async (newCategory: Category) => {
+        if (updatingCategory) {
+            updateCategory(newCategory._id || "No id", newCategory);
+            setFamilyCategories((prevCategories) =>
+                prevCategories.map((category) =>
+                    category._id === updatingCategory._id
+                        ? newCategory
+                        : category
+                )
+            );
+        } else {
+            const responseCategory = await createCategory(newCategory);
+            if (responseCategory) {
+                setFamilyCategories((prevCategories) => [
+                    ...prevCategories,
+                    responseCategory,
+                ]);
+            }
+        }
+        handleCloseCategoryModal();
+    };
+
+    const handleDeleteCategory = async (id: string) => {
+        try {
+            await deleteCategory(id);
+            setFamilyCategories((prevCategories) =>
+                prevCategories.filter((category) => category._id !== id)
+            );
+        } catch (error) {
+            console.error("Error deleting category:" + error);
         }
     };
 
@@ -88,22 +139,6 @@ const Family = () => {
         setYear(Number(e.target.value));
     };
 
-    const handleAddSpendings = (newSpendings: Spendings) => {
-        setFamilySpendings((prevSpendings) => [...prevSpendings, newSpendings]);
-    };
-
-    const handleAddCategory = (newCategory: Category) => {
-        setFamilyCategories((prevCategory) => [...prevCategory, newCategory]);
-    };
-
-    const handleCreateFamilyBudget = (newFamilyBudget: FamilyBudget) => {
-        setFamilyBudget(newFamilyBudget);
-    };
-
-    const handleCreateFamilyAccount = (newFamilyAccount: FamilyAccount) => {
-        setFamilyAccount(newFamilyAccount);
-    };
-
     if (loading) {
         return <Loading />;
     }
@@ -111,7 +146,7 @@ const Family = () => {
     if (!hasFamilyAccount) {
         return (
             <FamilyAccountForm
-                onCreateAccount={handleCreateFamilyAccount}
+                onCreateAccount={setFamilyAccount}
                 refresh={handleRefresh}
             />
         );
@@ -122,7 +157,7 @@ const Family = () => {
             <FamilyBudgetForm
                 month={month}
                 year={year}
-                onCreateBudget={handleCreateFamilyBudget}
+                onCreateBudget={setFamilyBudget}
                 refresh={handleRefresh}
             />
         );
@@ -143,6 +178,7 @@ const Family = () => {
                         name={familyBudget.name}
                         income={familyBudget.income}
                         expense={familyBudget.expense}
+                        isPersonal={false}
                     />
                     {familySpendings.length > 0 ? (
                         <BudgetSpendings spendings={familySpendings} />
@@ -158,23 +194,46 @@ const Family = () => {
                 </h3>
             )}
 
-            {/* <h4>Vytvořit nový plán výdaje</h4>
-            <SpendingsForm
-                familyCategories={familyCategories}
-                isPersonal={false}
-                onAddSpendings={handleAddSpendings}
-            />*/}
-
             {familyCategories.length > 0 ? (
-                <FamilyCategory familyCategories={familyCategories} />
+                <FamilyCategory
+                    familyCategories={familyCategories}
+                    onUpdateCategory={handleOpenCategoryModal}
+                    onDeleteCategory={handleDeleteCategory}
+                />
             ) : (
                 <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
                     Transakce nejsou k dispozici.
                 </h3>
             )}
 
-            {/* <h4>Vytvořit novou kategorii</h4>
-            <CategoryForm onAddCategory={handleAddCategory} /> */}
+            <button
+                onClick={() => handleOpenCategoryModal()}
+                className="bg-green-500 text-white px-4 py-2 rounded mt-4"
+            >
+                Přidat kategorii
+            </button>
+
+            {isCategoryModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                        <h3 className="text-xl font-semibold mb-4">
+                            {updatingCategory
+                                ? "Upravit kategorii"
+                                : "Přidat novou kategorii"}
+                        </h3>
+                        <CategoryForm
+                            onAddCategory={handleAddCategory}
+                            initialCategory={updatingCategory || undefined}
+                        />
+                        <button
+                            onClick={handleCloseCategoryModal}
+                            className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                        >
+                            Zavřít
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

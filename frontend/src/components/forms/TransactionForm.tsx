@@ -1,122 +1,142 @@
 import { useState } from "react";
 import { Category } from "../../types/category";
-import { createTransaction } from "../../api/transaction-api";
 import { Transaction } from "../../types/transaction";
 
 interface TransactionFormProps {
     familyCategories: Category[];
     onAddTransaction: (transaction: Transaction) => void;
-    refresh: () => void;
+    initialTransaction?: Transaction;
 }
 
 const TransactionForm: React.FC<TransactionFormProps> = ({
     familyCategories,
     onAddTransaction,
-    refresh,
+    initialTransaction,
 }) => {
     const defaultTransaction = {
         name: "",
         amount: 0,
         date: new Date(),
         description: "",
-        category: "",
+        category: "DEFAULT",
     };
 
     const currDate = new Date();
 
-    const [newTransaction, setNewTransaction] =
-        useState<Transaction>(defaultTransaction);
+    const [transaction, setTransaction] = useState<Transaction>(
+        initialTransaction || defaultTransaction
+    );
 
     const handleTransactionChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
-        setNewTransaction({
-            ...newTransaction,
+        setTransaction({
+            ...transaction,
             [e.target.name]: e.target.value,
         });
     };
 
     const handleTransactionSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        let response = await createTransaction(newTransaction);
-        if (response) {
-            onAddTransaction(response);
-            setNewTransaction(defaultTransaction);
-            refresh();
-        } else {
-            alert("Chyba při vytváření transakce");
-        }
+        onAddTransaction(transaction);
     };
 
     return (
         <form onSubmit={handleTransactionSubmit}>
-            <input
-                placeholder={"Name"}
-                onChange={handleTransactionChange}
-                name="name"
-                required
-                value={newTransaction.name}
-                maxLength={50}
-            />
-            <input
-                placeholder={"Amount"}
-                onChange={handleTransactionChange}
-                name="amount"
-                required
-                type="number"
-                value={newTransaction.amount}
-                maxLength={10}
-            />
-            <input
-                placeholder={"Date"}
-                onChange={handleTransactionChange}
-                name="date"
-                required
-                type="date"
-                min={
-                    currDate.getFullYear() +
-                    "-" +
-                    String(currDate.getMonth() + 1).padStart(2, "0") +
-                    "-01"
-                }
-                max={
-                    currDate.getFullYear() +
-                    "-" +
-                    String(currDate.getMonth() + 1).padStart(2, "0") +
-                    "-" +
-                    String(currDate.getDate()).padStart(2, "0")
-                }
-                maxLength={20}
-            />
-            <input
-                placeholder={"Description"}
-                onChange={handleTransactionChange}
-                name="description"
-                required
-                type="text"
-                value={newTransaction.description}
-                maxLength={150}
-            />
-            Kategorie:
-            {familyCategories.length > 0 ? (
-                <select
-                    name="category"
-                    defaultValue="DEFAULT"
+            <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Název</label>
+                <input
+                    type="text"
+                    name="name"
+                    value={transaction.name}
                     onChange={handleTransactionChange}
-                >
-                    <option hidden disabled value="DEFAULT">
-                        Vyberte kategorii
-                    </option>
-                    {familyCategories.map((category) => (
-                        <option key={category._id} value={category._id}>
-                            {category.name}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                    maxLength={50}
+                    placeholder="Název"
+                />
+            </div>
+            <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Částka</label>
+                <input
+                    type="number"
+                    name="amount"
+                    value={transaction.amount}
+                    onChange={handleTransactionChange}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                    maxLength={10}
+                    placeholder="Částka"
+                />
+            </div>
+            <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Datum</label>
+                <input
+                    type="date"
+                    name="date"
+                    onChange={handleTransactionChange}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                    min={
+                        currDate.getFullYear() +
+                        "-" +
+                        String(currDate.getMonth() + 1).padStart(2, "0") +
+                        "-01"
+                    }
+                    max={
+                        currDate.getFullYear() +
+                        "-" +
+                        String(currDate.getMonth() + 1).padStart(2, "0") +
+                        "-" +
+                        String(currDate.getDate()).padStart(2, "0")
+                    }
+                    maxLength={20}
+                    placeholder="Datum"
+                />
+            </div>
+            <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Popis</label>
+                <input
+                    type="text"
+                    name="description"
+                    value={transaction.description}
+                    onChange={handleTransactionChange}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                    maxLength={150}
+                    placeholder="Popis"
+                />
+            </div>
+            <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">
+                    Kategorie
+                </label>
+                {familyCategories.length > 0 ? (
+                    <select
+                        name="category"
+                        onChange={handleTransactionChange}
+                        className="w-full px-3 py-2 border rounded"
+                        defaultValue={transaction.category}
+                    >
+                        <option hidden disabled value="DEFAULT">
+                            Vyberte kategorii
                         </option>
-                    ))}
-                </select>
-            ) : (
-                <p>Žádné kategorie k dispozici.</p>
-            )}
-            <button type="submit">Přidat transakci</button>
+                        {familyCategories.map((category) => (
+                            <option key={category._id} value={category._id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    <p>Žádné kategorie k dispozici.</p>
+                )}
+            </div>
+            <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+                {initialTransaction ? "Upravit transakci" : "Přidat transakci"}
+            </button>
         </form>
     );
 };

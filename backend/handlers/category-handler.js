@@ -105,7 +105,6 @@ const handleGetAllFamilyCategories = async (req, res) => {
                 familyCategories = await getAllFamilyCategories(fBudget);
             }
         }
-
         res.status(200).json(globalCategories.concat(familyCategories));
     } catch (error) {
         res.status(error.statusCode || 500).json({ message: error.message });

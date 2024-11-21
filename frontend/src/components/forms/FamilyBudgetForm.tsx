@@ -64,27 +64,103 @@ const FamilyBudgetForm: React.FC<FamilyBudgetFormProps> = ({
     };
 
     return (
-        <form onSubmit={handleFamilyBudgetSubmit}>
-            <h3>Vytvořit nový rodinný rozpočet</h3>
-            Název rozpočtu:
-            <input
-                type="text"
-                name="name"
-                value={newFamilyBudget.name}
-                onChange={handleFamilyBudgetChange}
-                required
-            />
-            Měsíc:
-            <input
-                type="text"
-                id="month"
-                value={monthNames[month - 1]}
-                disabled
-            />
-            Rok:
-            <input type="text" id="year" value={year} disabled />
-            Flexibilita:
-            <button type="submit">Vytvořit rozpočet</button>
+        <form
+            onSubmit={handleFamilyBudgetSubmit}
+            className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg"
+        >
+            <h3 className="text-xl font-semibold mb-6 text-center">
+                Vytvořit nový rodinný rozpočet
+            </h3>
+            <div className="mb-4">
+                <label
+                    htmlFor="name"
+                    className="block text-sm font-medium mb-1"
+                >
+                    Název rozpočtu:
+                </label>
+                <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    value={newFamilyBudget.name}
+                    onChange={handleFamilyBudgetChange}
+                    required
+                    className="w-full px-3 py-2 border rounded"
+                    placeholder="Zadejte název rozpočtu"
+                />
+            </div>
+            <div className="mb-4">
+                <label
+                    htmlFor="month"
+                    className="block text-sm font-medium mb-1"
+                >
+                    Měsíc:
+                </label>
+                <input
+                    type="text"
+                    id="month"
+                    value={monthNames[month - 1]}
+                    disabled
+                    className="w-full px-3 py-2 border rounded bg-gray-100"
+                />
+            </div>
+            <div className="mb-4">
+                <label
+                    htmlFor="year"
+                    className="block text-sm font-medium mb-1"
+                >
+                    Rok:
+                </label>
+                <input
+                    type="text"
+                    id="year"
+                    value={year}
+                    disabled
+                    className="w-full px-3 py-2 border rounded bg-gray-100"
+                />
+            </div>
+            <div className="mb-4">
+                <label
+                    htmlFor="income"
+                    className="block text-sm font-medium mb-1"
+                >
+                    Příjem:
+                </label>
+                <input
+                    type="number"
+                    name="income"
+                    id="income"
+                    value={newFamilyBudget.income}
+                    onChange={handleFamilyBudgetChange}
+                    className="w-full px-3 py-2 border rounded"
+                    placeholder="Zadejte příjem"
+                    required
+                />
+            </div>
+            <div className="mb-4">
+                <label
+                    htmlFor="expense"
+                    className="block text-sm font-medium mb-1"
+                >
+                    Výdaje:
+                </label>
+                <input
+                    type="number"
+                    name="expense"
+                    id="expense"
+                    value={newFamilyBudget.expense}
+                    onChange={handleFamilyBudgetChange}
+                    className="w-full px-3 py-2 border rounded"
+                    placeholder="Zadejte výdaje"
+                    required
+                />
+            </div>
+            <button
+                type="submit"
+                className="w-full bg-green-500 text-white py-2 rounded-lg mt-4 hover:bg-green-600 transition"
+            >
+                Vytvořit rozpočet
+            </button>
         </form>
     );
 };

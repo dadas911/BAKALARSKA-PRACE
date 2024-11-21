@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { Spendings } from "../types/spendings";
 import { Transaction } from "../types/transaction";
 import { getPersonalSpendingsByMonth } from "../api/spendings-api";
-import { getTransactionsByMonth } from "../api/transaction-api";
+import {
+    createTransaction,
+    deleteTransaction,
+    getTransactionsByMonth,
+    updateTransaction,
+} from "../api/transaction-api";
 import { PersonalBudget } from "../types/personal-budget";
 import {
     getPersonalBudgetByMonth,
@@ -40,6 +45,10 @@ const Personal = () => {
     const [month, setMonth] = useState<number>(currDate.getMonth() + 1);
     const [year, setYear] = useState<number>(currDate.getFullYear());
 
+    const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+    const [updatingTransaction, setUpdatingTransaction] =
+        useState<Transaction | null>(null);
+
     const getPersonalBudgetInfo = async () => {
         const personalBudgetStatus = await getHasPersonalBudget(month, year);
         setHasPersonalBudget(personalBudgetStatus);
@@ -54,6 +63,7 @@ const Personal = () => {
         }
 
         const category = await getAllFamilyCategories();
+        console.log("Category: " + category);
         setFamilyCategories(category);
     };
 
@@ -82,11 +92,50 @@ const Personal = () => {
         ]);
     };
 
-    const handleAddTransaction = (newTransaction: Transaction) => {
-        setPersonalTransactions((prevTransaction) => [
-            ...prevTransaction,
-            newTransaction,
-        ]);
+    const handleOpenTransactionModal = (transaction?: Transaction) => {
+        setUpdatingTransaction(transaction || null);
+        setIsTransactionModalOpen(true);
+    };
+
+    const handleCloseTransactionModal = () => {
+        setUpdatingTransaction(null);
+        setIsTransactionModalOpen(false);
+    };
+
+    const handleAddTransaction = async (newTransaction: Transaction) => {
+        if (updatingTransaction) {
+            updateTransaction(newTransaction._id || "No id", newTransaction);
+            setPersonalTransactions((prevTransactions) =>
+                prevTransactions.map((transaction) =>
+                    transaction._id === updatingTransaction._id
+                        ? newTransaction
+                        : transaction
+                )
+            );
+        } else {
+            const rensponseTransaction = await createTransaction(
+                newTransaction
+            );
+            if (rensponseTransaction) {
+                setPersonalTransactions((prevTransaction) => [
+                    ...prevTransaction,
+                    rensponseTransaction,
+                ]);
+            }
+        }
+
+        handleCloseTransactionModal();
+    };
+
+    const handleDeleteTransaction = async (id: string) => {
+        try {
+            await deleteTransaction(id);
+            setPersonalTransactions((prevTransactions) =>
+                prevTransactions.filter((transaction) => transaction._id !== id)
+            );
+        } catch (error) {
+            console.log("Error deleting transaction: " + error);
+        }
     };
 
     const handleCreatePersonalBudget = (newPersonalBudget: PersonalBudget) => {
@@ -128,6 +177,7 @@ const Personal = () => {
                         name={personalBudget.name}
                         income={personalBudget.income}
                         expense={personalBudget.expense}
+                        isPersonal={true}
                     />
                     {personalSpendings.length > 0 ? (
                         <BudgetSpendings spendings={personalSpendings} />
@@ -154,6 +204,8 @@ const Personal = () => {
                 <Transactions
                     transactions={personalTransactions}
                     familyCategories={familyCategories}
+                    onUpdateTransaction={handleOpenTransactionModal}
+                    onDeleteTransaction={handleDeleteTransaction}
                 />
             ) : (
                 <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
@@ -161,12 +213,37 @@ const Personal = () => {
                 </h3>
             )}
 
-            {/* <h4>Vytvořit novou transakci</h4>
-            <TransactionForm
-                familyCategories={familyCategories}
-                onAddTransaction={handleAddTransaction}
-                refresh={handleRefresh}
-            /> */}
+            <button
+                onClick={() => handleOpenTransactionModal()}
+                className="bg-green-500 text-white px-4 py-2 rounded mt-4"
+            >
+                Přidat transakci
+            </button>
+
+            {isTransactionModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                        <h3 className="text-xl font-semibold mb-4">
+                            {updatingTransaction
+                                ? "Upravit transakci"
+                                : "Přidat novou transakci"}
+                        </h3>
+                        <TransactionForm
+                            onAddTransaction={handleAddTransaction}
+                            initialTransaction={
+                                updatingTransaction || undefined
+                            }
+                            familyCategories={familyCategories}
+                        />
+                        <button
+                            onClick={handleCloseTransactionModal}
+                            className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                        >
+                            Zavřít
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

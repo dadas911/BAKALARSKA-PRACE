@@ -4,11 +4,15 @@ import { Transaction } from "../../types/transaction";
 interface TransactionsProps {
     transactions: Transaction[];
     familyCategories: Category[];
+    onUpdateTransaction: (transaction: Transaction) => void;
+    onDeleteTransaction: (id: string) => void;
 }
 
 const Transactions: React.FC<TransactionsProps> = ({
     transactions,
     familyCategories,
+    onUpdateTransaction,
+    onDeleteTransaction,
 }) => (
     <div className="overflow-x-auto shadow-md sm:rounded-lg">
         <h3 className="text-2xl font-semibold text-neutral-700 text-center mb-4">
@@ -28,6 +32,9 @@ const Transactions: React.FC<TransactionsProps> = ({
                     </th>
                     <th scope="col" className="px-6 py-3">
                         Kategorie
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                        Akce
                     </th>
                 </tr>
             </thead>
@@ -63,6 +70,27 @@ const Transactions: React.FC<TransactionsProps> = ({
                                     {transaction.description}
                                 </td>
                                 <td className="px-6 py-4">{categoryName}</td>
+                                <td className="px-6 py-4 flex gap-2">
+                                    <button
+                                        onClick={() =>
+                                            onUpdateTransaction(transaction)
+                                        }
+                                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                                    >
+                                        Upravit
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            onDeleteTransaction(
+                                                transaction._id ||
+                                                    "No id for category"
+                                            )
+                                        }
+                                        className="bg-red-500 text-white px-4 py-2 rounded"
+                                    >
+                                        Smazat
+                                    </button>
+                                </td>
                             </tr>
                         );
                     })

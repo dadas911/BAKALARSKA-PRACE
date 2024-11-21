@@ -107,6 +107,7 @@ const Home = () => {
                             name={personalBudget.name}
                             income={personalBudget.income}
                             expense={personalBudget.expense}
+                            isPersonal={true}
                         />
                     ) : (
                         <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
@@ -141,6 +142,7 @@ const Home = () => {
                                 name={familyBudget.name}
                                 income={familyBudget.income}
                                 expense={familyBudget.expense}
+                                isPersonal={false}
                             />
                         ) : (
                             <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
