@@ -1,10 +1,10 @@
-import { Spendings } from "../../types/spendings";
+import { FinancialGoal } from "../../types/financial-goal";
 import SpendingChart from "../charts/SpendingsChart";
 
-interface BudgetSpendingsProps {
-    spendings: Spendings[];
-    onUpdateSpendings: (spendings: Spendings) => void;
-    onDeleteSpendings: (id: string) => void;
+interface BudgetFinancialGoalsProps {
+    financialGoals: FinancialGoal[];
+    onUpdateFinancialGoal: (financialGoal: FinancialGoal) => void;
+    onDeleteFinancialGoal: (id: string) => void;
 }
 
 const containerClass =
@@ -15,43 +15,43 @@ const itemClass =
 
 const labelClass = "text-sm text-gray-500 font-light";
 
-const BudgetSpendings: React.FC<BudgetSpendingsProps> = ({
-    spendings,
-    onUpdateSpendings,
-    onDeleteSpendings,
+const BudgetFinancialGoals: React.FC<BudgetFinancialGoalsProps> = ({
+    financialGoals,
+    onUpdateFinancialGoal,
+    onDeleteFinancialGoal,
 }) => (
     <div className="w-full">
         <h3 className="text-2xl font-semibold text-neutral-700 text-center mb-4">
-            Shrnutí výdajů
+            Shrnutí finančních cílů
         </h3>
         <div className={containerClass}>
-            {spendings.map((spending, index) => (
+            {financialGoals.map((financialGoal, index) => (
                 <div key={index} className={itemClass}>
                     <div>
                         <div className="text-lg font-semibold text-neutral-700 mb-2 text-center">
-                            {spending.name}
+                            {financialGoal.name}
                         </div>
 
                         <div className="flex justify-between items-center mb-4">
                             <div className="flex flex-col space-y-2">
                                 <span className={labelClass}>
-                                    Celková částka
+                                    Potřebná částka
                                 </span>
                                 <div className="text-lg font-semibold text-green-700">
-                                    {spending.totalAmount} Kč
+                                    {financialGoal.neededAmount} Kč
                                 </div>
                                 <span className={labelClass}>
-                                    Utracená částka
+                                    Naspořená částka
                                 </span>
                                 <div className="text-lg font-semibold text-red-700">
-                                    {spending.spentAmount} Kč
+                                    {financialGoal.currentAmount} Kč
                                 </div>
                             </div>
 
                             <div className="w-32 h-32">
                                 <SpendingChart
-                                    totalAmount={spending.totalAmount}
-                                    spentAmount={spending.spentAmount}
+                                    totalAmount={financialGoal.neededAmount}
+                                    spentAmount={financialGoal.currentAmount}
                                 />
                             </div>
                         </div>
@@ -59,15 +59,16 @@ const BudgetSpendings: React.FC<BudgetSpendingsProps> = ({
 
                     <div className="flex justify-between mt-4">
                         <button
-                            onClick={() => onUpdateSpendings(spending)}
+                            onClick={() => onUpdateFinancialGoal(financialGoal)}
                             className="bg-blue-500 text-white px-4 py-2 rounded"
                         >
                             Upravit
                         </button>
                         <button
                             onClick={() =>
-                                onDeleteSpendings(
-                                    spending._id || "No id for spending"
+                                onDeleteFinancialGoal(
+                                    financialGoal._id ||
+                                        "No id for financial goal"
                                 )
                             }
                             className="bg-red-500 text-white px-4 py-2 rounded"
@@ -81,4 +82,4 @@ const BudgetSpendings: React.FC<BudgetSpendingsProps> = ({
     </div>
 );
 
-export default BudgetSpendings;
+export default BudgetFinancialGoals;

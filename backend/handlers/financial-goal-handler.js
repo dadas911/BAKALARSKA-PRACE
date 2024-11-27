@@ -80,8 +80,10 @@ const handleCreateFinancialGoal = async (req, res) => {
         const user = await getUserById(req.user._id);
         let budget = "";
         if (isPersonal) {
+            console.log("IsPersonal = true");
             budget = user.personalBudget;
         } else {
+            console.log("IsPersonal = false");
             const familyAccount = await getAccountById(user.familyAccount);
             budget = familyAccount.familyBudget;
         }

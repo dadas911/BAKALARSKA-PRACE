@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Category } from "../../types/category";
 
-const CategoryForm = ({
-    onAddCategory,
-    initialCategory,
-}: {
+interface CategoryFormProps {
     onAddCategory: (category: Category) => void;
     initialCategory?: Category;
+}
+
+const CategoryForm: React.FC<CategoryFormProps> = ({
+    onAddCategory,
+    initialCategory,
 }) => {
     const defaultCategory = { name: "", isExpense: true, isGlobal: false };
     const [category, setCategory] = useState<Category>(

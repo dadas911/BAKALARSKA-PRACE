@@ -1,10 +1,9 @@
-import { Spendings } from "../../types/spendings";
-import SpendingChart from "../charts/SpendingsChart";
+import { Scholarship } from "../../types/scholarship";
 
-interface BudgetSpendingsProps {
-    spendings: Spendings[];
-    onUpdateSpendings: (spendings: Spendings) => void;
-    onDeleteSpendings: (id: string) => void;
+interface ScholarshipsProps {
+    scholarships: Scholarship[];
+    onUpdateScholarship: (scholarship: Scholarship) => void;
+    onDeleteScholarship: (id: string) => void;
 }
 
 const containerClass =
@@ -15,59 +14,59 @@ const itemClass =
 
 const labelClass = "text-sm text-gray-500 font-light";
 
-const BudgetSpendings: React.FC<BudgetSpendingsProps> = ({
-    spendings,
-    onUpdateSpendings,
-    onDeleteSpendings,
+const Scholarships: React.FC<ScholarshipsProps> = ({
+    scholarships,
+    onUpdateScholarship,
+    onDeleteScholarship,
 }) => (
     <div className="w-full">
         <h3 className="text-2xl font-semibold text-neutral-700 text-center mb-4">
-            Shrnutí výdajů
+            Shrnutí stipendií
         </h3>
         <div className={containerClass}>
-            {spendings.map((spending, index) => (
+            {scholarships.map((scholarship, index) => (
                 <div key={index} className={itemClass}>
                     <div>
                         <div className="text-lg font-semibold text-neutral-700 mb-2 text-center">
-                            {spending.name}
+                            {scholarship.name}
                         </div>
 
                         <div className="flex justify-between items-center mb-4">
                             <div className="flex flex-col space-y-2">
                                 <span className={labelClass}>
-                                    Celková částka
+                                    Očekáváná částka
                                 </span>
                                 <div className="text-lg font-semibold text-green-700">
-                                    {spending.totalAmount} Kč
+                                    {scholarship.amount} Kč
                                 </div>
                                 <span className={labelClass}>
-                                    Utracená částka
+                                    Datum požádání
                                 </span>
                                 <div className="text-lg font-semibold text-red-700">
-                                    {spending.spentAmount} Kč
+                                    Nevim
                                 </div>
-                            </div>
-
-                            <div className="w-32 h-32">
-                                <SpendingChart
-                                    totalAmount={spending.totalAmount}
-                                    spentAmount={spending.spentAmount}
-                                />
+                                <span className={labelClass}>
+                                    Datum notifikace
+                                </span>
+                                <div className="text-lg font-semibold text-red-700">
+                                    Nevim
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div className="flex justify-between mt-4">
                         <button
-                            onClick={() => onUpdateSpendings(spending)}
+                            onClick={() => onUpdateScholarship(scholarship)}
                             className="bg-blue-500 text-white px-4 py-2 rounded"
                         >
                             Upravit
                         </button>
                         <button
                             onClick={() =>
-                                onDeleteSpendings(
-                                    spending._id || "No id for spending"
+                                onDeleteScholarship(
+                                    scholarship._id ||
+                                        "No id for financial goal"
                                 )
                             }
                             className="bg-red-500 text-white px-4 py-2 rounded"
@@ -81,4 +80,4 @@ const BudgetSpendings: React.FC<BudgetSpendingsProps> = ({
     </div>
 );
 
-export default BudgetSpendings;
+export default Scholarships;

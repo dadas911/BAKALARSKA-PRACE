@@ -116,7 +116,11 @@ const Home = () => {
                     )}
 
                     {personalSpendings.length > 0 ? (
-                        <BudgetSpendings spendings={personalSpendings} />
+                        <BudgetSpendings
+                            spendings={personalSpendings}
+                            onDeleteSpendings={() => null}
+                            onUpdateSpendings={() => null}
+                        />
                     ) : (
                         <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
                             Výdaje nejsou k dispozici.
@@ -151,7 +155,11 @@ const Home = () => {
                         )}
 
                         {familySpendings.length > 0 ? (
-                            <BudgetSpendings spendings={familySpendings} />
+                            <BudgetSpendings
+                                spendings={familySpendings}
+                                onDeleteSpendings={() => null}
+                                onUpdateSpendings={() => null}
+                            />
                         ) : (
                             <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
                                 Výdaje nejsou k dispozici.

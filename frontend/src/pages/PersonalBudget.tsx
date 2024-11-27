@@ -106,7 +106,7 @@ const Personal = () => {
 
     const handleAddSpendings = async (newSpendings: Spendings) => {
         if (updatingSpendings) {
-            updateSpendings(newSpendings._id || "No id", newSpendings);
+            await updateSpendings(newSpendings._id || "No id", newSpendings);
             setPersonalSpendings((prevSpendings) =>
                 prevSpendings.map((spendings) =>
                     spendings._id === updatingSpendings._id
