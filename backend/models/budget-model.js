@@ -13,6 +13,13 @@ const BudgetSchema = new mongoose.Schema({
             default: [],
         },
     ],
+    financialGoals: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "FinancialGoal",
+            default: [],
+        },
+    ],
 });
 
 export const BudgetModel = mongoose.model("Budget", BudgetSchema);

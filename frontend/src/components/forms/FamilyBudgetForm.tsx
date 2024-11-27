@@ -119,42 +119,7 @@ const FamilyBudgetForm: React.FC<FamilyBudgetFormProps> = ({
                     className="w-full px-3 py-2 border rounded bg-gray-100"
                 />
             </div>
-            <div className="mb-4">
-                <label
-                    htmlFor="income"
-                    className="block text-sm font-medium mb-1"
-                >
-                    Příjem:
-                </label>
-                <input
-                    type="number"
-                    name="income"
-                    id="income"
-                    value={newFamilyBudget.income}
-                    onChange={handleFamilyBudgetChange}
-                    className="w-full px-3 py-2 border rounded"
-                    placeholder="Zadejte příjem"
-                    required
-                />
-            </div>
-            <div className="mb-4">
-                <label
-                    htmlFor="expense"
-                    className="block text-sm font-medium mb-1"
-                >
-                    Výdaje:
-                </label>
-                <input
-                    type="number"
-                    name="expense"
-                    id="expense"
-                    value={newFamilyBudget.expense}
-                    onChange={handleFamilyBudgetChange}
-                    className="w-full px-3 py-2 border rounded"
-                    placeholder="Zadejte výdaje"
-                    required
-                />
-            </div>
+
             <button
                 type="submit"
                 className="w-full bg-green-500 text-white py-2 rounded-lg mt-4 hover:bg-green-600 transition"

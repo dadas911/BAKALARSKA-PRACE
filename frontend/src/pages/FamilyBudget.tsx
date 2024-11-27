@@ -5,7 +5,12 @@ import {
     getFamilyBudgetByMonth,
     getHasFamilyBudget,
 } from "../api/family-budget-api";
-import { getFamilySpendingsByMonth } from "../api/spendings-api";
+import {
+    createSpendings,
+    deleteSpendings,
+    getFamilySpendingsByMonth,
+    updateSpendings,
+} from "../api/spendings-api";
 import {
     getFamilyAccount,
     getHasFamilyAccount,
@@ -26,6 +31,7 @@ import BudgetBalance from "../components/budget/BudgetBalance";
 import BudgetSpendings from "../components/budget/Spendings";
 import FamilyBudgetForm from "../components/forms/FamilyBudgetForm";
 import FamilyAccountForm from "../components/forms/FamilyAccountForm";
+import SpendingsForm from "../components/forms/SpendingsForm";
 
 const Family = () => {
     const [refresh, setRefresh] = useState(false);
@@ -52,6 +58,10 @@ const Family = () => {
         null
     );
 
+    const [isSpendingsModalOpen, setIsSpendingsModalOpen] = useState(false);
+    const [updatingSpendings, setUpdatingSpendings] =
+        useState<Spendings | null>(null);
+
     const getFamilyBudgetInfo = async () => {
         const familyAccountStatus = await getHasFamilyAccount();
         setHasFamilyAccount(familyAccountStatus);
@@ -71,6 +81,50 @@ const Family = () => {
             }
             const category = await getAllFamilyCategories();
             setFamilyCategories(category);
+        }
+    };
+
+    const handleOpenSpendingsModal = (spendings?: Spendings) => {
+        setUpdatingSpendings(spendings || null);
+        setIsSpendingsModalOpen(true);
+    };
+
+    const handleCloseSpendingsModal = () => {
+        setUpdatingSpendings(null);
+        setIsSpendingsModalOpen(false);
+    };
+
+    const handleAddSpendings = async (newSpendings: Spendings) => {
+        if (updatingSpendings) {
+            updateSpendings(newSpendings._id || "No id", newSpendings);
+            setFamilySpendings((prevSpendings) =>
+                prevSpendings.map((spendings) =>
+                    spendings._id === updatingSpendings._id
+                        ? newSpendings
+                        : spendings
+                )
+            );
+        } else {
+            const rensponseSpendings = await createSpendings(newSpendings);
+            if (rensponseSpendings) {
+                setFamilySpendings((prevSpendings) => [
+                    ...prevSpendings,
+                    rensponseSpendings,
+                ]);
+            }
+        }
+
+        handleCloseSpendingsModal();
+    };
+
+    const handleDeleteSpendings = async (id: string) => {
+        try {
+            await deleteSpendings(id);
+            setFamilySpendings((prevSpendings) =>
+                prevSpendings.filter((spendings) => spendings._id !== id)
+            );
+        } catch (error) {
+            console.error("Error deleting spendings:" + error);
         }
     };
 
@@ -181,7 +235,11 @@ const Family = () => {
                         isPersonal={false}
                     />
                     {familySpendings.length > 0 ? (
-                        <BudgetSpendings spendings={familySpendings} />
+                        <BudgetSpendings
+                            spendings={familySpendings}
+                            onUpdateSpendings={handleOpenSpendingsModal}
+                            onDeleteSpendings={handleDeleteSpendings}
+                        />
                     ) : (
                         <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
                             Výdaje nejsou k dispozici.
@@ -192,6 +250,37 @@ const Family = () => {
                 <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
                     Shrnutí rodinného účtu není k dispozici.
                 </h3>
+            )}
+
+            <button
+                onClick={() => handleOpenSpendingsModal()}
+                className="bg-green-500 text-white px-4 py-2 rounded mt-4"
+            >
+                Přidat rodinný plán výdajů
+            </button>
+
+            {isSpendingsModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                        <h3 className="text-xl font-semibold mb-4">
+                            {updatingSpendings
+                                ? "Upravit plán výdajů"
+                                : "Přidat nový plán výdajů"}
+                        </h3>
+                        <SpendingsForm
+                            onAddSpendings={handleAddSpendings}
+                            initialSpendings={updatingSpendings || undefined}
+                            isPersonal={false}
+                            familyCategories={familyCategories}
+                        />
+                        <button
+                            onClick={handleCloseSpendingsModal}
+                            className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                        >
+                            Zavřít
+                        </button>
+                    </div>
+                </div>
             )}
 
             {familyCategories.length > 0 ? (

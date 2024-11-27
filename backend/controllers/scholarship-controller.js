@@ -1,8 +1,8 @@
-import { SpendingsModel } from "../models/spendings-model.js";
+import { ScholarshipModel } from "../models/scholarship-model.js";
 
-const getAllSpendings = async () => {
+const getAllScholarship = async () => {
     try {
-        const data = await SpendingsModel.find({});
+        const data = await ScholarshipModel.find({});
         return data;
     } catch (error) {
         error.statusCode = error.statusCode || 500;
@@ -10,12 +10,12 @@ const getAllSpendings = async () => {
     }
 };
 
-const getSpendingsById = async (id) => {
+const getScholarshipById = async (id) => {
     try {
-        const data = await SpendingsModel.findById(id);
+        const data = await ScholarshipModel.findById(id);
 
         if (!data) {
-            const error = new Error("Výdaje nebyly nalezeny");
+            const error = new Error("Stipendium nebylo nazelezno");
             error.statusCode = 404;
             throw error;
         }
@@ -27,9 +27,9 @@ const getSpendingsById = async (id) => {
     }
 };
 
-const createSpendings = async (spending) => {
+const createScholarship = async (scholarship) => {
     try {
-        const newData = await SpendingsModel.create(spending);
+        const newData = await ScholarshipModel.create(scholarship);
         return newData;
     } catch (error) {
         error.statusCode = error.statusCode || 500;
@@ -37,12 +37,12 @@ const createSpendings = async (spending) => {
     }
 };
 
-const deleteSpendings = async (id) => {
+const deleteScholarship = async (id) => {
     try {
-        const deletedData = await SpendingsModel.findByIdAndDelete(id);
+        const deletedData = await ScholarshipModel.findByIdAndDelete(id);
 
         if (!deletedData) {
-            const error = new Error("Výdaje nebyly nalezeny");
+            const error = new Error("Stipendium nebylo nazelezno");
             error.statusCode = 404;
             throw error;
         }
@@ -54,16 +54,16 @@ const deleteSpendings = async (id) => {
     }
 };
 
-const updateSpendings = async (id, newData) => {
+const updateScholarship = async (id, newData) => {
     try {
-        const updatedData = await SpendingsModel.findByIdAndUpdate(
+        const updatedData = await ScholarshipModel.findByIdAndUpdate(
             id,
             newData,
             { new: true }
         );
 
         if (!updatedData) {
-            const error = new Error("Výdaje nebyly nalezeny");
+            const error = new Error("Stipendium nebylo nazelezno");
             error.statusCode = 404;
             throw error;
         }
@@ -76,9 +76,9 @@ const updateSpendings = async (id, newData) => {
 };
 
 export {
-    getAllSpendings,
-    getSpendingsById,
-    createSpendings,
-    deleteSpendings,
-    updateSpendings,
+    getAllScholarship,
+    getScholarshipById,
+    createScholarship,
+    deleteScholarship,
+    updateScholarship,
 };

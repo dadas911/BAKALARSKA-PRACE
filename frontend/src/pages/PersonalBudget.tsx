@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { Spendings } from "../types/spendings";
 import { Transaction } from "../types/transaction";
-import { getPersonalSpendingsByMonth } from "../api/spendings-api";
+import {
+    createSpendings,
+    deleteSpendings,
+    getPersonalSpendingsByMonth,
+    updateSpendings,
+} from "../api/spendings-api";
 import {
     createTransaction,
     deleteTransaction,
@@ -49,12 +54,17 @@ const Personal = () => {
     const [updatingTransaction, setUpdatingTransaction] =
         useState<Transaction | null>(null);
 
+    const [isSpendingsModalOpen, setIsSpendingsModalOpen] = useState(false);
+    const [updatingSpendings, setUpdatingSpendings] =
+        useState<Spendings | null>(null);
+
     const getPersonalBudgetInfo = async () => {
         const personalBudgetStatus = await getHasPersonalBudget(month, year);
         setHasPersonalBudget(personalBudgetStatus);
         if (personalBudgetStatus) {
             const budget = await getPersonalBudgetByMonth(month, year);
             const spendings = await getPersonalSpendingsByMonth(month, year);
+            console.log("Spendings: " + spendings);
             const transactions = await getTransactionsByMonth(month, year);
 
             setPersonalBudget(budget);
@@ -63,7 +73,6 @@ const Personal = () => {
         }
 
         const category = await getAllFamilyCategories();
-        console.log("Category: " + category);
         setFamilyCategories(category);
     };
 
@@ -85,11 +94,48 @@ const Personal = () => {
         setYear(Number(e.target.value));
     };
 
-    const handleAddSpendings = (newSpendings: Spendings) => {
-        setPersonalSpendings((prevSpendings) => [
-            ...prevSpendings,
-            newSpendings,
-        ]);
+    const handleOpenSpendingsModal = (spendings?: Spendings) => {
+        setUpdatingSpendings(spendings || null);
+        setIsSpendingsModalOpen(true);
+    };
+
+    const handleCloseSpendingsModal = () => {
+        setUpdatingSpendings(null);
+        setIsSpendingsModalOpen(false);
+    };
+
+    const handleAddSpendings = async (newSpendings: Spendings) => {
+        if (updatingSpendings) {
+            updateSpendings(newSpendings._id || "No id", newSpendings);
+            setPersonalSpendings((prevSpendings) =>
+                prevSpendings.map((spendings) =>
+                    spendings._id === updatingSpendings._id
+                        ? newSpendings
+                        : spendings
+                )
+            );
+        } else {
+            const rensponseSpendings = await createSpendings(newSpendings);
+            if (rensponseSpendings) {
+                setPersonalSpendings((prevSpendings) => [
+                    ...prevSpendings,
+                    rensponseSpendings,
+                ]);
+            }
+        }
+
+        handleCloseSpendingsModal();
+    };
+
+    const handleDeleteSpendings = async (id: string) => {
+        try {
+            await deleteSpendings(id);
+            setPersonalSpendings((prevSpendings) =>
+                prevSpendings.filter((spendings) => spendings._id !== id)
+            );
+        } catch (error) {
+            console.error("Error deleting spendings:" + error);
+        }
     };
 
     const handleOpenTransactionModal = (transaction?: Transaction) => {
@@ -180,7 +226,11 @@ const Personal = () => {
                         isPersonal={true}
                     />
                     {personalSpendings.length > 0 ? (
-                        <BudgetSpendings spendings={personalSpendings} />
+                        <BudgetSpendings
+                            spendings={personalSpendings}
+                            onUpdateSpendings={handleOpenSpendingsModal}
+                            onDeleteSpendings={handleDeleteSpendings}
+                        />
                     ) : (
                         <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
                             Výdaje nejsou k dispozici.
@@ -193,12 +243,36 @@ const Personal = () => {
                 </h3>
             )}
 
-            {/* <h4>Vytvořit nový plán výdaje</h4>
-            <SpendingsForm
-                familyCategories={familyCategories}
-                isPersonal={true}
-                onAddSpendings={handleAddSpendings}
-            /> */}
+            <button
+                onClick={() => handleOpenSpendingsModal()}
+                className="bg-green-500 text-white px-4 py-2 rounded mt-4"
+            >
+                Přidat osobní plán výdajů
+            </button>
+
+            {isSpendingsModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                        <h3 className="text-xl font-semibold mb-4">
+                            {updatingSpendings
+                                ? "Upravit plán výdajů"
+                                : "Přidat nový plán výdajů"}
+                        </h3>
+                        <SpendingsForm
+                            onAddSpendings={handleAddSpendings}
+                            initialSpendings={updatingSpendings || undefined}
+                            isPersonal={true}
+                            familyCategories={familyCategories}
+                        />
+                        <button
+                            onClick={handleCloseSpendingsModal}
+                            className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                        >
+                            Zavřít
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {personalTransactions.length > 0 ? (
                 <Transactions

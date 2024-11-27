@@ -1,8 +1,8 @@
-import { SpendingsModel } from "../models/spendings-model.js";
+import { FinancialGoalModel } from "../models/financial-goal-model.js";
 
-const getAllSpendings = async () => {
+const getAllFinancialGoals = async () => {
     try {
-        const data = await SpendingsModel.find({});
+        const data = await FinancialGoalModel.find({});
         return data;
     } catch (error) {
         error.statusCode = error.statusCode || 500;
@@ -10,12 +10,12 @@ const getAllSpendings = async () => {
     }
 };
 
-const getSpendingsById = async (id) => {
+const getFinancialGoalById = async (id) => {
     try {
-        const data = await SpendingsModel.findById(id);
+        const data = await FinancialGoalModel.findById(id);
 
         if (!data) {
-            const error = new Error("Výdaje nebyly nalezeny");
+            const error = new Error("Finanční cíl nebyl nalezen");
             error.statusCode = 404;
             throw error;
         }
@@ -27,9 +27,9 @@ const getSpendingsById = async (id) => {
     }
 };
 
-const createSpendings = async (spending) => {
+const createFinancialGoal = async (financialGoal) => {
     try {
-        const newData = await SpendingsModel.create(spending);
+        const newData = await FinancialGoalModel.create(financialGoal);
         return newData;
     } catch (error) {
         error.statusCode = error.statusCode || 500;
@@ -37,12 +37,12 @@ const createSpendings = async (spending) => {
     }
 };
 
-const deleteSpendings = async (id) => {
+const deleteFinancialGoal = async (id) => {
     try {
-        const deletedData = await SpendingsModel.findByIdAndDelete(id);
+        const deletedData = await FinancialGoalModel.findByIdAndDelete(id);
 
         if (!deletedData) {
-            const error = new Error("Výdaje nebyly nalezeny");
+            const error = new Error("Finanční cíl nebyl nalezen");
             error.statusCode = 404;
             throw error;
         }
@@ -54,16 +54,16 @@ const deleteSpendings = async (id) => {
     }
 };
 
-const updateSpendings = async (id, newData) => {
+const updateFinancialGoal = async (id, newData) => {
     try {
-        const updatedData = await SpendingsModel.findByIdAndUpdate(
+        const updatedData = await FinancialGoalModel.findByIdAndUpdate(
             id,
             newData,
             { new: true }
         );
 
         if (!updatedData) {
-            const error = new Error("Výdaje nebyly nalezeny");
+            const error = new Error("Finanční cíl nebyl nalezen");
             error.statusCode = 404;
             throw error;
         }
@@ -76,9 +76,9 @@ const updateSpendings = async (id, newData) => {
 };
 
 export {
-    getAllSpendings,
-    getSpendingsById,
-    createSpendings,
-    deleteSpendings,
-    updateSpendings,
+    getAllFinancialGoals,
+    getFinancialGoalById,
+    createFinancialGoal,
+    deleteFinancialGoal,
+    updateFinancialGoal,
 };

@@ -124,14 +124,19 @@ const handleUpdateSpendings = async (req, res) => {
 const handleGetPersonalSpendingsByMonth = async (req, res) => {
     try {
         const { month, year } = req.body;
-        const user = await getUserById(req.user._id);
-        const pBudget = await getBudgetByIdAndDate(user, month, year, true);
+        const pBudget = await getBudgetByIdAndDate(
+            req.user._id,
+            month,
+            year,
+            true
+        );
 
         const spendings = await Promise.all(
             pBudget.spendings.map(async (id) => {
                 return await getSpendingsById(id);
             })
         );
+
         res.status(200).json(spendings);
     } catch (error) {
         res.status(error.statusCode || 500).json({ message: error.message });

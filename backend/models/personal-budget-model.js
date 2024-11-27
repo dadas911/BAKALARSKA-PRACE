@@ -20,6 +20,13 @@ const PersonalBudgetSchema = new mongoose.Schema({
             default: [],
         },
     ],
+    scholarships: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Scholarship",
+            default: [],
+        },
+    ],
 });
 
 export const PersonalBudgetModel = BudgetModel.discriminator(

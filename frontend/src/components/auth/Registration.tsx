@@ -16,7 +16,9 @@ const Registration: React.FC<RegistrationProps> = ({ onCreation }) => {
         role: "živitel",
     });
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    function handleChange(
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) {
         setUser({ ...user, [e.target.name]: e.target.value });
     }
 
@@ -67,6 +69,7 @@ const Registration: React.FC<RegistrationProps> = ({ onCreation }) => {
             />
             <select
                 name="role"
+                onChange={handleChange}
                 className="border border-gray-300 p-3 rounded focus:outline-green-500"
             >
                 <option value="živitel">Živitel</option>
