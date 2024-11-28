@@ -9,6 +9,7 @@ import {
 } from "../api/scholarship-api";
 import Loading from "../components/common/Loading";
 import Scholarships from "../components/personal/Scholarships";
+import ScholarshipForm from "../components/forms/ScholarshipForm";
 
 const ScholarshipsPage = () => {
     const [scholarships, setScholarships] = useState<Scholarship[]>([]);
@@ -111,9 +112,8 @@ const ScholarshipsPage = () => {
                             <Scholarships
                                 scholarships={scholarships}
                                 onUpdateScholarship={handleOpenScholarshipModal}
-                                onDeleteScholarship={deleteScholarship}
+                                onDeleteScholarship={handleDeleteScholarship}
                             />
-                            Délka: {scholarships.length}
                         </>
                     ) : (
                         <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
@@ -135,15 +135,12 @@ const ScholarshipsPage = () => {
                                         ? "Upravit osobní finanční cíl"
                                         : "Přidat nový osobní finanční cíl"}
                                 </h3>
-                                {/* <FinancialGoalForm
-                                    onAddFinancialGoal={
-                                        handleAddScholarship
+                                <ScholarshipForm
+                                    onAddScholarship={handleAddScholarship}
+                                    initialScholarship={
+                                        updatingScholarship || undefined
                                     }
-                                    initialFinancialGoal={
-                                        updateScholarship || undefined
-                                    }
-                                    isPersonal={true}
-                                /> */}
+                                />
                                 <button
                                     onClick={handleCloseScholarshipModal}
                                     className="mt-4 bg-red-500 text-white px-4 py-2 rounded"

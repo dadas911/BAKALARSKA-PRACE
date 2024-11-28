@@ -3,6 +3,7 @@ import { IoCashOutline, IoPeopleSharp } from "react-icons/io5";
 import { BsCash } from "react-icons/bs";
 import { GiStairsGoal } from "react-icons/gi";
 import { GrCertificate } from "react-icons/gr";
+import { FaUserCheck } from "react-icons/fa6";
 
 type Page = {
     key: string;
@@ -31,10 +32,10 @@ export const pageList: Page[] = [
         icon: <BsCash />,
     },
     {
-        key: "user",
-        name: "Uživatel a Rodina",
-        path: "/user",
-        icon: <IoPeopleSharp />,
+        key: "familymemberbudget",
+        name: "Rozpočet člena rodiny",
+        path: "/familymemberbudget",
+        icon: <FaUserCheck />,
     },
     {
         key: "financialgoals",
@@ -47,5 +48,11 @@ export const pageList: Page[] = [
         name: "Stipendia",
         path: "/scholarships",
         icon: <GrCertificate />,
+    },
+    {
+        key: "user",
+        name: "Uživatel a Rodina",
+        path: "/user",
+        icon: <IoPeopleSharp />,
     },
 ];

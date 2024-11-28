@@ -87,7 +87,7 @@ const FinancialGoalForm: React.FC<FinancialGoalFormProps> = ({
             </div>
             <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">
-                    Splnit do
+                    Splnit do data
                 </label>
                 <input
                     type="date"

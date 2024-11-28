@@ -1,5 +1,5 @@
 import { FinancialGoal } from "../../types/financial-goal";
-import SpendingChart from "../charts/SpendingsChart";
+import FinancialGoalChart from "../charts/FinancialGoalChart";
 
 interface BudgetFinancialGoalsProps {
     financialGoals: FinancialGoal[];
@@ -27,36 +27,42 @@ const BudgetFinancialGoals: React.FC<BudgetFinancialGoalsProps> = ({
         <div className={containerClass}>
             {financialGoals.map((financialGoal, index) => (
                 <div key={index} className={itemClass}>
-                    <div>
-                        <div className="text-lg font-semibold text-neutral-700 mb-2 text-center">
-                            {financialGoal.name}
-                        </div>
+                    <div className="text-lg font-semibold text-neutral-700 mb-2 text-center">
+                        {financialGoal.name}
+                    </div>
 
-                        <div className="flex justify-between items-center mb-4">
-                            <div className="flex flex-col space-y-2">
-                                <span className={labelClass}>
-                                    Potřebná částka
-                                </span>
-                                <div className="text-lg font-semibold text-green-700">
-                                    {financialGoal.neededAmount} Kč
-                                </div>
-                                <span className={labelClass}>
-                                    Naspořená částka
-                                </span>
-                                <div className="text-lg font-semibold text-red-700">
-                                    {financialGoal.currentAmount} Kč
-                                </div>
+                    <div className="flex justify-between mb-4">
+                        <div className="flex flex-col space-y-2">
+                            <span className={labelClass}>Potřebná částka</span>
+                            <div className="text-lg font-semibold text-neutral-700">
+                                {financialGoal.neededAmount} Kč
                             </div>
-
-                            <div className="w-32 h-32">
-                                <SpendingChart
-                                    totalAmount={financialGoal.neededAmount}
-                                    spentAmount={financialGoal.currentAmount}
-                                />
+                        </div>
+                        <div className="flex flex-col space-y-2">
+                            <span className={labelClass}>Naspořená částka</span>
+                            <div className="text-lg font-semibold text-green-700">
+                                {financialGoal.currentAmount} Kč
                             </div>
                         </div>
                     </div>
 
+                    <div className="flex flex-col space-y-2 mb-4 text-center">
+                        <span className={labelClass}>Splnit do</span>
+                        <div className="text-lg font-semibold text-neutral-700 ">
+                            {new Date(
+                                financialGoal.dueDate
+                            ).toLocaleDateString()}
+                        </div>
+                    </div>
+
+                    <div className="w-full h-16 mb-4">
+                        <FinancialGoalChart
+                            neededAmount={financialGoal.neededAmount}
+                            currentAmount={financialGoal.currentAmount}
+                        />
+                    </div>
+
+                    {/* Tlačítka pro úpravy a smazání */}
                     <div className="flex justify-between mt-4">
                         <button
                             onClick={() => onUpdateFinancialGoal(financialGoal)}

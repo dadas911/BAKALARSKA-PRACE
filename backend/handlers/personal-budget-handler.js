@@ -101,6 +101,22 @@ const handleGetPersonalBudgetByMonth = async (req, res) => {
     }
 };
 
+const handleGetFamilyMemberBudgetByMonth = async (req, res) => {
+    try {
+        const { id, month, year } = req.body;
+        const personalBudget = await getBudgetByIdAndDate(
+            id,
+            month,
+            year,
+            true
+        );
+
+        res.status(200).json(personalBudget);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
 export {
     handleGetAllPersonalBudgets,
     handleGetPersonalBudgetById,
@@ -108,4 +124,5 @@ export {
     handleDeletePersonalBudget,
     handleUpdatePersonalBudget,
     handleGetPersonalBudgetByMonth,
+    handleGetFamilyMemberBudgetByMonth,
 };

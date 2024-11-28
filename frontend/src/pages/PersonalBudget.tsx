@@ -64,7 +64,6 @@ const Personal = () => {
         if (personalBudgetStatus) {
             const budget = await getPersonalBudgetByMonth(month, year);
             const spendings = await getPersonalSpendingsByMonth(month, year);
-            console.log("Spendings: " + spendings);
             const transactions = await getTransactionsByMonth(month, year);
 
             setPersonalBudget(budget);
@@ -82,7 +81,7 @@ const Personal = () => {
             await getPersonalBudgetInfo();
             setLoading(false);
         };
-
+        console.log("use effetc personal budget");
         getData();
     }, [month, year, refresh]);
 

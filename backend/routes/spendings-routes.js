@@ -8,6 +8,7 @@ import {
     handleUpdateSpendings,
     handleGetPersonalSpendingsByMonth,
     handleGetFamilySpendingsByMonth,
+    handleGetFamilyMemberSpendingsByMonth,
 } from "../handlers/spendings-handler.js";
 
 import checkToken from "../middleware/checkToken.js";
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.route("/personal").post(checkToken, handleGetPersonalSpendingsByMonth);
 router.route("/family").post(checkToken, handleGetFamilySpendingsByMonth);
+router.route("/member").post(checkToken, handleGetFamilyMemberSpendingsByMonth);
 router.route("/").get(checkToken, handleGetAllSpendings);
 router.route("/:id").get(checkToken, handleGetSpendingsById);
 router.route("/").post(checkToken, handleCreateSpendings);

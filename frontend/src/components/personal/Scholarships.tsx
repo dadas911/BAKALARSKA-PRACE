@@ -40,16 +40,22 @@ const Scholarships: React.FC<ScholarshipsProps> = ({
                                     {scholarship.amount} Kč
                                 </div>
                                 <span className={labelClass}>
-                                    Datum požádání
+                                    Datum nejpozdějšího požádání
                                 </span>
-                                <div className="text-lg font-semibold text-red-700">
-                                    Nevim
+                                <div className="text-lg font-semibold text-neutral-700">
+                                    {new Date(
+                                        scholarship.submissionDate
+                                    ).toLocaleDateString()}
                                 </div>
                                 <span className={labelClass}>
                                     Datum notifikace
                                 </span>
-                                <div className="text-lg font-semibold text-red-700">
-                                    Nevim
+                                <div className="text-lg font-semibold text-neutral-700">
+                                    {scholarship.notifyDate
+                                        ? new Date(
+                                              scholarship.notifyDate
+                                          ).toLocaleDateString()
+                                        : "žádné"}
                                 </div>
                             </div>
                         </div>

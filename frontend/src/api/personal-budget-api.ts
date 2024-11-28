@@ -93,6 +93,24 @@ export async function getPersonalBudgetByMonth(
     }
 }
 
+export async function getFamilyMemberBudgetByMonth(
+    id: string,
+    month: number,
+    year: number
+): Promise<PersonalBudget | null> {
+    try {
+        const response = await axios.post(
+            `${URL_API}/personal-budgets/member`,
+            { id: id, month: month, year: year }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return null;
+    }
+}
+
 export async function getHasPersonalBudget(
     month: number,
     year: number

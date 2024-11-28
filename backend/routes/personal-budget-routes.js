@@ -7,6 +7,7 @@ import {
     handleDeletePersonalBudget,
     handleUpdatePersonalBudget,
     handleGetPersonalBudgetByMonth,
+    handleGetFamilyMemberBudgetByMonth,
 } from "../handlers/personal-budget-handler.js";
 
 import checkToken from "../middleware/checkToken.js";
@@ -14,6 +15,7 @@ import checkToken from "../middleware/checkToken.js";
 const router = express.Router();
 
 router.route("/personal").post(checkToken, handleGetPersonalBudgetByMonth);
+router.route("/member").post(checkToken, handleGetFamilyMemberBudgetByMonth);
 router.route("/").get(checkToken, handleGetAllPersonalBudgets);
 router.route("/:id").get(checkToken, handleGetPersonalBudgetById);
 router.route("/").post(checkToken, handleCreatePersonalBudget);

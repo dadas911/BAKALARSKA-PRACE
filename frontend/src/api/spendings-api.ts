@@ -82,6 +82,25 @@ export async function getPersonalSpendingsByMonth(
     }
 }
 
+export async function getFamilyMemberSpendingsByMonth(
+    id: string,
+    month: number,
+    year: number
+): Promise<Spendings[]> {
+    try {
+        const response = await axios.post(`${URL_API}/spendings/member`, {
+            id: id,
+            month: month,
+            year: year,
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return [];
+    }
+}
+
 export async function getFamilySpendingsByMonth(
     month: number,
     year: number

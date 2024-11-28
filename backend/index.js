@@ -13,6 +13,7 @@ import transactionRouter from "./routes/transaction-routes.js";
 import spendingsRouter from "./routes/spendings-routes.js";
 import financialGoalRouter from "./routes/financial-goal-routers.js";
 import scholarshipRouter from "./routes/scholarship-routes.js";
+import notificationRouter from "./routes/notification-routes.js";
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use("/api/transactions", transactionRouter);
 app.use("/api/spendings", spendingsRouter);
 app.use("/api/financial-goals", financialGoalRouter);
 app.use("/api/scholarships", scholarshipRouter);
+app.use("/api/notifications", notificationRouter);
 
 const startServer = async () => {
     try {

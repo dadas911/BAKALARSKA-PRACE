@@ -143,6 +143,23 @@ const handleGetPersonalSpendingsByMonth = async (req, res) => {
     }
 };
 
+const handleGetFamilyMemberSpendingsByMonth = async (req, res) => {
+    try {
+        const { id, month, year } = req.body;
+        const pBudget = await getBudgetByIdAndDate(id, month, year, true);
+
+        const spendings = await Promise.all(
+            pBudget.spendings.map(async (id) => {
+                return await getSpendingsById(id);
+            })
+        );
+
+        res.status(200).json(spendings);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
 const handleGetFamilySpendingsByMonth = async (req, res) => {
     try {
         const { month, year } = req.body;
@@ -173,5 +190,6 @@ export {
     handleDeleteSpendings,
     handleUpdateSpendings,
     handleGetPersonalSpendingsByMonth,
+    handleGetFamilyMemberSpendingsByMonth,
     handleGetFamilySpendingsByMonth,
 };

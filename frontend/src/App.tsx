@@ -6,6 +6,7 @@ import FamilyBudget from "./pages/FamilyBudget";
 import User from "./pages/User";
 import FinancialGoals from "./pages/FinancialGoals";
 import Scholarships from "./pages/Scholarships";
+import FamilyMemberBudget from "./pages/FamilyMemberBudget";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import { useLayoutEffect } from "react";
@@ -35,6 +36,10 @@ function App() {
                     <Route
                         path="/personalbudget"
                         element={<PersonalBudget />}
+                    />
+                    <Route
+                        path="/familymemberbudget"
+                        element={<FamilyMemberBudget />}
                     />
                     <Route path="/user" element={<User />} />
                     <Route
