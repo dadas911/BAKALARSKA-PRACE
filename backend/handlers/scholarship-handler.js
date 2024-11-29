@@ -8,6 +8,7 @@ import {
     createScholarship,
     deleteScholarship,
     updateScholarship,
+    getScholarshipByBudgetId,
 } from "../controllers/scholarship-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
 
@@ -34,12 +35,7 @@ const handleGetAllScholarships = async (req, res) => {
             true
         );
 
-        const scholarships = await Promise.all(
-            pBudget.scholarships.map(async (id) => {
-                return await getScholarshipById(id);
-            })
-        );
-
+        const scholarships = await getScholarshipByBudgetId(pBudget._id);
         res.status(200).json(scholarships);
     } catch (error) {
         res.status(error.statusCode || 500).json({ message: error.message });

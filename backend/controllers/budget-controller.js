@@ -1,6 +1,8 @@
 import { BudgetModel } from "../models/budget-model.js";
 import { FamilyBudgetModel } from "../models/family-budget-model.js";
 import { PersonalBudgetModel } from "../models/personal-budget-model.js";
+import { getAllAccounts, updateAccount } from "./family-account-controller.js";
+import { getAllUsers, updateUser } from "./user-controller.js";
 
 //Returns all users in database
 const getAllBudgets = async () => {
@@ -37,14 +39,12 @@ const getBudgetByIdAndDate = async (id, month, year, isPersonalBudget) => {
                 month: month,
                 year: year,
             });
-            //console.log("Personal data: " + JSON.stringify(data));
         } else {
             data = await FamilyBudgetModel.findOne({
                 account: id,
                 month: month,
                 year: year,
             });
-            //console.log("Family data: " + JSON.stringify(data));
         }
 
         if (!data) {
@@ -77,4 +77,26 @@ const updateBudget = async (id, newData) => {
     }
 };
 
-export { getAllBudgets, getBudgetById, updateBudget, getBudgetByIdAndDate };
+const resetBudgets = async () => {
+    //Reset personal budgets -> user.personalBudget = null;
+    const users = await getAllUsers();
+    for (const user of users) {
+        user.personalBudget = null;
+        await updateUser(user._id, user);
+    }
+
+    //Reset family budgets -> familyAccount.familyBudget = null;
+    const familyAccounts = await getAllAccounts();
+    for (const account of familyAccounts) {
+        account.familyBudget = null;
+        await updateAccount(account._id, account);
+    }
+};
+
+export {
+    getAllBudgets,
+    getBudgetById,
+    updateBudget,
+    getBudgetByIdAndDate,
+    resetBudgets,
+};

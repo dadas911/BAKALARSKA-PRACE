@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 
 import connectDB from "./db/connect.js";
+import "./utility/scheduled-checks.js";
 
 import userRouter from "./routes/user-routes.js";
 import familyAccountRouter from "./routes/family-account-routes.js";
