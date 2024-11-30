@@ -15,6 +15,8 @@ import { getUserById } from "../controllers/user-controller.js";
 import { getAccountById } from "../controllers/family-account-controller.js";
 import { getPersonalBudgetById } from "../controllers/personal-budget-controller.js";
 import { getTransactionById } from "../controllers/transaction-controller.js";
+import { createNotification } from "../controllers/notification-controller.js";
+import { getCategoryById } from "../controllers/category-controller.js";
 
 const handleGetAllSpendings = async (req, res) => {
     try {
@@ -51,6 +53,25 @@ const handleCreateSpendings = async (req, res) => {
                     spentAmount += Math.abs(transaction.amount);
                 }
             }
+
+            //SpentAmount > totalAmount -> create notification
+            if (spentAmount >= totalAmount) {
+                const currCategory = await getCategoryById(category);
+                await createNotification({
+                    name: "Překročení osobního výdajového plánu",
+                    text:
+                        'Překročili jste plán výdaje "' +
+                        name +
+                        '" v kategorii "' +
+                        currCategory.name +
+                        '". Naplánovaná částka je ' +
+                        totalAmount +
+                        ", vy jste již utratili " +
+                        spentAmount +
+                        ".",
+                    user: user._id,
+                });
+            }
         }
         //Spendings belongs to family account
         else {
@@ -58,12 +79,36 @@ const handleCreateSpendings = async (req, res) => {
             budget = account.familyBudget;
             for (const userId of account.users) {
                 const user = await getUserById(userId);
-                const pBudget = await getBudgetById(user.personalBudget);
-                for (const transactionId of pBudget.transactions) {
-                    const transaction = await getTransactionById(transactionId);
-                    if (transaction.category == category) {
-                        spentAmount += Math.abs(transaction.amount);
+                if (user.personalBudget) {
+                    const pBudget = await getBudgetById(user.personalBudget);
+                    for (const transactionId of pBudget.transactions) {
+                        const transaction = await getTransactionById(
+                            transactionId
+                        );
+                        if (transaction.category == category) {
+                            spentAmount += Math.abs(transaction.amount);
+                        }
                     }
+                }
+            }
+            for (const userId of account.users) {
+                //SpentAmount > totalAmount -> create notification
+                if (spentAmount >= totalAmount) {
+                    const currCategory = await getCategoryById(category);
+                    await createNotification({
+                        name: "Překročení rodinného výdajového plánu",
+                        text:
+                            'Překročili jste plán výdaje "' +
+                            name +
+                            '" v kategorii "' +
+                            currCategory.name +
+                            '". Naplánovaná částka je ' +
+                            totalAmount +
+                            ", rodina utratila již " +
+                            spentAmount +
+                            ".",
+                        user: userId,
+                    });
                 }
             }
         }
@@ -115,6 +160,7 @@ const handleUpdateSpendings = async (req, res) => {
         const { id } = req.params;
         const newData = req.body;
         const updatedData = await updateSpendings(id, newData);
+
         res.status(200).json(updatedData);
     } catch (error) {
         res.status(error.statusCode || 500).json({ message: error.message });

@@ -192,7 +192,8 @@ const modifyBalanceAndSpendingsHelper = async (
     }
 
     if (personalSpending) {
-        personalSpending.spentAmount += Math.abs(amount);
+        personalSpending.spentAmount -= amount;
+        personalSpending.spentAmount = Math.abs(personalSpending.spentAmount);
         await updateSpendings(personalSpending._id, personalSpending);
     }
 
@@ -226,7 +227,8 @@ const modifyBalanceAndSpendingsHelper = async (
         }
 
         if (familySpending) {
-            familySpending.spentAmount += Math.abs(amount);
+            familySpending.spentAmount -= amount;
+            familySpending.spentAmount = Math.abs(familySpending.spentAmount);
             await updateSpendings(familySpending._id, familySpending);
         }
     }

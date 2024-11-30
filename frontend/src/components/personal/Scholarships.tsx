@@ -55,7 +55,7 @@ const Scholarships: React.FC<ScholarshipsProps> = ({
                                         ? new Date(
                                               scholarship.notifyDate
                                           ).toLocaleDateString()
-                                        : "žádné"}
+                                        : "Žádné"}
                                 </div>
                             </div>
                         </div>
