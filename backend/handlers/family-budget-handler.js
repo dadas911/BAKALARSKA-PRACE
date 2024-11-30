@@ -11,6 +11,10 @@ import {
 } from "../controllers/family-budget-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
 import { getBudgetByIdAndDate } from "../controllers/budget-controller.js";
+import {
+    getFinancialGoalById,
+    updateFinancialGoal,
+} from "../controllers/financial-goal-controller.js";
 
 const handleGetAllFamilyBudgets = async (req, res) => {
     try {
@@ -36,6 +40,35 @@ const handleCreateFamilyBudget = async (req, res) => {
         const { name, month, year, income, expense } = req.body;
         const user = await getUserById(req.user._id);
         const account = user.familyAccount;
+
+        let prevMonth;
+        let prevYear;
+        let financialGoals = [];
+        //Searching for previous month budget
+        //Setting previous budget month + year
+        if (month === 1) {
+            prevMonth = 12;
+            prevYear = year - 1;
+        } else {
+            prevMonth = month - 1;
+            prevYear = year;
+        }
+
+        let prevBudget;
+        try {
+            prevBudget = await getBudgetByIdAndDate(
+                account,
+                prevMonth,
+                prevYear,
+                false
+            );
+        } catch (error) {}
+
+        //previous budget exits
+        if (prevBudget) {
+            financialGoals = prevBudget.financialGoals;
+        }
+
         const newData = await createFamilyBudget({
             name,
             month,
@@ -43,7 +76,19 @@ const handleCreateFamilyBudget = async (req, res) => {
             income,
             expense,
             account,
+            financialGoals,
         });
+
+        if (financialGoals.length > 0) {
+            for (const financialGoalId of financialGoals) {
+                const currFinancialGoal = await getFinancialGoalById(
+                    financialGoalId
+                );
+                currFinancialGoal.budget = newData._id;
+                await updateFinancialGoal(financialGoalId, currFinancialGoal);
+            }
+        }
+
         const currDate = new Date();
         const currMonth = currDate.getMonth() + 1;
         const currYear = currDate.getFullYear();

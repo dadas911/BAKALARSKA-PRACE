@@ -27,6 +27,16 @@ const getFinancialGoalById = async (id) => {
     }
 };
 
+const getFinancialGoalByBudgetId = async (id) => {
+    try {
+        const data = await FinancialGoalModel.find({ budget: id });
+        return data;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
 const createFinancialGoal = async (financialGoal) => {
     try {
         const newData = await FinancialGoalModel.create(financialGoal);
@@ -78,6 +88,7 @@ const updateFinancialGoal = async (id, newData) => {
 export {
     getAllFinancialGoals,
     getFinancialGoalById,
+    getFinancialGoalByBudgetId,
     createFinancialGoal,
     deleteFinancialGoal,
     updateFinancialGoal,

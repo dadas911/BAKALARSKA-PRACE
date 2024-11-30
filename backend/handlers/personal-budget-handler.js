@@ -7,6 +7,14 @@ import {
 } from "../controllers/personal-budget-controller.js";
 import { getBudgetByIdAndDate } from "../controllers/budget-controller.js";
 import { getUserById, updateUser } from "../controllers/user-controller.js";
+import {
+    getScholarshipById,
+    updateScholarship,
+} from "../controllers/scholarship-controller.js";
+import {
+    getFinancialGoalById,
+    updateFinancialGoal,
+} from "../controllers/financial-goal-controller.js";
 
 const handleGetAllPersonalBudgets = async (req, res) => {
     try {
@@ -32,6 +40,38 @@ const handleCreatePersonalBudget = async (req, res) => {
         const user = req.user._id;
         const { name, month, year, income, expense, flexibility, weight } =
             req.body;
+        let prevMonth;
+        let prevYear;
+        let scholarships = [];
+        let financialGoals = [];
+
+        //Searching for previous month budget
+        //Setting previous budget month + year
+        if (month === 1) {
+            prevMonth = 12;
+            prevYear = year - 1;
+        } else {
+            prevMonth = month - 1;
+            prevYear = year;
+        }
+
+        // Zjištění předchozího rozpočtu
+        let prevBudget;
+        try {
+            prevBudget = await getBudgetByIdAndDate(
+                user,
+                prevMonth,
+                prevYear,
+                true
+            );
+        } catch (error) {}
+
+        //previous budget exits
+        if (prevBudget) {
+            scholarships = prevBudget.scholarships;
+            financialGoals = prevBudget.financialGoals;
+        }
+
         const newData = await createPersonalBudget({
             name,
             month,
@@ -41,7 +81,29 @@ const handleCreatePersonalBudget = async (req, res) => {
             flexibility,
             weight,
             user,
+            financialGoals,
+            scholarships,
         });
+
+        //Link scholarships and financial goals to new budget
+        if (scholarships.length > 0) {
+            for (const scholarshipId of scholarships) {
+                const currScholarship = await getScholarshipById(scholarshipId);
+                currScholarship.personalBudget = newData._id;
+                await updateScholarship(scholarshipId, currScholarship);
+            }
+        }
+
+        if (financialGoals.length > 0) {
+            for (const financialGoalId of financialGoals) {
+                const currFinancialGoal = await getFinancialGoalById(
+                    financialGoalId
+                );
+                currFinancialGoal.budget = newData._id;
+                await updateFinancialGoal(financialGoalId, currFinancialGoal);
+            }
+        }
+
         const currDate = new Date();
         const currMonth = currDate.getMonth() + 1;
         const currYear = currDate.getFullYear();

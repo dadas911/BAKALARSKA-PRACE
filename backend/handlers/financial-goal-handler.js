@@ -9,6 +9,7 @@ import {
     createFinancialGoal,
     deleteFinancialGoal,
     updateFinancialGoal,
+    getFinancialGoalByBudgetId,
 } from "../controllers/financial-goal-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
 
@@ -35,11 +36,7 @@ const handleGetPersonalFinancialGoals = async (req, res) => {
             true
         );
 
-        const financialGoals = await Promise.all(
-            pBudget.financialGoals.map(async (id) => {
-                return await getFinancialGoalById(id);
-            })
-        );
+        const financialGoals = await getFinancialGoalByBudgetId(pBudget._id);
 
         res.status(200).json(financialGoals);
     } catch (error) {
@@ -61,11 +58,7 @@ const handleGetFamilyFinancialGoals = async (req, res) => {
             false
         );
 
-        const financialGoals = await Promise.all(
-            fBudget.financialGoals.map(async (id) => {
-                return await getFinancialGoalById(id);
-            })
-        );
+        const financialGoals = await getFinancialGoalByBudgetId(fBudget._id);
 
         res.status(200).json(financialGoals);
     } catch (error) {
