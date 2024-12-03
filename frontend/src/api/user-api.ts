@@ -75,6 +75,19 @@ export async function updateUser(id: string, user: User): Promise<User | null> {
     }
 }
 
+export async function checkUserRole(role: string): Promise<boolean> {
+    try {
+        const response = await axios.post(`${URL_API}/users/role`, {
+            role: role,
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return false;
+    }
+}
+
 export async function loginUser(user: UserLogin) {
     try {
         const response = await axios.post(`${URL_API}/users/login`, user);

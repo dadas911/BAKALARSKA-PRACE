@@ -13,7 +13,7 @@ const Registration: React.FC<RegistrationProps> = ({ onCreation }) => {
         secondName: "",
         password: "",
         email: "",
-        role: "živitel",
+        role: ["živitel", "člen domácnosti", "student", "senior"],
     });
 
     function handleChange(
@@ -67,16 +67,6 @@ const Registration: React.FC<RegistrationProps> = ({ onCreation }) => {
                 maxLength={50}
                 className="border border-gray-300 p-3 rounded focus:outline-green-500"
             />
-            <select
-                name="role"
-                onChange={handleChange}
-                className="border border-gray-300 p-3 rounded focus:outline-green-500"
-            >
-                <option value="živitel">Živitel</option>
-                <option value="člen domácnosti">Člen domácnosti</option>
-                <option value="student">Student</option>
-                <option value="senior">Senior</option>
-            </select>
             <input
                 placeholder="Heslo"
                 onChange={handleChange}

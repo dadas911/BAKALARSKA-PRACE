@@ -229,6 +229,7 @@ const Personal = () => {
                             spendings={personalSpendings}
                             onUpdateSpendings={handleOpenSpendingsModal}
                             onDeleteSpendings={handleDeleteSpendings}
+                            canModify={true}
                         />
                     ) : (
                         <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">

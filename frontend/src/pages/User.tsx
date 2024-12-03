@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { User } from "../types/user";
 import { FamilyAccount } from "../types/family-account";
-import { getUser } from "../api/user-api";
+import { checkUserRole, getUser } from "../api/user-api";
 import {
     addUserToAccount,
     getFamilyAccount,
@@ -21,6 +21,8 @@ const Account = () => {
 
     const [loading, setLoading] = useState<boolean>(true);
     const [newEmail, setNewEmail] = useState<string>("");
+    const [roles, setRoles] = useState<string[]>([]);
+    const [isProvider, setIsProvider] = useState<boolean>(false);
 
     const getUserInfo = async () => {
         const userData = await getUser();
@@ -31,6 +33,8 @@ const Account = () => {
                 setFamilyAccount(accountData);
                 const users = await getAllAccountUsers();
                 setAccountUsers(users);
+                const provider = await checkUserRole("živitel");
+                setIsProvider(provider);
             }
         }
     };
@@ -41,13 +45,27 @@ const Account = () => {
 
     const handleAddUserSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const response = await addUserToAccount(newEmail);
+        if (roles.length < 1) {
+            alert("Vyberte alespoň jednu roli!");
+            return;
+        }
+        const response = await addUserToAccount(newEmail, roles);
         if (response) {
             setNewEmail("");
             handleRefresh();
         } else {
             alert("Chyba při přidání uživatele");
         }
+    };
+
+    const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const role = e.target.value;
+
+        setRoles((prevRole) =>
+            e.target.checked
+                ? [...prevRole, role]
+                : prevRole.filter((currRole) => currRole !== role)
+        );
     };
 
     const handleRemoveUserFromAccount = async (email: string) => {
@@ -94,7 +112,7 @@ const Account = () => {
                         <b>E-mail:</b> {user?.email}
                     </p>
                     <p>
-                        <b>Role:</b> {user?.role}
+                        <b>Role:</b> {user?.role.join(", ")}
                     </p>
                 </div>
             </div>
@@ -106,32 +124,65 @@ const Account = () => {
                     <p>
                         <b>Jméno účtu:</b> {familyAccount?.name}
                     </p>
-                    <div className="mt-6">
-                        <h3 className="text-lg font-medium text-neutral-700 mb-2">
-                            Přidat uživatele k rodinnému účtu
-                        </h3>
-                        <form
-                            onSubmit={handleAddUserSubmit}
-                            className="flex gap-2"
-                        >
-                            <input
-                                placeholder="E-mail"
-                                onChange={handleAddUserChange}
-                                name="email"
-                                type="email"
-                                value={newEmail}
-                                required
-                                maxLength={20}
-                                className="border border-gray-300 p-2 rounded focus:outline-green-500"
-                            />
-                            <button
-                                type="submit"
-                                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                    {isProvider && (
+                        <div className="mt-6">
+                            <h3 className="text-lg font-medium text-neutral-700 mb-2">
+                                Přidat uživatele k rodinnému účtu
+                            </h3>
+                            <form
+                                onSubmit={handleAddUserSubmit}
+                                className="flex flex-col gap-4"
                             >
-                                Přidat uživatele
-                            </button>
-                        </form>
-                    </div>
+                                <div className="flex gap-2">
+                                    <input
+                                        placeholder="E-mail"
+                                        onChange={handleAddUserChange}
+                                        name="email"
+                                        type="email"
+                                        value={newEmail}
+                                        required
+                                        maxLength={50}
+                                        className="border border-gray-300 p-2 rounded focus:outline-green-500 flex-grow"
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                                    >
+                                        Přidat uživatele
+                                    </button>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium mb-2">
+                                        Role přidaného uživatele:
+                                    </h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {[
+                                            "živitel",
+                                            "člen domácnosti",
+                                            "student",
+                                            "senior",
+                                        ].map((role) => (
+                                            <label
+                                                key={role}
+                                                className="flex items-center"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    value={role}
+                                                    checked={roles.includes(
+                                                        role
+                                                    )}
+                                                    onChange={handleRoleChange}
+                                                    className="mr-2"
+                                                />
+                                                {role}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    )}
                     <div className="mt-6">
                         <h3 className="text-lg font-medium text-neutral-700 mb-4">
                             Členové rodinného účtu
@@ -158,34 +209,43 @@ const Account = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {accountUsers.map((user) => (
+                                    {accountUsers.map((currUser) => (
                                         <tr
-                                            key={user._id}
+                                            key={currUser._id}
                                             className="bg-white border-b hover:bg-green-100"
                                         >
                                             <td className="px-6 py-4 font-semibold ">
-                                                {user.username}
+                                                {currUser.username}
                                             </td>
                                             <td className="px-6 py-4">
-                                                {user.firstName}{" "}
-                                                {user.secondName}
+                                                {currUser.firstName}{" "}
+                                                {currUser.secondName}
                                             </td>
                                             <td className="px-6 py-4">
-                                                {user.role}
+                                                {currUser?.role.join(", ")}
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                {user._id !==
+                                                {currUser._id !==
                                                 familyAccount.owner ? (
-                                                    <button
-                                                        onClick={() =>
-                                                            handleRemoveUserFromAccount(
-                                                                user.email
-                                                            )
-                                                        }
-                                                        className="text-red-500 hover:underline"
-                                                    >
-                                                        Odebrat
-                                                    </button>
+                                                    isProvider ? (
+                                                        <button
+                                                            onClick={() =>
+                                                                handleRemoveUserFromAccount(
+                                                                    currUser.email
+                                                                )
+                                                            }
+                                                            className="text-red-500 hover:underline"
+                                                        >
+                                                            {currUser._id ===
+                                                            user?._id
+                                                                ? "Opustit"
+                                                                : "Odebrat"}
+                                                        </button>
+                                                    ) : (
+                                                        <span className="text-gray-500">
+                                                            Žádné
+                                                        </span>
+                                                    )
                                                 ) : (
                                                     <span className="text-gray-500">
                                                         Vlastník

@@ -12,7 +12,6 @@ import {
     updateSpendings,
 } from "../api/spendings-api";
 import {
-    getAllAccountUsers,
     getFamilyAccount,
     getHasFamilyAccount,
 } from "../api/family-account-api";
@@ -33,8 +32,7 @@ import BudgetSpendings from "../components/budget/Spendings";
 import FamilyBudgetForm from "../components/forms/FamilyBudgetForm";
 import FamilyAccountForm from "../components/forms/FamilyAccountForm";
 import SpendingsForm from "../components/forms/SpendingsForm";
-import { User } from "../types/user";
-import { getUser, getUserById } from "../api/user-api";
+import { checkUserRole } from "../api/user-api";
 
 const Family = () => {
     const [refresh, setRefresh] = useState(false);
@@ -65,6 +63,9 @@ const Family = () => {
     const [updatingSpendings, setUpdatingSpendings] =
         useState<Spendings | null>(null);
 
+    const [isProvider, setIsProvider] = useState<boolean>(false);
+    const [isFamilyMember, setIsFamilyMember] = useState<boolean>(false);
+
     const getFamilyBudgetInfo = async () => {
         const familyAccountStatus = await getHasFamilyAccount();
         setHasFamilyAccount(familyAccountStatus);
@@ -78,9 +79,13 @@ const Family = () => {
             if (familyBudgetStatus) {
                 const budget = await getFamilyBudgetByMonth(month, year);
                 const spendings = await getFamilySpendingsByMonth(month, year);
+                const provider = await checkUserRole("živitel");
+                const member = await checkUserRole("člen domácnosti");
 
                 setFamilyBudget(budget);
                 setFamilySpendings(spendings);
+                setIsProvider(provider);
+                setIsFamilyMember(member);
             }
             const category = await getAllFamilyCategories();
             setFamilyCategories(category);
@@ -242,6 +247,7 @@ const Family = () => {
                             spendings={familySpendings}
                             onUpdateSpendings={handleOpenSpendingsModal}
                             onDeleteSpendings={handleDeleteSpendings}
+                            canModify={isProvider || isFamilyMember}
                         />
                     ) : (
                         <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
@@ -254,13 +260,14 @@ const Family = () => {
                     Shrnutí rodinného účtu není k dispozici.
                 </h3>
             )}
-
-            <button
-                onClick={() => handleOpenSpendingsModal()}
-                className="bg-green-500 text-white px-4 py-2 rounded mt-4"
-            >
-                Přidat rodinný plán výdajů
-            </button>
+            {(isProvider || isFamilyMember) && (
+                <button
+                    onClick={() => handleOpenSpendingsModal()}
+                    className="bg-green-500 text-white px-4 py-2 rounded mt-4"
+                >
+                    Přidat rodinný plán výdajů
+                </button>
+            )}
 
             {isSpendingsModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -291,6 +298,7 @@ const Family = () => {
                     familyCategories={familyCategories}
                     onUpdateCategory={handleOpenCategoryModal}
                     onDeleteCategory={handleDeleteCategory}
+                    canModify={isProvider || isFamilyMember}
                 />
             ) : (
                 <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
@@ -298,13 +306,14 @@ const Family = () => {
                 </h3>
             )}
 
-            <button
-                onClick={() => handleOpenCategoryModal()}
-                className="bg-green-500 text-white px-4 py-2 rounded mt-4"
-            >
-                Přidat kategorii
-            </button>
-
+            {(isProvider || isFamilyMember) && (
+                <button
+                    onClick={() => handleOpenCategoryModal()}
+                    className="bg-green-500 text-white px-4 py-2 rounded mt-4"
+                >
+                    Přidat kategorii
+                </button>
+            )}
             {isCategoryModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg shadow-lg p-6 w-96">

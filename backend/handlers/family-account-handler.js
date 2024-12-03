@@ -42,7 +42,8 @@ const handleGetAccount = async (req, res) => {
 };
 const handleCreateAccount = async (req, res) => {
     try {
-        const { name } = req.body;
+        const { account, roles } = req.body;
+        const name = account.name;
         const owner = req.user._id;
         const users = [req.user._id];
         const newData = await createAccount({ name, owner, users });
@@ -53,6 +54,7 @@ const handleCreateAccount = async (req, res) => {
             res.status(404).json({ message: "Vlastník účtu nebyl nalezen" });
         }
         user.familyAccount = newData._id;
+        user.role = roles;
         await updateUser(user._id, user);
 
         res.status(200).json(newData);
@@ -95,7 +97,7 @@ const handleHasFamilyAccount = async (req, res) => {
 
 const handleAddUserToAccount = async (req, res) => {
     try {
-        const { email } = req.body;
+        const { email, roles } = req.body;
         const sender = await getUserById(req.user._id);
         const user = await getUserByEmail(email);
         if (user.familyAccount) {
@@ -108,6 +110,7 @@ const handleAddUserToAccount = async (req, res) => {
         familyAccount.users.push(user._id);
 
         user.familyAccount = sender.familyAccount;
+        user.role = roles;
         await updateAccount(familyAccount._id, familyAccount);
         await updateUser(user._id, user);
         const result = true;
@@ -134,6 +137,7 @@ const handleDeleteUserFromAccount = async (req, res) => {
         );
 
         user.familyAccount = null;
+        user.role = [];
         await updateAccount(familyAccount._id, familyAccount);
         await updateUser(user._id, user);
         const result = true;

@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
         match: [/\S+@\S+\.\S+/, "Prosím, zadejte platnou e-mailovou adresu"],
     },
     role: {
-        type: String,
+        type: [String],
         required: true,
         enum: ["živitel", "člen domácnosti", "student", "senior"],
     },

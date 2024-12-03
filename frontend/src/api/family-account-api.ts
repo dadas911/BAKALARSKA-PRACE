@@ -39,13 +39,14 @@ export async function getFamilyAccount(): Promise<FamilyAccount | null> {
 }
 
 export async function createFamilyAccount(
-    account: FamilyAccount
+    account: FamilyAccount,
+    roles: string[]
 ): Promise<FamilyAccount | null> {
     try {
-        const response = await axios.post(
-            `${URL_API}/family-accounts`,
-            account
-        );
+        const response = await axios.post(`${URL_API}/family-accounts`, {
+            account,
+            roles,
+        });
         return response.data;
     } catch (error) {
         console.error("Chyba při volání API:", error);
@@ -91,10 +92,14 @@ export async function getHasFamilyAccount(): Promise<boolean> {
     }
 }
 
-export async function addUserToAccount(email: String): Promise<boolean> {
+export async function addUserToAccount(
+    email: String,
+    roles: string[]
+): Promise<boolean> {
     try {
         const response = await axios.post(`${URL_API}/family-accounts/add`, {
             email: email,
+            roles: roles,
         });
         return response.data;
     } catch (error) {

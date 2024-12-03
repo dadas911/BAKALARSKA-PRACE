@@ -5,7 +5,7 @@ export interface User {
     secondName: string;
     password: string;
     email: string;
-    role: "živitel" | "člen domácnosti" | "student" | "senior";
+    role: Array<"živitel" | "člen domácnosti" | "student" | "senior">;
     familyAccount?: string | null;
     personalBudget?: string | null;
 }

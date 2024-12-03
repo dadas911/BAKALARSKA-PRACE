@@ -5,6 +5,7 @@ interface BudgetSpendingsProps {
     spendings: Spendings[];
     onUpdateSpendings: (spendings: Spendings) => void;
     onDeleteSpendings: (id: string) => void;
+    canModify: boolean;
 }
 
 const containerClass =
@@ -19,6 +20,7 @@ const BudgetSpendings: React.FC<BudgetSpendingsProps> = ({
     spendings,
     onUpdateSpendings,
     onDeleteSpendings,
+    canModify,
 }) => (
     <div className="w-full">
         <h3 className="text-2xl font-semibold text-neutral-700 text-center mb-4">
@@ -56,25 +58,26 @@ const BudgetSpendings: React.FC<BudgetSpendingsProps> = ({
                             </div>
                         </div>
                     </div>
-
-                    <div className="flex justify-between mt-4">
-                        <button
-                            onClick={() => onUpdateSpendings(spending)}
-                            className="bg-blue-500 text-white px-4 py-2 rounded"
-                        >
-                            Upravit
-                        </button>
-                        <button
-                            onClick={() =>
-                                onDeleteSpendings(
-                                    spending._id || "No id for spending"
-                                )
-                            }
-                            className="bg-red-500 text-white px-4 py-2 rounded"
-                        >
-                            Smazat
-                        </button>
-                    </div>
+                    {canModify && (
+                        <div className="flex justify-between mt-4">
+                            <button
+                                onClick={() => onUpdateSpendings(spending)}
+                                className="bg-blue-500 text-white px-4 py-2 rounded"
+                            >
+                                Upravit
+                            </button>
+                            <button
+                                onClick={() =>
+                                    onDeleteSpendings(
+                                        spending._id || "No id for spending"
+                                    )
+                                }
+                                className="bg-red-500 text-white px-4 py-2 rounded"
+                            >
+                                Smazat
+                            </button>
+                        </div>
+                    )}
                 </div>
             ))}
         </div>

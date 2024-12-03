@@ -13,6 +13,7 @@ import { getHasFamilyBudget } from "../api/family-budget-api";
 import Loading from "../components/common/Loading";
 import BudgetFinancialGoals from "../components/budget/BudgetFinancialGoals";
 import FinancialGoalForm from "../components/forms/FinancialGoalForm";
+import { checkUserRole } from "../api/user-api";
 
 const FinancialGoals = () => {
     const [personalGoals, setPersonalGoals] = useState<FinancialGoal[]>([]);
@@ -22,6 +23,8 @@ const FinancialGoals = () => {
     const [hasPersonalBudget, setHasPersonalBudget] = useState<boolean>(false);
     const [hasFamilyAccount, setHasFamilyAccount] = useState<boolean>(false);
     const [hasFamilyBudget, setHasFamilyBudget] = useState<boolean>(false);
+    const [isProvider, setIsProvider] = useState<boolean>(false);
+    const [isFamilyMember, setIsFamilyMember] = useState<boolean>(false);
 
     const [
         isPersonalFinancialGoalModalOpen,
@@ -50,6 +53,10 @@ const FinancialGoals = () => {
         const familyAccountStatus = await getHasFamilyAccount();
         setHasFamilyAccount(familyAccountStatus);
         if (familyAccountStatus) {
+            const provider = await checkUserRole("živitel");
+            setIsProvider(provider);
+            const member = await checkUserRole("člen domácnosti");
+            setIsFamilyMember(member);
             const familyBudgetStatus = await getHasFamilyBudget(month, year);
             setHasFamilyBudget(familyBudgetStatus);
             if (familyBudgetStatus) {
@@ -202,6 +209,7 @@ const FinancialGoals = () => {
                             onDeleteFinancialGoal={
                                 handleDeletePersonalFinancialGoal
                             }
+                            canModify={true}
                         />
                     ) : (
                         <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
@@ -267,18 +275,23 @@ const FinancialGoals = () => {
                                 onDeleteFinancialGoal={
                                     handleDeleteFamilyFinancialGoal
                                 }
+                                canModify={isProvider || isFamilyMember}
                             />
                         ) : (
                             <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
                                 Žádné rodinné finanční cíle
                             </h3>
                         )}
-                        <button
-                            onClick={() => handleOpenFamilyFinancialGoalModal()}
-                            className="bg-green-500 text-white px-4 py-2 rounded mt-4"
-                        >
-                            Přidat rodinný finanční cíl
-                        </button>
+                        {(isProvider || isFamilyMember) && (
+                            <button
+                                onClick={() =>
+                                    handleOpenFamilyFinancialGoalModal()
+                                }
+                                className="bg-green-500 text-white px-4 py-2 rounded mt-4"
+                            >
+                                Přidat rodinný finanční cíl
+                            </button>
+                        )}
 
                         {isFamilyFinancialGoalModalOpen && (
                             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

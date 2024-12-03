@@ -4,12 +4,14 @@ interface FamilyCategoryProps {
     familyCategories: Category[];
     onUpdateCategory: (category: Category) => void;
     onDeleteCategory: (id: string) => void;
+    canModify: boolean;
 }
 
 const FamilyCategory: React.FC<FamilyCategoryProps> = ({
     familyCategories,
     onUpdateCategory,
     onDeleteCategory,
+    canModify,
 }) => (
     <div className="overflow-x-auto shadow-md sm:rounded-lg">
         <h3 className="text-2xl font-semibold text-neutral-700 text-center mb-4">
@@ -51,22 +53,30 @@ const FamilyCategory: React.FC<FamilyCategoryProps> = ({
                                 </span>
                             </td>
                             <td className="px-6 py-4 flex gap-2">
-                                <button
-                                    onClick={() => onUpdateCategory(category)}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                                >
-                                    Upravit
-                                </button>
-                                <button
-                                    onClick={() =>
-                                        onDeleteCategory(
-                                            category._id || "No id for category"
-                                        )
-                                    }
-                                    className="bg-red-500 text-white px-4 py-2 rounded"
-                                >
-                                    Smazat
-                                </button>
+                                {canModify && !category.isGlobal && (
+                                    <>
+                                        <button
+                                            onClick={() =>
+                                                onUpdateCategory(category)
+                                            }
+                                            className="bg-blue-500 text-white px-4 py-2 rounded"
+                                        >
+                                            Upravit
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                onDeleteCategory(
+                                                    category._id ||
+                                                        "No id for category"
+                                                )
+                                            }
+                                            className="bg-red-500 text-white px-4 py-2 rounded"
+                                        >
+                                            Smazat
+                                        </button>
+                                    </>
+                                )}
+                                {(!canModify || category.isGlobal) && "Žádné"}
                             </td>
                         </tr>
                     ))

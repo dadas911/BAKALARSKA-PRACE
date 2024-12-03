@@ -120,6 +120,7 @@ const Home = () => {
                             spendings={personalSpendings}
                             onDeleteSpendings={() => null}
                             onUpdateSpendings={() => null}
+                            canModify={false}
                         />
                     ) : (
                         <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
@@ -159,6 +160,7 @@ const Home = () => {
                                 spendings={familySpendings}
                                 onDeleteSpendings={() => null}
                                 onUpdateSpendings={() => null}
+                                canModify={false}
                             />
                         ) : (
                             <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">

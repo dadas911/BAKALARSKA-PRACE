@@ -3,10 +3,31 @@ import { pageList } from "./page-list";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FcBarChart } from "react-icons/fc";
 import { CiLogout } from "react-icons/ci";
+import { useState, useEffect } from "react";
+import { checkUserRole } from "../../api/user-api";
+import { getHasFamilyAccount } from "../../api/family-account-api";
 
 const NavigationBar = () => {
     const navigate = useNavigate();
     const currLocation = useLocation();
+
+    const [isStudent, setIsStudent] = useState<boolean>(false);
+    const [isProvider, setIsProvider] = useState<boolean>(false);
+    const [hasFamilyAccount, setHasFamilyAccount] = useState<boolean>(false);
+
+    useEffect(() => {
+        const checkRoles = async () => {
+            const student = await checkUserRole("student");
+            setIsStudent(student);
+            const provider = await checkUserRole("živitel");
+            setIsProvider(provider);
+            const hasAccount = await getHasFamilyAccount();
+            console.log("hasAccount");
+            setHasFamilyAccount(hasAccount);
+        };
+
+        checkRoles();
+    }, [isStudent, isProvider]);
 
     function handleLogout() {
         sessionStorage.removeItem("User");
@@ -25,6 +46,15 @@ const NavigationBar = () => {
             </div>
             <div className="flex-1 gap-0.5 py-8 flex-col flex">
                 {pageList.map((page) => {
+                    if (
+                        (page.key === "familymemberbudget" && !isProvider) ||
+                        (page.key === "familymemberbudget" &&
+                            !hasFamilyAccount) ||
+                        (page.key === "scholarships" && !isStudent)
+                    ) {
+                        return null;
+                    }
+
                     const isActiveLink = currLocation.pathname === page.path;
                     return (
                         <Link

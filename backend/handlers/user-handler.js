@@ -121,6 +121,18 @@ const handleUpdateUser = async (req, res) => {
     }
 };
 
+const handleCheckUserRole = async (req, res) => {
+    try {
+        const { role } = req.body;
+        const user = await getUserById(req.user._id);
+        const result = user.role.includes(role);
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
 const handleLoginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -160,4 +172,5 @@ export {
     handleUpdateUser,
     handleLoginUser,
     handleGetUser,
+    handleCheckUserRole,
 };
