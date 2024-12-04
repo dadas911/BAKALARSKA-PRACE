@@ -36,7 +36,8 @@ const handleGetCategoryById = async (req, res) => {
 
 const handleCreateCategory = async (req, res) => {
     try {
-        let { name, isGlobal, isExpense, familyBudget } = req.body;
+        let { name, reductionRate, isGlobal, isExpense, familyBudget } =
+            req.body;
 
         const user = await getUserById(req.user._id);
         const account = await getAccountById(user.familyAccount);
@@ -44,6 +45,7 @@ const handleCreateCategory = async (req, res) => {
 
         const newData = await createCategory({
             name,
+            reductionRate,
             isGlobal,
             isExpense,
             familyBudget,

@@ -7,6 +7,7 @@ import User from "./pages/User";
 import FinancialGoals from "./pages/FinancialGoals";
 import Scholarships from "./pages/Scholarships";
 import FamilyMemberBudget from "./pages/FamilyMemberBudget";
+import Analysis from "./pages/Analysis";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import { useLayoutEffect } from "react";
@@ -47,6 +48,7 @@ function App() {
                         element={<FinancialGoals />}
                     />
                     <Route path="/scholarships" element={<Scholarships />} />
+                    <Route path="/analysis" element={<Analysis />} />
                 </Route>
             </Routes>
         </Router>

@@ -17,7 +17,7 @@ const Layout = () => {
     return (
         <div className="flex flex-row bg-neutral-200 h-screen w-screen overflow-x-hidden">
             <NavigationBar />
-            <div className="flex-1 ml-60">
+            <div className="flex-1 ml-0 sm:ml-60">
                 <Header />
                 <div className="p-4">{<Outlet />}</div>
             </div>

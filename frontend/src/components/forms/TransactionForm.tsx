@@ -77,12 +77,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                     onChange={handleTransactionChange}
                     className="w-full px-3 py-2 border rounded"
                     required
-                    min={
-                        currDate.getFullYear() +
-                        "-" +
-                        String(currDate.getMonth() + 1).padStart(2, "0") +
-                        "-01"
-                    }
+                    // min={
+                    //     currDate.getFullYear() +
+                    //     "-" +
+                    //     String(currDate.getMonth() + 1).padStart(2, "0") +
+                    //     "-01"
+                    // }
                     max={
                         currDate.getFullYear() +
                         "-" +

@@ -10,7 +10,12 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
     onAddCategory,
     initialCategory,
 }) => {
-    const defaultCategory = { name: "", isExpense: true, isGlobal: false };
+    const defaultCategory = {
+        name: "",
+        reductionRate: 0,
+        isExpense: true,
+        isGlobal: false,
+    };
     const [category, setCategory] = useState<Category>(
         initialCategory || defaultCategory
     );
@@ -39,6 +44,23 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border rounded"
                 />
+            </div>
+            <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">
+                    Míra snížení (%)
+                </label>
+                <input
+                    type="number"
+                    max={100}
+                    name="reductionRate"
+                    value={category.reductionRate}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                    Procento, o které lze snížit výdaje v této kategorii při
+                    optimalizaci rozpočtu (0-100 %).
+                </p>
             </div>
             <div className="mb-4">
                 <label className="inline-flex items-center">

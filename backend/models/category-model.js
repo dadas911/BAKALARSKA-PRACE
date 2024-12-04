@@ -4,6 +4,7 @@ const CategorySchema = new mongoose.Schema({
     name: { type: String, required: true },
     isGlobal: { type: Boolean, default: false },
     isExpense: { type: Boolean, default: true, required: true },
+    reductionRate: { type: Number, default: 0, required: false },
     familyBudget: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "FamilyBudget",

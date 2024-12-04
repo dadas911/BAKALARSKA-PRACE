@@ -49,7 +49,7 @@ const getBudgetByIdAndDate = async (id, month, year, isPersonalBudget) => {
 
         if (!data) {
             const error = new Error("Rozpočet nebyl nalezen");
-            error.statusCode = 404;
+            error.statusCode = 400;
             throw error;
         }
 

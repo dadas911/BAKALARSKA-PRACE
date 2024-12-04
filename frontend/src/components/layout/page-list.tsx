@@ -4,6 +4,7 @@ import { BsCash } from "react-icons/bs";
 import { GiStairsGoal } from "react-icons/gi";
 import { GrCertificate } from "react-icons/gr";
 import { FaUserCheck } from "react-icons/fa6";
+import { GiArchiveResearch } from "react-icons/gi";
 
 type Page = {
     key: string;
@@ -54,5 +55,11 @@ export const pageList: Page[] = [
         name: "Uživatel a Rodina",
         path: "/user",
         icon: <IoPeopleSharp />,
+    },
+    {
+        key: "analysis",
+        name: "Analýza finanční situace",
+        path: "/analysis",
+        icon: <GiArchiveResearch />,
     },
 ];

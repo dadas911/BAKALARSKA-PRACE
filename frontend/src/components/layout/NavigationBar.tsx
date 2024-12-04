@@ -39,7 +39,7 @@ const NavigationBar = () => {
     const classLinkActive = "bg-green-600 text-white";
 
     return (
-        <div className="fixed h-full flex flex-col bg-neutral-700 w-60 p-3">
+        <div className="fixed h-full flex flex-col bg-neutral-700 w-60 p-3 invisible sm:visible">
             <div className="flex item-center gap-5 px-3 py-3">
                 <FcBarChart fontSize={24} />{" "}
                 <span className="text-green-400 text-xl">MoneyS3</span>
