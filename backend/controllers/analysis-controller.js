@@ -49,7 +49,7 @@ const analyzeFinancialRisk = async (reserve, monthlyExpenses) => {
 
 const analyzeSpendingsReduction = async (budgets) => {
     const categoryInformation = {};
-
+    console.log("Budgets: " + JSON.stringify(budgets));
     //Go through budgets
     for (const budget of budgets) {
         //Go through every budget spendings

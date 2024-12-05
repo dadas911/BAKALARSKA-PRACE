@@ -131,6 +131,7 @@ const handleFamilyRiskAnalysis = async (req, res) => {
         }
 
         const user = await getUserById(req.user._id);
+
         //Calculating avarage monthly expenses
         for (let i = 0; i < 6; i++) {
             let currBudget = null;
@@ -156,7 +157,7 @@ const handleFamilyRiskAnalysis = async (req, res) => {
         }
 
         if (budgets.length === 0) {
-            return res.status(404).json({
+            return res.status(400).json({
                 success: false,
                 message:
                     "Žádné předchozí měsíční rozpočty k dispozici. Pro provedení analýzu finančního rizika je nutné mít alespoň jeden předchozí měsíční rozpočet (maximálně 6 měsíců starý)",
@@ -171,23 +172,32 @@ const handleFamilyRiskAnalysis = async (req, res) => {
 
         const averageMonthlyExpenses = Math.abs(allExpenses / budgets.length);
 
-        //Getting recommendedReserve, financialRiskLevelm, increaseReserve and monthCovered
+        //Getting recommendedReserve, financialRiskLevel and increaseReserve
         const {
             recommendedReserve,
             financialRiskLevel,
             increaseReserve,
             monthCovered,
         } = await analyzeFinancialRisk(reserve, averageMonthlyExpenses);
+
         let summary = "";
         if (financialRiskLevel === "Nízké") {
             summary =
-                "Vaše rodinné finanční riziko je nízké, není potřeba upravovat rodinnou finanční rezervu";
+                "Vaše rodinné finanční riziko je nízké, není potřeba upravovat Vaší finanční rezervu";
         } else if (financialRiskLevel === "Střední") {
             summary =
-                "Vaše rodinné finanční riziko je střední, je potřeba trochu navýšit rodinnou finanční rezervu";
+                "Vaše rodinné finanční riziko je střední, je potřeba trochu navýšit Vaší finanční rezervu";
         } else {
             summary =
-                "Vaše rodinné finanční riziko je vysoké, je potřeba upravit rozpočet a co nejdříve navýšit rodinnou finanční rezervu";
+                "Vaše rodinné finanční riziko je vysoké, je potřeba upravit rozpočet a co nejdříve navýšit Vaší finanční rezervu";
+        }
+
+        let spendingReduction = [];
+        if (
+            financialRiskLevel === "Střední" ||
+            financialRiskLevel === "Vysoké"
+        ) {
+            spendingReduction = await analyzeSpendingsReduction(budgets);
         }
 
         return res.status(200).json({
@@ -201,12 +211,14 @@ const handleFamilyRiskAnalysis = async (req, res) => {
                 increaseReserve,
                 summary,
                 monthCovered,
+                spendingReduction,
             },
         });
     } catch (error) {
         res.status(error.statusCode || 500).json({
             success: false,
             message: error.message,
+            data: null,
         });
     }
 };
