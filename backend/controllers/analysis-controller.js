@@ -49,7 +49,6 @@ const analyzeFinancialRisk = async (reserve, monthlyExpenses) => {
 
 const analyzeSpendingsReduction = async (budgets) => {
     const categoryInformation = {};
-    console.log("Budgets: " + JSON.stringify(budgets));
     //Go through budgets
     for (const budget of budgets) {
         //Go through every budget spendings
@@ -106,4 +105,54 @@ const analyzeSpendingsReduction = async (budgets) => {
     return result;
 };
 
-export { analyzeFinancialRisk, analyzeSpendingsReduction };
+const analyzeFinancialGoal = async (goal, contribution) => {
+    // Calculate month to achieve goal
+    const remainingAmount = goal.neededAmount - goal.currentAmount;
+    const monthsToAchieveGoal = Math.ceil(remainingAmount / contribution);
+
+    // Calculate how many month are remaining to dueDate
+    const dueDate = new Date(goal.dueDate);
+    const currDate = new Date();
+
+    const dueYear = dueDate.getFullYear();
+    const dueMonth = dueDate.getMonth();
+
+    const currentYear = currDate.getFullYear();
+    const currentMonth = currDate.getMonth();
+
+    const yearDifference = dueYear - currentYear;
+    const monthDifference = dueMonth - currentMonth;
+
+    const monthsToAchieveGoalRemaining = yearDifference * 12 + monthDifference;
+
+    // Setting status
+    let financialGoalStatus = "Dosáhnete";
+    if (monthsToAchieveGoal > monthsToAchieveGoalRemaining) {
+        financialGoalStatus = "Nedosáhnete";
+    }
+
+    // Calculate how much money is needed
+    const requiredMonthlyContribution =
+        remainingAmount / monthsToAchieveGoalRemaining;
+
+    let monthlyContributionAdjustment = 0;
+    if (requiredMonthlyContribution > contribution) {
+        monthlyContributionAdjustment =
+            requiredMonthlyContribution - contribution;
+    }
+
+    return {
+        financialGoalStatus,
+        monthsToAchieveGoal,
+        monthsToAchieveGoalRemaining,
+        expectedMonthlyContribution: contribution,
+        monthlyContributionAdjustment,
+        requiredMonthlyContribution,
+    };
+};
+
+export {
+    analyzeFinancialRisk,
+    analyzeSpendingsReduction,
+    analyzeFinancialGoal,
+};

@@ -1,18 +1,15 @@
 import { useState } from "react";
 import { FinancialGoal } from "../../types/financial-goal";
-import {
-    familyFinancialGoalAnalysis,
-    personalFinancialGoalAnalysis,
-} from "../../api/analysis-api";
-
 interface FinancialGoalAnalysisFormProps {
     isPersonal: boolean;
     goals: FinancialGoal[];
+    onAnalyzeFinancialGoal: (goalId: string, contribution: number) => void;
 }
 
 const FinancialGoalAnalysisForm: React.FC<FinancialGoalAnalysisFormProps> = ({
     isPersonal,
     goals,
+    onAnalyzeFinancialGoal,
 }) => {
     const [selectedGoal, setSelectedGoal] = useState<string>(
         goals[0]?._id || ""
@@ -21,19 +18,7 @@ const FinancialGoalAnalysisForm: React.FC<FinancialGoalAnalysisFormProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (isPersonal) {
-            const result = await personalFinancialGoalAnalysis(
-                selectedGoal,
-                monthlyContribution
-            );
-            console.log("Osobní výstup: " + JSON.stringify(result));
-        } else {
-            const result = await familyFinancialGoalAnalysis(
-                selectedGoal,
-                monthlyContribution
-            );
-            console.log("Rodinný výstup: " + JSON.stringify(result));
-        }
+        onAnalyzeFinancialGoal(selectedGoal, monthlyContribution);
     };
 
     if (goals.length === 0) {
@@ -76,6 +61,10 @@ const FinancialGoalAnalysisForm: React.FC<FinancialGoalAnalysisFormProps> = ({
                     className="w-full px-3 py-2 border rounded"
                     min="0"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                    Aplikace počítá s tím, že s tímto příspěvkem začnete až
+                    příští měsíc.
+                </p>
             </div>
             <button
                 type="submit"

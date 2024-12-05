@@ -1,50 +1,17 @@
 import {
+    analyzeFinancialGoal,
     analyzeFinancialRisk,
     analyzeSpendingsReduction,
 } from "../controllers/analysis-controller.js";
 import { getBudgetByIdAndDate } from "../controllers/budget-controller.js";
+import { getFinancialGoalById } from "../controllers/financial-goal-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
 
 const handlePersonalRiskAnalysis = async (req, res) => {
     try {
         const { reserve } = req.body;
 
-        const currDate = new Date();
-        let currMonth = currDate.getMonth() + 1;
-        let currYear = currDate.getFullYear();
-        //Getting avarage monthly spendings/expenses
-        const budgets = [];
-
-        if (currMonth === 1) {
-            currMonth = 12;
-            currYear = currYear - 1;
-        } else {
-            currMonth = currMonth - 1;
-        }
-
-        //Calculating avarage monthly expenses
-        for (let i = 0; i < 6; i++) {
-            let currBudget = null;
-            try {
-                currBudget = await getBudgetByIdAndDate(
-                    req.user._id,
-                    currMonth,
-                    currYear,
-                    true
-                );
-            } catch (error) {}
-
-            if (currBudget) {
-                budgets.push(currBudget);
-            }
-
-            currMonth--;
-
-            if (currMonth < 1) {
-                currMonth = 12;
-                currYear--;
-            }
-        }
+        const budgets = await helperGetBudgets(req.user._id, true);
 
         if (budgets.length === 0) {
             return res.status(400).json({
@@ -117,44 +84,9 @@ const handleFamilyRiskAnalysis = async (req, res) => {
     try {
         const { reserve } = req.body;
 
-        const currDate = new Date();
-        let currMonth = currDate.getMonth() + 1;
-        let currYear = currDate.getFullYear();
-        //Getting avarage monthly spendings/expenses
-        const budgets = [];
-
-        if (currMonth === 1) {
-            currMonth = 12;
-            currYear = currYear - 1;
-        } else {
-            currMonth = currMonth - 1;
-        }
-
         const user = await getUserById(req.user._id);
 
-        //Calculating avarage monthly expenses
-        for (let i = 0; i < 6; i++) {
-            let currBudget = null;
-            try {
-                currBudget = await getBudgetByIdAndDate(
-                    user.familyAccount,
-                    currMonth,
-                    currYear,
-                    false
-                );
-            } catch (error) {}
-
-            if (currBudget) {
-                budgets.push(currBudget);
-            }
-
-            currMonth--;
-
-            if (currMonth < 1) {
-                currMonth = 12;
-                currYear--;
-            }
-        }
+        const budgets = await helperGetBudgets(user.familyAccount, false);
 
         if (budgets.length === 0) {
             return res.status(400).json({
@@ -226,13 +158,80 @@ const handleFamilyRiskAnalysis = async (req, res) => {
 const handlePersonalFinancialGoalAnalysis = async (req, res) => {
     try {
         const { goalId, contribution } = req.body;
-        res.status(200).json({
+        const financialGoal = await getFinancialGoalById(goalId);
+
+        //Check if financial goal is not expired
+        const currDate = new Date();
+        const dueDate = new Date(financialGoal.dueDate);
+        const currYear = currDate.getFullYear();
+        const dueYear = dueDate.getFullYear();
+        const currMonth = currDate.getMonth();
+        const dueMonth = dueDate.getMonth();
+
+        if (
+            dueYear < currYear ||
+            (currYear === dueYear && dueMonth <= currMonth)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Finanční cíl je již propadlý. Zkuste nastavit nový cíl nebo upravit stávající.",
+                data: null,
+            });
+        }
+
+        //Check if goal is not completed
+        if (financialGoal.currentAmount >= financialGoal.neededAmount) {
+            return res.status(400).json({
+                success: false,
+                message: "Finanční cíl je již splněný.",
+                data: null,
+            });
+        }
+
+        const {
+            financialGoalStatus,
+            monthsToAchieveGoal,
+            monthsToAchieveGoalRemaining,
+            expectedMonthlyContribution,
+            monthlyContributionAdjustment,
+            requiredMonthlyContribution,
+        } = await analyzeFinancialGoal(financialGoal, contribution);
+
+        console.log("monthsToAchieveGoal: " + monthsToAchieveGoal);
+
+        let summary = "";
+        if (financialGoalStatus === "Dosáhnete") {
+            summary =
+                "S vaším aktuálním měsíčním příspěvkem dosáhnete cíle včas.";
+        } else {
+            summary = `Cíl nebude dosažen včas. Pro dosažení cíle včas je potřeba zvýšit měsíční příspěvek na ${requiredMonthlyContribution.toFixed(
+                2
+            )} Kč.`;
+        }
+
+        const budgets = await helperGetBudgets(req.user._id, true);
+
+        let spendingReduction = [];
+        if (budgets.length > 0) {
+            spendingReduction = await analyzeSpendingsReduction(budgets);
+        }
+
+        return res.status(200).json({
             success: true,
-            message:
-                "Id finančního gólu: " +
-                goalId +
-                " , měsíční osobní příspěvek: " +
-                contribution,
+            message: "",
+            data: {
+                financialGoalStatus,
+                neededAmount: financialGoal.neededAmount,
+                currentAmount: financialGoal.currentAmount,
+                monthsToAchieveGoal,
+                monthsToAchieveGoalRemaining,
+                expectedMonthlyContribution,
+                requiredMonthlyContribution,
+                monthlyContributionAdjustment,
+                summary,
+                spendingReduction,
+            },
         });
     } catch (error) {
         res.status(error.statusCode || 500).json({
@@ -245,13 +244,80 @@ const handlePersonalFinancialGoalAnalysis = async (req, res) => {
 const handleFamilyFinancialGoalAnalysis = async (req, res) => {
     try {
         const { goalId, contribution } = req.body;
-        res.status(200).json({
+        const financialGoal = await getFinancialGoalById(goalId);
+
+        //Check if financial goal is not expired
+        const currDate = new Date();
+        const dueDate = new Date(financialGoal.dueDate);
+        const currYear = currDate.getFullYear();
+        const dueYear = dueDate.getFullYear();
+        const currMonth = currDate.getMonth();
+        const dueMonth = dueDate.getMonth();
+
+        if (
+            dueYear < currYear ||
+            (currYear === dueYear && dueMonth <= currMonth)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Finanční cíl je již propadlý. Zkuste nastavit nový cíl nebo upravit stávající.",
+                data: null,
+            });
+        }
+
+        //Check if goal is not completed
+        if (financialGoal.currentAmount >= financialGoal.neededAmount) {
+            return res.status(400).json({
+                success: false,
+                message: "Finanční cíl je již splněný.",
+                data: null,
+            });
+        }
+
+        const {
+            financialGoalStatus,
+            monthsToAchieveGoal,
+            monthsToAchieveGoalRemaining,
+            expectedMonthlyContribution,
+            monthlyContributionAdjustment,
+            requiredMonthlyContribution,
+        } = await analyzeFinancialGoal(financialGoal, contribution);
+
+        let summary = "";
+        if (financialGoalStatus === "Dosáhnete") {
+            summary =
+                "S vaším aktuálním měsíčním příspěvkem dosáhnete rodinného cíle včas.";
+        } else {
+            summary = `Rodinný cíl nebude dosažen včas. Pro dosažení cíle včas je potřeba zvýšit měsíční příspěvek na ${requiredMonthlyContribution.toFixed(
+                2
+            )} Kč.`;
+        }
+
+        const user = await getUserById(req.user._id);
+
+        const budgets = await helperGetBudgets(user.familyAccount, false);
+
+        let spendingReduction = [];
+        if (budgets.length > 0) {
+            spendingReduction = await analyzeSpendingsReduction(budgets);
+        }
+
+        return res.status(200).json({
             success: true,
-            message:
-                "Id finančního gólu: " +
-                goalId +
-                " , měsíční měsíční příspěvek: " +
-                contribution,
+            message: "",
+            data: {
+                financialGoalStatus,
+                neededAmount: financialGoal.neededAmount,
+                currentAmount: financialGoal.currentAmount,
+                monthsToAchieveGoal,
+                monthsToAchieveGoalRemaining,
+                expectedMonthlyContribution,
+                requiredMonthlyContribution,
+                monthlyContributionAdjustment,
+                summary,
+                spendingReduction,
+            },
         });
     } catch (error) {
         res.status(error.statusCode || 500).json({
@@ -259,6 +325,47 @@ const handleFamilyFinancialGoalAnalysis = async (req, res) => {
             message: error.message,
         });
     }
+};
+
+const helperGetBudgets = async (id, isPersonal) => {
+    const currDate = new Date();
+    let currMonth = currDate.getMonth() + 1;
+    let currYear = currDate.getFullYear();
+    //Getting avarage monthly spendings/expenses
+    const budgets = [];
+
+    if (currMonth === 1) {
+        currMonth = 12;
+        currYear = currYear - 1;
+    } else {
+        currMonth = currMonth - 1;
+    }
+
+    //Calculating avarage monthly expenses
+    for (let i = 0; i < 6; i++) {
+        let currBudget = null;
+        try {
+            currBudget = await getBudgetByIdAndDate(
+                id,
+                currMonth,
+                currYear,
+                isPersonal
+            );
+        } catch (error) {}
+
+        if (currBudget) {
+            budgets.push(currBudget);
+        }
+
+        currMonth--;
+
+        if (currMonth < 1) {
+            currMonth = 12;
+            currYear--;
+        }
+    }
+
+    return budgets;
 };
 
 export {

@@ -56,7 +56,7 @@ export async function familyRiskAnalysis(
 export async function personalFinancialGoalAnalysis(
     goalId: string,
     contribution: number
-): Promise<{ success: boolean; message: string }> {
+): Promise<{ success: boolean; data: any; message: string }> {
     try {
         const response = await axios.post(`${URL_API}/analysis/personalgoal`, {
             goalId: goalId,
@@ -64,16 +64,27 @@ export async function personalFinancialGoalAnalysis(
         });
 
         return response.data;
-    } catch (error) {
-        console.error("Chyba při volání API:", error);
-        return { success: false, message: "Chyba při volání API:," + error };
+    } catch (error: any) {
+        if (error.response) {
+            return {
+                success: false,
+                message: error.response.data.message || "Chyba při volání API",
+                data: null,
+            };
+        } else {
+            return {
+                success: false,
+                message: "Chyba při volání API: " + error.message,
+                data: null,
+            };
+        }
     }
 }
 
 export async function familyFinancialGoalAnalysis(
     goalId: string,
     contribution: number
-): Promise<{ success: boolean; message: string }> {
+): Promise<{ success: boolean; data: any; message: string }> {
     try {
         const response = await axios.post(`${URL_API}/analysis/familygoal`, {
             goalId: goalId,
@@ -81,8 +92,19 @@ export async function familyFinancialGoalAnalysis(
         });
 
         return response.data;
-    } catch (error) {
-        console.error("Chyba při volání API:", error);
-        return { success: false, message: "Chyba při volání API:," + error };
+    } catch (error: any) {
+        if (error.response) {
+            return {
+                success: false,
+                message: error.response.data.message || "Chyba při volání API",
+                data: null,
+            };
+        } else {
+            return {
+                success: false,
+                message: "Chyba při volání API: " + error.message,
+                data: null,
+            };
+        }
     }
 }
