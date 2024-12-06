@@ -209,7 +209,7 @@ const RiskAnalysis: React.FC<RiskAnalysisProps> = ({ hasFamilyAccount }) => {
                                 <h4 className="text-lg font-semibold text-neutral-700">
                                     Doporučené zvýšení rezervy
                                 </h4>
-                                <p>{riskAnalysisResult.increaseReserve} Kč</p>
+                                <p>+{riskAnalysisResult.increaseReserve} Kč</p>
                             </div>
                             <div className="p-4 border rounded-lg bg-white shadow-md">
                                 <h4 className="text-lg font-semibold text-neutral-700">
@@ -256,7 +256,7 @@ const RiskAnalysis: React.FC<RiskAnalysisProps> = ({ hasFamilyAccount }) => {
                                                 Upravené výdaje
                                             </th>
                                             <th className={tableHeaderClass}>
-                                                Úspora
+                                                Měsíční úspora
                                             </th>
                                         </tr>
                                     </thead>

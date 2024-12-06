@@ -132,8 +132,8 @@ const ScholarshipsPage = () => {
                             <div className="bg-white rounded-lg shadow-lg p-6 w-96">
                                 <h3 className="text-xl font-semibold mb-4">
                                     {updatingScholarship
-                                        ? "Upravit osobní finanční cíl"
-                                        : "Přidat nový osobní finanční cíl"}
+                                        ? "Upravit stipendium"
+                                        : "Přidat nové stipendium"}
                                 </h3>
                                 <ScholarshipForm
                                     onAddScholarship={handleAddScholarship}

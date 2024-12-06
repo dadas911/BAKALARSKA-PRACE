@@ -4,6 +4,7 @@ export interface PersonalBudget {
     month: number;
     year: number;
     income: number;
+    expectedIncome?: number;
     expense: number;
     spendings: string[];
     flexibility: number;

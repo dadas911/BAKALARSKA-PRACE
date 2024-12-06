@@ -37,6 +37,25 @@ export async function createSpendings(
     }
 }
 
+export async function createSmartSpendings(spendingsPerCategory: {
+    [key: string]: number;
+}): Promise<{ success: boolean; data: Spendings[] | null; message: string }> {
+    try {
+        const response = await axios.post(`${URL_API}/spendings/smart`, {
+            spendingsPerCategory: spendingsPerCategory,
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Chyba při volání API:", error);
+        return {
+            success: false,
+            data: null,
+            message: "Chyba při vytváření výdajových plánů",
+        };
+    }
+}
+
 export async function deleteSpendings(id: string): Promise<Spendings | null> {
     try {
         const response = await axios.delete(`${URL_API}/spendings/${id}`);

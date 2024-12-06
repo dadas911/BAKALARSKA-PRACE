@@ -1,22 +1,23 @@
 import { useState } from "react";
 import { Category } from "../../types/category";
-import { createPersonalBudget } from "../../api/personal-budget-api";
 import { PersonalBudget } from "../../types/personal-budget";
 
 interface PersonalBudgetFormProps {
+    initialBudget?: PersonalBudget;
     month: number;
     year: number;
     familyCategories: Category[];
     onCreateBudget: (newBudget: any) => void;
-    refresh: () => void;
+    onRefresh: () => void;
 }
 
 const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
+    initialBudget,
     month,
     year,
     familyCategories,
     onCreateBudget,
-    refresh,
+    onRefresh,
 }) => {
     let expenseCategories = familyCategories.filter(
         (category) => category.isExpense === true
@@ -47,6 +48,7 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
         month: month,
         year: year,
         income: 0,
+        expectedIncome: 0,
         expense: 0,
         spendings: [],
         flexibility: 1,
@@ -54,7 +56,7 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
     };
 
     const [newPersonalBudget, setNewPersonalBudget] = useState<PersonalBudget>(
-        defaultPersonalBudget
+        initialBudget || defaultPersonalBudget
     );
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,14 +82,8 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const response = await createPersonalBudget(newPersonalBudget);
-        if (response) {
-            onCreateBudget(response);
-            setNewPersonalBudget(defaultPersonalBudget);
-            refresh();
-        } else {
-            alert("Chyba při vytváření rozpočtu");
-        }
+        onCreateBudget(newPersonalBudget);
+        onRefresh();
     };
 
     return (
@@ -114,6 +110,25 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
                     required
                     className="w-full px-3 py-2 border rounded"
                     placeholder="Zadejte název osobního rozpočtu"
+                />
+            </div>
+
+            <div className="mb-4">
+                <label
+                    htmlFor="name"
+                    className="block text-sm font-medium mb-1"
+                >
+                    Očekávaný příjem tento měsíc:
+                </label>
+                <input
+                    type="number"
+                    name="expectedIncome"
+                    value={newPersonalBudget.expectedIncome}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border rounded"
+                    placeholder="Zadejte očekávaný měsíční příjem"
+                    min={0}
                 />
             </div>
 
@@ -163,7 +178,7 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
                     onChange={handleInputChange}
                     min="0"
                     max="1"
-                    step="0.1"
+                    step="0.01"
                     required
                     className="w-full px-3 py-2 border rounded"
                 />
@@ -182,8 +197,10 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
                     </label>
                     <input
                         type="number"
-                        name={`weight-${category.name}`}
-                        value={newPersonalBudget.weight[category.name]}
+                        name={`weight-${category._id}`}
+                        value={
+                            newPersonalBudget.weight[category._id || "no id"]
+                        }
                         onChange={handleInputChange}
                         min="0"
                         max="1"
@@ -198,7 +215,7 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
                 type="submit"
                 className="w-full bg-green-500 text-white py-2 rounded-lg mt-6 hover:bg-green-600 transition"
             >
-                Vytvořit rozpočet
+                {initialBudget ? "Upravit" : "Vytvořit"} rozpočet
             </button>
         </form>
     );

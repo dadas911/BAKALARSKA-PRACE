@@ -213,7 +213,7 @@ const handlePersonalFinancialGoalAnalysis = async (req, res) => {
         const budgets = await helperGetBudgets(req.user._id, true);
 
         let spendingReduction = [];
-        if (budgets.length > 0) {
+        if (budgets.length > 0 && financialGoalStatus !== "Dosáhnete") {
             spendingReduction = await analyzeSpendingsReduction(budgets);
         }
 
@@ -299,7 +299,7 @@ const handleFamilyFinancialGoalAnalysis = async (req, res) => {
         const budgets = await helperGetBudgets(user.familyAccount, false);
 
         let spendingReduction = [];
-        if (budgets.length > 0) {
+        if (budgets.length > 0 && financialGoalStatus !== "Dosáhnete") {
             spendingReduction = await analyzeSpendingsReduction(budgets);
         }
 

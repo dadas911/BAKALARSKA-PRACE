@@ -38,8 +38,16 @@ const handleGetPersonalBudgetById = async (req, res) => {
 const handleCreatePersonalBudget = async (req, res) => {
     try {
         const user = req.user._id;
-        const { name, month, year, income, expense, flexibility, weight } =
-            req.body;
+        const {
+            name,
+            month,
+            year,
+            income,
+            expectedIncome,
+            expense,
+            flexibility,
+            weight,
+        } = req.body;
         let prevMonth;
         let prevYear;
         let scholarships = [];
@@ -77,6 +85,7 @@ const handleCreatePersonalBudget = async (req, res) => {
             month,
             year,
             income,
+            expectedIncome,
             expense,
             flexibility,
             weight,

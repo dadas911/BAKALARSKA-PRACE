@@ -6,6 +6,7 @@ import {
     getHasFamilyBudget,
 } from "../api/family-budget-api";
 import {
+    createSmartSpendings,
     createSpendings,
     deleteSpendings,
     getFamilySpendingsByMonth,
@@ -33,6 +34,7 @@ import FamilyBudgetForm from "../components/forms/FamilyBudgetForm";
 import FamilyAccountForm from "../components/forms/FamilyAccountForm";
 import SpendingsForm from "../components/forms/SpendingsForm";
 import { checkUserRole } from "../api/user-api";
+import SmartSpendingsForm from "../components/forms/SmartSpendingsForm";
 
 const Family = () => {
     const [refresh, setRefresh] = useState(false);
@@ -65,6 +67,9 @@ const Family = () => {
 
     const [isProvider, setIsProvider] = useState<boolean>(false);
     const [isFamilyMember, setIsFamilyMember] = useState<boolean>(false);
+
+    const [isSmartSpendingsModalOpen, setIsSmartSpendingsModalOpen] =
+        useState<boolean>(false);
 
     const getFamilyBudgetInfo = async () => {
         const familyAccountStatus = await getHasFamilyAccount();
@@ -183,6 +188,33 @@ const Family = () => {
         setRefresh((prev) => !prev);
     };
 
+    const handleOpenSmartSpendingsModal = () => {
+        setIsSmartSpendingsModalOpen(true);
+    };
+
+    const handleCloseSmartSpendingsModal = () => {
+        setIsSmartSpendingsModalOpen(false);
+    };
+
+    const handleCalculateSmartSpendings = async (spendingsPerCategory: {
+        [key: string]: number;
+    }) => {
+        handleCloseSmartSpendingsModal();
+        const responseSpendings = await createSmartSpendings(
+            spendingsPerCategory
+        );
+        if (responseSpendings.success) {
+            if (responseSpendings.data) {
+                const newSpendings = familySpendings.concat(
+                    responseSpendings.data
+                );
+                setFamilySpendings(newSpendings);
+            }
+        } else {
+            alert(responseSpendings.message);
+        }
+    };
+
     useEffect(() => {
         const getData = async () => {
             setLoading(true);
@@ -261,18 +293,26 @@ const Family = () => {
                 </h3>
             )}
             {(isProvider || isFamilyMember) && (
-                <button
-                    onClick={() => handleOpenSpendingsModal()}
-                    className="bg-green-500 text-white px-4 py-2 rounded mt-4"
-                >
-                    Přidat rodinný plán výdajů
-                </button>
+                <div className="flex w-full space-x-4 mt-4">
+                    <button
+                        onClick={() => handleOpenSpendingsModal()}
+                        className="flex-1 bg-green-500 text-white px-4 py-2 rounded"
+                    >
+                        Přidat rodinný plán výdajů
+                    </button>
+                    <button
+                        onClick={() => handleOpenSmartSpendingsModal()}
+                        className="flex-1 bg-blue-500 text-white px-4 py-2 rounded"
+                    >
+                        Použít inteligentní vzorec
+                    </button>
+                </div>
             )}
 
             {isSpendingsModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-                        <h3 className="text-xl font-semibold mb-4">
+                        <h3 className="text-xl font-semibold mb-4 text-center">
                             {updatingSpendings
                                 ? "Upravit plán výdajů"
                                 : "Přidat nový plán výdajů"}
@@ -293,6 +333,26 @@ const Family = () => {
                 </div>
             )}
 
+            {isSmartSpendingsModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                        <h3 className="text-xl font-semibold mb-4 text-center">
+                            Inteligentní plán výdajů
+                        </h3>
+                        <SmartSpendingsForm
+                            familyCategories={familyCategories}
+                            onCalculateSpendings={handleCalculateSmartSpendings}
+                        />
+                        <button
+                            onClick={handleCloseSmartSpendingsModal}
+                            className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+                        >
+                            Zavřít
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {familyCategories.length > 0 ? (
                 <FamilyCategory
                     familyCategories={familyCategories}
@@ -302,7 +362,7 @@ const Family = () => {
                 />
             ) : (
                 <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
-                    Transakce nejsou k dispozici.
+                    Kategorie nejsou k dispozici.
                 </h3>
             )}
 

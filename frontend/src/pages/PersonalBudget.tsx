@@ -17,6 +17,8 @@ import { PersonalBudget } from "../types/personal-budget";
 import {
     getPersonalBudgetByMonth,
     getHasPersonalBudget,
+    updatePersonalBudget,
+    createPersonalBudget,
 } from "../api/personal-budget-api";
 import { Category } from "../types/category";
 import { getAllFamilyCategories } from "../api/category-api";
@@ -58,6 +60,16 @@ const Personal = () => {
     const [updatingSpendings, setUpdatingSpendings] =
         useState<Spendings | null>(null);
 
+    const [isEditBudgetOpen, setIsEditBudgetOpen] = useState(false);
+
+    const handleOpenEditBudget = () => {
+        setIsEditBudgetOpen(true);
+    };
+
+    const handleCloseEditBudget = () => {
+        setIsEditBudgetOpen(false);
+    };
+
     const getPersonalBudgetInfo = async () => {
         const personalBudgetStatus = await getHasPersonalBudget(month, year);
         setHasPersonalBudget(personalBudgetStatus);
@@ -74,16 +86,6 @@ const Personal = () => {
         const category = await getAllFamilyCategories();
         setFamilyCategories(category);
     };
-
-    useEffect(() => {
-        const getData = async () => {
-            setLoading(true);
-            await getPersonalBudgetInfo();
-            setLoading(false);
-        };
-        console.log("use effetc personal budget");
-        getData();
-    }, [month, year, refresh]);
 
     const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setMonth(Number(e.target.value));
@@ -183,13 +185,49 @@ const Personal = () => {
         }
     };
 
-    const handleCreatePersonalBudget = (newPersonalBudget: PersonalBudget) => {
-        setPersonalBudget(newPersonalBudget);
+    const handleCreatePersonalBudget = async (
+        newPersonalBudget: PersonalBudget
+    ) => {
+        try {
+            const response = await createPersonalBudget(newPersonalBudget);
+            if (response) {
+                console.log("personalBudget response");
+                setPersonalBudget(response);
+                handleRefresh();
+            }
+        } catch (error) {
+            console.log("Error creating personal budget: " + error);
+        }
+    };
+
+    const handleUpdatePersonalBudget = async (
+        updatedBudget: PersonalBudget
+    ) => {
+        try {
+            const updated = await updatePersonalBudget(
+                updatedBudget._id || "No id",
+                updatedBudget
+            );
+            setPersonalBudget(updated);
+            handleCloseEditBudget();
+        } catch (error) {
+            console.error("Error updating personal budget:", error);
+        }
     };
 
     const handleRefresh = () => {
         setRefresh((prev) => !prev);
     };
+
+    useEffect(() => {
+        const getData = async () => {
+            setLoading(true);
+            await getPersonalBudgetInfo();
+            setLoading(false);
+        };
+        console.log("use effect on personal budget");
+        getData();
+    }, [month, year, refresh]);
 
     if (loading) {
         return <Loading />;
@@ -202,7 +240,20 @@ const Personal = () => {
                 year={year}
                 familyCategories={familyCategories}
                 onCreateBudget={handleCreatePersonalBudget}
-                refresh={handleRefresh}
+                onRefresh={handleRefresh}
+            />
+        );
+    }
+
+    if (isEditBudgetOpen && personalBudget) {
+        return (
+            <PersonalBudgetForm
+                initialBudget={personalBudget}
+                month={month}
+                year={year}
+                familyCategories={familyCategories}
+                onCreateBudget={handleUpdatePersonalBudget}
+                onRefresh={handleRefresh}
             />
         );
     }
@@ -292,6 +343,12 @@ const Personal = () => {
                 className="bg-green-500 text-white px-4 py-2 rounded mt-4"
             >
                 Přidat transakci
+            </button>
+            <button
+                onClick={handleOpenEditBudget}
+                className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+            >
+                Upravit rozpočet
             </button>
 
             {isTransactionModalOpen && (
