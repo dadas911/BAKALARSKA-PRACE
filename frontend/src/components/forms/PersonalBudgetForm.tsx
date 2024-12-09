@@ -28,6 +28,10 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
         {}
     );
 
+    if (initialBudget) {
+        console.log("Initial Budget: " + JSON.stringify(initialBudget));
+    }
+
     const monthNames = [
         "Leden",
         "Únor",
@@ -199,7 +203,7 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
                         type="number"
                         name={`weight-${category._id}`}
                         value={
-                            newPersonalBudget.weight[category._id || "no id"]
+                            newPersonalBudget.weight[category.name || "no id"]
                         }
                         onChange={handleInputChange}
                         min="0"

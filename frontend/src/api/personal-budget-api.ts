@@ -64,6 +64,7 @@ export async function updatePersonalBudget(
     budget: PersonalBudget
 ): Promise<PersonalBudget | null> {
     try {
+        console.log("Api budget: " + JSON.stringify(budget));
         const response = await axios.put(
             `${URL_API}/personal-budgets/${id}`,
             budget

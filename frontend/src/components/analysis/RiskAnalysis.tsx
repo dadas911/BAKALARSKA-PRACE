@@ -307,7 +307,6 @@ const RiskAnalysis: React.FC<RiskAnalysisProps> = ({ hasFamilyAccount }) => {
                                     </tbody>
                                 </table>
 
-                                {/* Pokud jsou tipy, vykreslíme je jako seznam */}
                                 {riskAnalysisResult.spendingReduction.some(
                                     (item) => item.tips.length > 0
                                 ) && (

@@ -1,10 +1,16 @@
 import {
+    analyzeExceededSpendings,
     analyzeFinancialGoal,
     analyzeFinancialRisk,
+    analyzeIncomeVsExpenses,
+    analyzeSpendingsDistribution,
+    analyzeTips,
     analyzeSpendingsReduction,
 } from "../controllers/analysis-controller.js";
 import { getBudgetByIdAndDate } from "../controllers/budget-controller.js";
+import { getCategoryById } from "../controllers/category-controller.js";
 import { getFinancialGoalById } from "../controllers/financial-goal-controller.js";
+import { getSpendingsById } from "../controllers/spendings-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
 
 const handlePersonalRiskAnalysis = async (req, res) => {
@@ -368,9 +374,65 @@ const helperGetBudgets = async (id, isPersonal) => {
     return budgets;
 };
 
+const handlePersonalBudgetAnalysis = async (req, res) => {
+    try {
+        //Getting previous months budget
+        const currDate = new Date();
+        const currMonth = currDate.getMonth() + 1;
+        const currYear = currDate.getFullYear();
+        let prevMonth = 0;
+        let prevYear = 0;
+        if (currMonth === 1) {
+            prevMonth = 12;
+            prevYear = currYear - 1;
+        } else {
+            prevMonth = currMonth - 1;
+            prevYear = currYear;
+        }
+
+        const budget = await getBudgetByIdAndDate(
+            req.user._id,
+            prevMonth,
+            prevYear,
+            true
+        );
+
+        //Get income/expense analysis
+        const incomeVsExpenses = await analyzeIncomeVsExpenses(budget);
+
+        //Get exceeded spendings analysis
+        const exceededSpendings = await analyzeExceededSpendings(budget);
+
+        //Get spendingsDistribution analysis
+        const spendingsDistribution = await analyzeSpendingsDistribution(
+            budget
+        );
+
+        //Get tips for saving per category
+        const tips = await analyzeTips();
+
+        return res.status(200).json({
+            success: true,
+            message: "",
+            data: {
+                incomeVsExpenses,
+                exceededSpendings,
+                spendingsDistribution,
+                tips,
+            },
+        });
+    } catch (error) {
+        res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 export {
     handlePersonalFinancialGoalAnalysis,
     handleFamilyFinancialGoalAnalysis,
     handlePersonalRiskAnalysis,
     handleFamilyRiskAnalysis,
+    handlePersonalBudgetAnalysis,
 };

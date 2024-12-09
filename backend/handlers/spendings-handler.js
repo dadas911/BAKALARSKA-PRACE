@@ -323,7 +323,7 @@ const helperCreateNotification = async (
     isPersonal,
     userId
 ) => {
-    if (spentAmount >= totalAmount) {
+    if (spentAmount > totalAmount) {
         const currCategory = await getCategoryById(category);
         if (isPersonal) {
             await createNotification({

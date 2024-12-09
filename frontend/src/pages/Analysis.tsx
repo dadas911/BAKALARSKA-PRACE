@@ -10,6 +10,7 @@ import { getHasFamilyAccount } from "../api/family-account-api";
 import { getHasFamilyBudget } from "../api/family-budget-api";
 import RiskAnalysis from "../components/analysis/RiskAnalysis";
 import FinancialGoalAnalysis from "../components/analysis/FinancialGoalAnalysis";
+import BudgetAnalysis from "../components/analysis/BudgetAnalysis";
 
 const Analysis = () => {
     const [hasFamilyAccount, setHasFamilyAccount] = useState<boolean>(false);
@@ -72,6 +73,7 @@ const Analysis = () => {
                 familyFinancialGoals={familyFinancialGoals}
                 hasFamilyAccount={hasFamilyAccount}
             />
+            <BudgetAnalysis hasFamilyAccount={hasFamilyAccount} />
         </div>
     );
 };

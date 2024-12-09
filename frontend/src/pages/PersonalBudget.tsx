@@ -225,7 +225,6 @@ const Personal = () => {
             await getPersonalBudgetInfo();
             setLoading(false);
         };
-        console.log("use effect on personal budget");
         getData();
     }, [month, year, refresh]);
 

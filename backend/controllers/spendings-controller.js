@@ -67,7 +67,7 @@ const updateSpendings = async (id, newData) => {
         );
 
         //Spent amount >= total amount -> generate notification
-        if (updatedData.spentAmount >= updatedData.totalAmount) {
+        if (updatedData.spentAmount > updatedData.totalAmount) {
             const budget = await getBudgetById(updatedData.budget);
             //Personal spending
             if (budget.__t === "PersonalBudget") {
