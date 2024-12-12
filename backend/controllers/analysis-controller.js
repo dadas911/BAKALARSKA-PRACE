@@ -20,7 +20,6 @@ const savingsTipsPerCategory = {
     Oblečení: [
         "Kupujte oblečení během sezónních výprodejů a slev.",
         "Zvažte nákup second-hand oblečení nebo výměnné akce.",
-        "Místo častého nákupu nových kousků, se zaměřte na kvalitní a nadčasové kousky, které vydrží dlouho.",
     ],
     Zábava: [
         "Vyhledávat bezplatné nebo levnější aktivity.",
@@ -33,7 +32,6 @@ const savingsTipsPerCategory = {
         "Využívejte slevy pro studenty na různé služby a produkty.",
     ],
     Ostatní: [
-        "Přehodnoťte své pravidelné platby a zrušte nepotřebné předplatné a služby.",
         "Sledujte svoje výdaje v této kategorii a hledejte možnosti, jak je omezit.",
         "Zaměřte se na nákupy pouze nezbytných věcí, pokud to není urgentní, počkejte na výprodeje nebo slevy.",
     ],
@@ -183,22 +181,22 @@ const analyzeIncomeVsExpenses = async (budget) => {
     if (totalExpenses > totalIncome) {
         status = "Výdaje jsou větší než příjmy";
         summary =
-            "Výdaje překračují příjmy, což znamená, že se dostáváte do finančního deficitu. Toto může vést dlouhodobě k finančním problémům";
+            "Výdaje překračují příjmy, což znamená, že se dostáváte do finančního deficitu. Toto může vést dlouhodobě k finančním problémům.";
         recommendation =
-            "Zaměřte se na omezení výdajů v méně prioritních kategoriích nebo zvažte zvýšení příjmů";
+            "Zaměřte se na omezení výdajů v méně prioritních kategoriích nebo zvažte zvýšení příjmů.";
     }
     //Balance is < 15% of income -> warning status
     else if (balance < (totalIncome / 100) * 15) {
         status = "Těsný rozpočet";
         summary =
-            "Vaše výdaje se téměř rovnají příjmům, což znamená, že máte omezené volné finance";
+            "Vaše výdaje se téměř rovnají příjmům, což znamená, že máte omezené volné finance.";
         recommendation =
             "Snažte se ušetřit v méně důležitých oblastech, abyste vytvořili větší rezervu a uvolnili více peněz.";
     }
     //Balance is more than 15% than income -> good status
     else {
         status = "Výdaje pod kontrolou";
-        summary = "Váš rozpočet jsou pod kontrolou a máte přebytek financí";
+        summary = "Váš rozpočet jsou pod kontrolou a máte přebytek financí.";
         recommendation =
             "Odložte přebytek do rezervy nebo ho investujte do dlouhodobých cílů.";
     }
@@ -243,13 +241,13 @@ const analyzeExceededSpendings = async (budget) => {
     //Check if some spendings were exceeded
     if (result.length > 0) {
         status = "Překročení některých výdajových plánů";
-        summary = "Výdaje v několika kategoriích překročily plán";
+        summary = "Výdaje v několika kategoriích překročily plán.";
         recommendation =
-            "Zaměřte se na tyto kategorie a hledejte možnosti úspor. Můžete zvážit nastavení jiného limitu";
+            "Zaměřte se na tyto kategorie a hledejte možnosti úspor. Můžete zvážit nastavení jiného limitu.";
     } else {
         status = "Žádné překročení";
-        summary = "Žádný plán výdajů nebyl překročen, vše je v rámci plánu";
-        recommendation = "Skvěle! Pokračujte v efektivní správě rozpočtu";
+        summary = "Žádný plán výdajů nebyl překročen, vše je v rámci plánu.";
+        recommendation = "Skvěle! Pokračujte v efektivní správě rozpočtu.";
     }
 
     return { exceededSpendings: result, status, summary, recommendation };

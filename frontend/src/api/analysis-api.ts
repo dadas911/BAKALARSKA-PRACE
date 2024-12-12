@@ -115,7 +115,7 @@ export async function personalBudgetAnalysis(): Promise<{
     message: string;
 }> {
     try {
-        const response = await axios.post(`${URL_API}/analysis/personalBudget`);
+        const response = await axios.post(`${URL_API}/analysis/personalbudget`);
         return response.data;
     } catch (error: any) {
         if (error.response) {
@@ -140,7 +140,7 @@ export async function familyBudgetAnalysis(): Promise<{
     message: string;
 }> {
     try {
-        const response = await axios.post(`${URL_API}/analysis/familyBudget`);
+        const response = await axios.post(`${URL_API}/analysis/familybudget`);
 
         return response.data;
     } catch (error: any) {

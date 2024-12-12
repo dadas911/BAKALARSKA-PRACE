@@ -5,6 +5,7 @@ import {
     handlePersonalRiskAnalysis,
     handleFamilyRiskAnalysis,
     handlePersonalBudgetAnalysis,
+    handleFamilyBudgetAnalysis,
 } from "../handlers/analysis-handler.js";
 import checkToken from "../middleware/checkToken.js";
 
@@ -17,5 +18,6 @@ router
     .post(checkToken, handlePersonalFinancialGoalAnalysis);
 router.route("/familygoal").post(checkToken, handleFamilyFinancialGoalAnalysis);
 router.route("/personalbudget").post(checkToken, handlePersonalBudgetAnalysis);
+router.route("/familybudget").post(checkToken, handleFamilyBudgetAnalysis);
 
 export default router;

@@ -429,10 +429,68 @@ const handlePersonalBudgetAnalysis = async (req, res) => {
     }
 };
 
+const handleFamilyBudgetAnalysis = async (req, res) => {
+    try {
+        //Getting previous months budget
+        const currDate = new Date();
+        const currMonth = currDate.getMonth() + 1;
+        const currYear = currDate.getFullYear();
+        let prevMonth = 0;
+        let prevYear = 0;
+        if (currMonth === 1) {
+            prevMonth = 12;
+            prevYear = currYear - 1;
+        } else {
+            prevMonth = currMonth - 1;
+            prevYear = currYear;
+        }
+
+        const user = await getUserById(req.user._id);
+
+        const budget = await getBudgetByIdAndDate(
+            user.familyAccount,
+            prevMonth,
+            prevYear,
+            false
+        );
+
+        //Get income/expense analysis
+        const incomeVsExpenses = await analyzeIncomeVsExpenses(budget);
+
+        //Get exceeded spendings analysis
+        const exceededSpendings = await analyzeExceededSpendings(budget);
+
+        //Get spendingsDistribution analysis
+        const spendingsDistribution = await analyzeSpendingsDistribution(
+            budget
+        );
+
+        //Get tips for saving per category
+        const tips = await analyzeTips();
+
+        return res.status(200).json({
+            success: true,
+            message: "",
+            data: {
+                incomeVsExpenses,
+                exceededSpendings,
+                spendingsDistribution,
+                tips,
+            },
+        });
+    } catch (error) {
+        res.status(error.statusCode || 500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 export {
     handlePersonalFinancialGoalAnalysis,
     handleFamilyFinancialGoalAnalysis,
     handlePersonalRiskAnalysis,
     handleFamilyRiskAnalysis,
     handlePersonalBudgetAnalysis,
+    handleFamilyBudgetAnalysis,
 };

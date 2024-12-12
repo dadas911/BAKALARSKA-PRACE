@@ -4,6 +4,7 @@ import {
     familyBudgetAnalysis,
     personalBudgetAnalysis,
 } from "../../api/analysis-api";
+import { getFamilyBudgetByMonth } from "../../api/family-budget-api";
 
 const buttonClass =
     "px-6 py-2 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 transition w-full sm:w-auto";
@@ -63,6 +64,8 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
     const [message, setMessage] = useState<string>("");
     const [hasPrevMonthBudget, setHasPrevMonthBudget] =
         useState<boolean>(false);
+    const [hasPrevMonthFamilyBudget, setHasPrevMonthFamilyBudget] =
+        useState<boolean>(false);
 
     const [budgetAnalysisResult, setBudgetAnalysisResult] =
         useState<budgetAnalysisResult | null>(null);
@@ -80,17 +83,6 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                     tips,
                 } = response.data;
 
-                console.log(
-                    "Income vs expenses: " + JSON.stringify(incomeVsExpenses)
-                );
-                console.log(
-                    "exceededSpendings: " + JSON.stringify(exceededSpendings)
-                );
-                console.log(
-                    "spendingDistibution " +
-                        JSON.stringify(spendingsDistribution)
-                );
-                console.log("Tips: " + JSON.stringify(tips));
                 setBudgetAnalysisResult({
                     incomeVsExpenses,
                     exceededSpendings,
@@ -149,6 +141,18 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
             } else {
                 setHasPrevMonthBudget(false);
             }
+
+            if (hasFamilyAccount) {
+                const prevFamilyBudget = await getFamilyBudgetByMonth(
+                    prevMonth,
+                    prevYear
+                );
+                if (prevFamilyBudget) {
+                    setHasPrevMonthFamilyBudget(true);
+                } else {
+                    setHasPrevMonthFamilyBudget(false);
+                }
+            }
         };
         getData();
     }, []);
@@ -161,18 +165,18 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                 </h2>
                 <div className="flex flex-col gap-3">
                     <p className="text-neutral-600 leading-relaxed">
-                        <strong>Analýza rozpočtu</strong> vám umožní detailně
-                        zhodnotit, jak efektivně spravujete své měsíční příjmy a
-                        výdaje. Pomůže vám zjistit, zda se vaše výdaje drží v
-                        rámci stanoveného rozpočtu, a identifikovat oblasti, kde
-                        by bylo možné ušetřit. Ať už se jedná o osobní rozpočet
-                        nebo rodinné finance, analýza vám ukáže, zda je vaše
-                        rozdělení financí vyvážené a v souladu s vašimi cíli.
-                        Pokud ne, aplikace vám nabídne rady, jak v různých
-                        kategoriích ušetřit. Tato analýza vám poskytne jasný
-                        přehled o vašich finančních návycích, pomůže vám vyhnout
-                        se zbytečným výdajům a usnadní dosažení lepší finanční
-                        situace.
+                        <strong>Analýza rozpočtu za minulý měsíc</strong> vám
+                        umožní detailně zhodnotit, jak efektivně spravujete své
+                        měsíční příjmy a výdaje. Pomůže vám zjistit, zda se vaše
+                        výdaje drží v rámci stanoveného rozpočtu, a
+                        identifikovat oblasti, kde by bylo možné ušetřit. Ať už
+                        se jedná o osobní rozpočet nebo rodinné finance, analýza
+                        vám ukáže, zda je vaše rozdělení financí vyvážené a v
+                        souladu s vašimi cíli. Pokud ne, aplikace vám nabídne
+                        rady, jak v různých kategoriích ušetřit. Tato analýza
+                        vám poskytne jasný přehled o vašich finančních návycích,
+                        pomůže vám vyhnout se zbytečným výdajům a usnadní
+                        dosažení lepší finanční situace.
                     </p>
                     {hasPrevMonthBudget ? (
                         <div className="flex flex-col sm:flex-row justify-center gap-8 mt-6">
@@ -182,7 +186,7 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                             >
                                 Analýza osobního rozpočtu
                             </button>
-                            {hasFamilyAccount && (
+                            {hasFamilyAccount && hasPrevMonthFamilyBudget && (
                                 <button
                                     className={buttonClass}
                                     onClick={() => handleAnalyzeBudget(false)}
@@ -199,18 +203,16 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                     )}
                 </div>
                 {budgetAnalysisResult && (
-                    <div className="mt-8 p-4 border-t-2 border-neutral-200">
+                    <div className="mt-8 p-4 border-t-2 border-neutral-200 space-y-8">
                         <h3 className="text-xl font-semibold mb-4 text-center">
-                            Výsledek analýzy rozpočtu
+                            Výsledek analýzy rozpočtu za minulý měsíc
                         </h3>
 
-                        {/* Příjmy vs Výdaje */}
                         <div className="mt-6 p-4 border rounded-lg bg-white shadow-md">
                             <h4 className="text-lg font-semibold text-neutral-700 text-center mb-4">
                                 Příjmy vs Výdaje
                             </h4>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                {/* Stav */}
                                 <div className={bubbleClass}>
                                     <h5 className={headerClass}>Stav</h5>
                                     <p
@@ -222,14 +224,15 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                                                 : dangerClass
                                         }
                                     >
-                                        {
-                                            budgetAnalysisResult
-                                                .incomeVsExpenses.status
-                                        }
+                                        <strong>
+                                            {
+                                                budgetAnalysisResult
+                                                    .incomeVsExpenses.status
+                                            }
+                                        </strong>
                                     </p>
                                 </div>
 
-                                {/* Celkové příjmy */}
                                 <div className={bubbleClass}>
                                     <h5 className={headerClass}>
                                         Celkové příjmy
@@ -243,7 +246,6 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                                     </p>
                                 </div>
 
-                                {/* Celkové výdaje */}
                                 <div className={bubbleClass}>
                                     <h5 className={headerClass}>
                                         Celkové výdaje
@@ -257,10 +259,16 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                                     </p>
                                 </div>
 
-                                {/* Bilance */}
                                 <div className={bubbleClass}>
-                                    <h5 className={headerClass}>Bilance</h5>
-                                    <p>
+                                    <h5 className={headerClass}>Zůstatek</h5>
+                                    <p
+                                        className={
+                                            budgetAnalysisResult
+                                                .incomeVsExpenses.balance >= 0
+                                                ? successClass
+                                                : dangerClass
+                                        }
+                                    >
                                         {
                                             budgetAnalysisResult
                                                 .incomeVsExpenses.balance
@@ -270,7 +278,6 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                                 </div>
                             </div>
 
-                            {/* Shrnutí a Doporučení vedle sebe */}
                             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div className={bubbleClass}>
                                     <h5 className={headerClass}>Shrnutí</h5>
@@ -294,54 +301,118 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                             </div>
                         </div>
 
-                        {/* Exceeded Spendings */}
                         <div className={bubbleClass}>
                             <h4 className="text-lg font-semibold text-neutral-700 text-center mb-4">
-                                Exceeded Spendings
+                                Překročené výdajové plány
                             </h4>
+
                             {budgetAnalysisResult.exceededSpendings
                                 .exceededSpendings.length > 0 ? (
-                                <div className="space-y-6">
-                                    {budgetAnalysisResult.exceededSpendings.exceededSpendings.map(
-                                        (item, index) => (
-                                            <div
-                                                key={index}
-                                                className={bubbleClass}
-                                            >
-                                                <h5 className={headerClass}>
-                                                    {item.name}
-                                                </h5>
-                                                <p className={textClass}>
-                                                    Kategorie: {item.category}
-                                                </p>
-                                                <p className={textClass}>
-                                                    Celková částka:{" "}
-                                                    {item.totalAmount} Kč
-                                                </p>
-                                                <p className={textClass}>
-                                                    Prospentá částka:{" "}
-                                                    {item.spentAmount} Kč
-                                                </p>
-                                                <p className={textClass}>
-                                                    Rozdíl: {item.difference} Kč
-                                                </p>
-                                            </div>
-                                        )
-                                    )}
+                                <div>
+                                    <table className="min-w-full table-auto">
+                                        <thead>
+                                            <tr>
+                                                <th
+                                                    className={tableHeaderClass}
+                                                >
+                                                    Název
+                                                </th>
+                                                <th
+                                                    className={tableHeaderClass}
+                                                >
+                                                    Kategorie
+                                                </th>
+                                                <th
+                                                    className={tableHeaderClass}
+                                                >
+                                                    Celková částka
+                                                </th>
+                                                <th
+                                                    className={tableHeaderClass}
+                                                >
+                                                    Utracená částka
+                                                </th>
+                                                <th
+                                                    className={tableHeaderClass}
+                                                >
+                                                    Překročeno
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {budgetAnalysisResult.exceededSpendings.exceededSpendings.map(
+                                                (item, index) => (
+                                                    <tr
+                                                        key={index}
+                                                        className="hover:bg-neutral-100"
+                                                    >
+                                                        <td
+                                                            className={
+                                                                tableCellClass
+                                                            }
+                                                        >
+                                                            {item.name}
+                                                        </td>
+                                                        <td
+                                                            className={
+                                                                tableCellClass
+                                                            }
+                                                        >
+                                                            {item.category}
+                                                        </td>
+                                                        <td
+                                                            className={
+                                                                tableCellClass
+                                                            }
+                                                        >
+                                                            {item.totalAmount}{" "}
+                                                            Kč
+                                                        </td>
+                                                        <td
+                                                            className={
+                                                                tableCellClass
+                                                            }
+                                                        >
+                                                            {item.spentAmount}{" "}
+                                                            Kč
+                                                        </td>
+                                                        <td
+                                                            className={
+                                                                tableCellClass +
+                                                                " " +
+                                                                dangerClass
+                                                            }
+                                                        >
+                                                            {item.difference} Kč
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            )}
+                                        </tbody>
+                                    </table>
                                 </div>
                             ) : (
-                                <p className={textClass}>
+                                <p className={"text-center " + successClass}>
                                     Žádné překročené výdaje.
                                 </p>
                             )}
 
                             <div className="mt-4 p-4 border rounded-lg bg-white shadow-md">
                                 <h5 className={headerClass}>Stav</h5>
-                                <p>
-                                    {
+                                <p
+                                    className={
                                         budgetAnalysisResult.exceededSpendings
-                                            .status
+                                            .status === "Žádné překročení"
+                                            ? successClass
+                                            : dangerClass
                                     }
+                                >
+                                    <strong>
+                                        {
+                                            budgetAnalysisResult
+                                                .exceededSpendings.status
+                                        }
+                                    </strong>
                                 </p>
                             </div>
 
@@ -369,7 +440,6 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                             </div>
                         </div>
 
-                        {/* Rozdělení výdajů - tabulka */}
                         <div className={bubbleClass}>
                             <h4 className="text-lg font-semibold text-neutral-700 text-center mb-4">
                                 Rozdělení výdajů
@@ -381,7 +451,7 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                                             Kategorie
                                         </th>
                                         <th className={tableHeaderClass}>
-                                            Procento příjmu
+                                            Procento z příjmů
                                         </th>
                                         <th className={tableHeaderClass}>
                                             Stav
@@ -402,7 +472,17 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                                                     {item.incomePercentage}%
                                                 </td>
                                                 <td className={tableCellClass}>
-                                                    {item.status}
+                                                    <strong
+                                                        className={
+                                                            item.status.includes(
+                                                                "překročen"
+                                                            )
+                                                                ? dangerClass
+                                                                : successClass
+                                                        }
+                                                    >
+                                                        {item.status}
+                                                    </strong>
                                                 </td>
                                             </tr>
                                         )
@@ -413,11 +493,22 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div className={bubbleClass}>
                                     <h5 className={headerClass}>Shrnutí</h5>
-                                    <p>
-                                        {
-                                            budgetAnalysisResult
-                                                .spendingsDistribution.summary
+                                    <p
+                                        className={
+                                            budgetAnalysisResult.spendingsDistribution.summary.includes(
+                                                "Překročení"
+                                            )
+                                                ? dangerClass
+                                                : successClass
                                         }
+                                    >
+                                        <strong>
+                                            {
+                                                budgetAnalysisResult
+                                                    .spendingsDistribution
+                                                    .summary
+                                            }
+                                        </strong>
                                     </p>
                                 </div>
 
@@ -434,10 +525,9 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                             </div>
                         </div>
 
-                        {/* Tipy */}
-                        <div className="mt-6">
+                        <div className={bubbleClass}>
                             <h4 className="text-lg font-semibold text-neutral-700 text-center mb-4">
-                                Tipy pro úsporu:
+                                Tipy pro úsporu
                             </h4>
                             <div className="space-y-6">
                                 {Object.keys(budgetAnalysisResult.tips).map(
