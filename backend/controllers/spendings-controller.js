@@ -66,6 +66,12 @@ const updateSpendings = async (id, newData) => {
             { new: true }
         );
 
+        if (!updatedData) {
+            const error = new Error("Výdaje nebyly nalezeny");
+            error.statusCode = 404;
+            throw error;
+        }
+
         //Spent amount >= total amount -> generate notification
         if (updatedData.spentAmount > updatedData.totalAmount) {
             const budget = await getBudgetById(updatedData.budget);
@@ -111,12 +117,6 @@ const updateSpendings = async (id, newData) => {
                     });
                 }
             }
-        }
-
-        if (!updatedData) {
-            const error = new Error("Výdaje nebyly nalezeny");
-            error.statusCode = 404;
-            throw error;
         }
 
         return updatedData;

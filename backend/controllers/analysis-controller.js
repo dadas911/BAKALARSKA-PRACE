@@ -172,8 +172,8 @@ const analyzeFinancialGoal = async (goal, contribution) => {
 //Function returns income vs expense analysis
 const analyzeIncomeVsExpenses = async (budget) => {
     const totalIncome = budget.income;
-    const totalExpenses = budget.expense;
-    const balance = totalIncome + totalExpenses;
+    const totalExpenses = -budget.expense;
+    const balance = totalIncome - totalExpenses;
     let status = "";
     let summary = "";
     let recommendation = "";
@@ -255,7 +255,7 @@ const analyzeExceededSpendings = async (budget) => {
 
 //Setting up recommended % of income per category
 const recommendedSpendingsDistribution = {
-    Bydlení: 35,
+    Bydlení: 5,
     Jídlo: 10,
     Doprava: 10,
     Oblečení: 10,
@@ -268,45 +268,44 @@ const recommendedSpendingsDistribution = {
 const analyzeSpendingsDistribution = async (budget) => {
     const totalIncome = budget.income;
     const distributionPerCategory = [];
+    const processedCategories = new Map();
 
-    //Check for processed categories (some users could have more spendings for same category)
-    const processedCategories = new Set();
-    const exceededCategories = [];
-
+    // First, iterate through spendings and accumulate spentAmount for each category
     for (const spendingId of budget.spendings) {
         const spending = await getSpendingsById(spendingId);
         const categoryData = await getCategoryById(spending.category);
         const name = categoryData.name;
 
-        //Skip if already processed
+        // If the category already exists, add the amount to the existing one
         if (processedCategories.has(name)) {
-            continue;
+            processedCategories.set(
+                name,
+                processedCategories.get(name) + spending.spentAmount
+            );
+        } else {
+            processedCategories.set(name, spending.spentAmount);
         }
+    }
 
-        const incomePercentage = (spending.spentAmount / totalIncome) * 100;
+    // Now process each category to calculate incomePercentage and status
+    const exceededCategories = [];
+    for (const [name, totalSpent] of processedCategories) {
+        const incomePercentage = (totalSpent / totalIncome) * 100;
 
-        //Determine status depending on incomePercentage
         let status = "";
         if (incomePercentage > (recommendedSpendingsDistribution[name] || 0)) {
-            status =
-                "Limit překročen (" +
-                recommendedSpendingsDistribution[name] +
-                "%)";
+            status = `Limit překročen (${recommendedSpendingsDistribution[name]}%)`;
             exceededCategories.push(name);
         } else {
-            status =
-                "V rámci limitu  (" +
-                recommendedSpendingsDistribution[name] +
-                "%)";
+            status = `V rámci limitu  (${recommendedSpendingsDistribution[name]}%)`;
         }
 
-        processedCategories.add(name);
         distributionPerCategory.push({ name, incomePercentage, status });
     }
 
+    // Generate summary and recommendation based on exceeded categories
     let summary = "";
     let recommendation = "";
-    //Get summary and recommendation depending on if some category was exceeded
     if (exceededCategories.length > 0) {
         summary = `Překročení limitu v kategoriích: ${exceededCategories.join(
             ", "
