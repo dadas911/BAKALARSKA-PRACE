@@ -5,6 +5,9 @@ import cors from "cors";
 import connectDB from "./db/connect.js";
 import "./utility/scheduled-checks.js";
 
+import swaggerUi from "swagger-ui-express";
+import swaggerSpecs from "./config/swagger-config.js";
+
 import userRouter from "./routes/user-routes.js";
 import familyAccountRouter from "./routes/family-account-routes.js";
 import personalBudgetRouter from "./routes/personal-budget-routes.js";
@@ -24,6 +27,9 @@ const app = express();
 //Setting up middleware
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
+
+//Setting up Swagger - api documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 app.get("/", (req, res) => {
     res.send({ message: "Hello World!" });

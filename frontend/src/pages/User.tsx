@@ -7,13 +7,17 @@ import {
     getFamilyAccount,
     getAllAccountUsers,
     removeUserFromAccount,
+    getHasFamilyAccount,
 } from "../api/family-account-api";
 import Loading from "../components/common/Loading";
+import FamilyAccountForm from "../components/forms/FamilyAccountForm";
 
 const Account = () => {
     const [refresh, setRefresh] = useState(false);
 
     const [user, setUser] = useState<User | null>(null);
+    const [hasFamilyAccount, setHasFamilyAccount] = useState<boolean>(false);
+
     const [familyAccount, setFamilyAccount] = useState<FamilyAccount | null>(
         null
     );
@@ -28,7 +32,9 @@ const Account = () => {
         const userData = await getUser();
         setUser(userData);
         if (userData) {
-            if (userData.familyAccount) {
+            const familyAccountStatus = await getHasFamilyAccount();
+            setHasFamilyAccount(familyAccountStatus);
+            if (familyAccountStatus) {
                 const accountData = await getFamilyAccount();
                 setFamilyAccount(accountData);
                 const users = await getAllAccountUsers();
@@ -260,9 +266,10 @@ const Account = () => {
                     </div>
                 </div>
             ) : (
-                <h3 className="text-lg text-red-500">
-                    Uživatel není členem rodinného účtu
-                </h3>
+                <FamilyAccountForm
+                    onCreateAccount={setFamilyAccount}
+                    refresh={handleRefresh}
+                ></FamilyAccountForm>
             )}
         </div>
     );

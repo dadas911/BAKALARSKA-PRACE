@@ -122,6 +122,11 @@ const handleCreateSmartSpendings = async (req, res) => {
 
             //Go through users in family
             for (const user of allFamilyUsers) {
+                //Skip user without personal budget
+                if (user.personalBudget === null) {
+                    continue;
+                }
+
                 //Get personal budget, weight for this category and calculate modified income
                 const pBudget = await getPersonalBudgetById(
                     user.personalBudget

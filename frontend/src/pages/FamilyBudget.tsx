@@ -31,7 +31,6 @@ import CategoryForm from "../components/forms/CategoryForm";
 import BudgetBalance from "../components/budget/BudgetBalance";
 import BudgetSpendings from "../components/budget/Spendings";
 import FamilyBudgetForm from "../components/forms/FamilyBudgetForm";
-import FamilyAccountForm from "../components/forms/FamilyAccountForm";
 import SpendingsForm from "../components/forms/SpendingsForm";
 import { checkUserRole } from "../api/user-api";
 import SmartSpendingsForm from "../components/forms/SmartSpendingsForm";
@@ -239,10 +238,14 @@ const Family = () => {
 
     if (!hasFamilyAccount) {
         return (
-            <FamilyAccountForm
-                onCreateAccount={setFamilyAccount}
-                refresh={handleRefresh}
-            />
+            <div className="flex justify-center items-center">
+                <h2 className="text-2xl font-semibold text-red-700 text-center px-4 py-2 mt-40">
+                    Uživatel není členem žádného rodinného účtu.
+                    <br />
+                    Vytvořit ho můžete v záložce
+                    <span className="font-bold"> "Uživatel a Rodina"</span>.
+                </h2>
+            </div>
         );
     }
 

@@ -6,7 +6,6 @@ import {
 } from "../controllers/family-budget-controller.js";
 import { FamilyBudgetModel } from "../models/family-budget-model.js";
 
-// Mocking FamilyBudgetModel methods
 jest.mock("../models/family-budget-model.js");
 
 describe("Family Budget Controller", () => {
