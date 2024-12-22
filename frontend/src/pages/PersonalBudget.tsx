@@ -364,6 +364,8 @@ const Personal = () => {
                                 updatingTransaction || undefined
                             }
                             familyCategories={familyCategories}
+                            month={month}
+                            year={year}
                         />
                         <button
                             onClick={handleCloseTransactionModal}

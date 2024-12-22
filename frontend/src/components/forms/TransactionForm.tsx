@@ -6,12 +6,16 @@ interface TransactionFormProps {
     familyCategories: Category[];
     onAddTransaction: (transaction: Transaction) => void;
     initialTransaction?: Transaction;
+    month: number;
+    year: number;
 }
 
 const TransactionForm: React.FC<TransactionFormProps> = ({
     familyCategories,
     onAddTransaction,
     initialTransaction,
+    month,
+    year,
 }) => {
     const defaultTransaction = {
         name: "",
@@ -21,7 +25,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         category: "DEFAULT",
     };
 
-    const currDate = new Date();
+    console.log(year + "-" + month + "-01");
 
     const [transaction, setTransaction] = useState<Transaction>(
         initialTransaction || defaultTransaction
@@ -77,20 +81,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                     onChange={handleTransactionChange}
                     className="w-full px-3 py-2 border rounded"
                     required
-                    // min={
-                    //     currDate.getFullYear() +
-                    //     "-" +
-                    //     String(currDate.getMonth() + 1).padStart(2, "0") +
-                    //     "-01"
-                    // }
-                    max={
-                        currDate.getFullYear() +
-                        "-" +
-                        String(currDate.getMonth() + 1).padStart(2, "0") +
-                        "-" +
-                        String(currDate.getDate()).padStart(2, "0")
+                    value={
+                        new Date(transaction.date).toISOString().split("T")[0]
                     }
-                    maxLength={20}
+                    max={new Date().toISOString().split("T")[0]}
+                    min={year + "-" + month + "-01"}
                     placeholder="Datum"
                 />
             </div>

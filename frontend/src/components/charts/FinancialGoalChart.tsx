@@ -20,6 +20,10 @@ const FinancialGoalChart: React.FC<FinancialGoalChartProps> = ({
     neededAmount,
     currentAmount,
 }) => {
+    if (currentAmount > neededAmount) {
+        currentAmount = neededAmount;
+    }
+
     const progressPercentage = (currentAmount / neededAmount) * 100;
 
     const data = {

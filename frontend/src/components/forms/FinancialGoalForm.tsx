@@ -93,6 +93,11 @@ const FinancialGoalForm: React.FC<FinancialGoalFormProps> = ({
                     type="date"
                     name="dueDate"
                     onChange={handleFinancialGoalChange}
+                    value={
+                        new Date(financialGoal.dueDate)
+                            .toISOString()
+                            .split("T")[0]
+                    }
                     className="w-full px-3 py-2 border rounded"
                     required
                     min={new Date().toISOString().split("T")[0]}

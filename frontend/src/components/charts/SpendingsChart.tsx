@@ -14,6 +14,10 @@ const SpendingChart: React.FC<SpendingChartProps> = ({
     totalAmount,
     spentAmount,
 }) => {
+    if (spentAmount > totalAmount) {
+        spentAmount = totalAmount;
+    }
+
     const remainingAmount = totalAmount - spentAmount;
 
     const data = {
