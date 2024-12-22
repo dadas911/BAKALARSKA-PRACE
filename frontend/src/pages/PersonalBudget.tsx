@@ -178,6 +178,7 @@ const Personal = () => {
         }
 
         handleCloseTransactionModal();
+        handleRefresh();
     };
 
     const handleDeleteTransaction = async (id: string) => {
@@ -186,6 +187,7 @@ const Personal = () => {
             setPersonalTransactions((prevTransactions) =>
                 prevTransactions.filter((transaction) => transaction._id !== id)
             );
+            handleRefresh();
         } catch (error) {
             console.log("Error deleting transaction: " + error);
         }
