@@ -39,14 +39,39 @@ const handleGetSpendingsById = async (req, res) => {
 
 const handleCreateSpendings = async (req, res) => {
     try {
-        let { name, totalAmount, category, isPersonal } = req.body;
+        let { spending, month, year } = req.body;
+        let { name, totalAmount, category, isPersonal } = spending;
+
+        let budgetId = "";
+
+        if (isPersonal) {
+            budgetId = await getBudgetByIdAndDate(
+                req.user._id,
+                month,
+                year,
+                true
+            );
+            budgetId = budgetId._id;
+        } else {
+            const user = await getUserById(req.user._id);
+            budgetId = await getBudgetByIdAndDate(
+                user.familyAccount,
+                month,
+                year,
+                false
+            );
+            budgetId = budgetId._id;
+        }
 
         const newData = await helperCreateSpendings(
             name,
             totalAmount,
             category,
             isPersonal,
-            req.user._id
+            req.user._id,
+            budgetId,
+            month,
+            year
         );
 
         res.status(200).json(newData);
@@ -85,6 +110,9 @@ const handleCreateSmartSpendings = async (req, res) => {
                 categoryId,
                 isPersonal: false,
                 senderId: req.user._id,
+                budgetId: null,
+                month: null,
+                year: null,
             });
 
             allTotalAmounts += totalAmount;
@@ -177,6 +205,9 @@ const handleCreateSmartSpendings = async (req, res) => {
                     categoryId,
                     isPersonal: true,
                     senderId: user._id,
+                    budgetId: null,
+                    month: null,
+                    year: null,
                 });
             }
         }
@@ -369,14 +400,22 @@ const helperSpentAmountAndNotification = async (
     totalAmount,
     category,
     isPersonal,
-    userId
+    userId,
+    budgetId,
+    month,
+    year
 ) => {
     const user = await getUserById(userId);
     let budget = "";
     let spentAmount = 0;
     //Spendings belongs to personal budget
     if (isPersonal) {
-        budget = user.personalBudget;
+        if (!budgetId) {
+            budget = user.personalBudget;
+        } else {
+            budget = budgetId;
+        }
+
         //Check for already existing transactions in same category
         spentAmount += await helperGetSpentAmount(budget, category);
 
@@ -393,15 +432,29 @@ const helperSpentAmountAndNotification = async (
     //Spendings belongs to family account
     else {
         const account = await getAccountById(user.familyAccount);
-        budget = account.familyBudget;
+        if (!budgetId) {
+            budget = account.familyBudget;
+        } else {
+            budget = budgetId;
+        }
         for (const userId of account.users) {
             const user = await getUserById(userId);
-            if (user.personalBudget) {
+            try {
+                let personalBudgetId = user.personalBudget;
+                if (month && year) {
+                    personalBudgetId = await getBudgetByIdAndDate(
+                        user._id,
+                        month,
+                        year,
+                        true
+                    );
+                    personalBudgetId = personalBudgetId._id;
+                }
                 spentAmount += await helperGetSpentAmount(
-                    user.personalBudget,
+                    personalBudgetId,
                     category
                 );
-            }
+            } catch (error) {}
         }
         for (const userId of account.users) {
             //SpentAmount > totalAmount -> create notification
@@ -428,14 +481,20 @@ const helperCreateSpendings = async (
     totalAmount,
     category,
     isPersonal,
-    senderId
+    senderId,
+    budgetId,
+    month,
+    year
 ) => {
     const { spentAmount, budget } = await helperSpentAmountAndNotification(
         name,
         totalAmount,
         category,
         isPersonal,
-        senderId
+        senderId,
+        budgetId,
+        month,
+        year
     );
 
     const newData = await createSpendings({

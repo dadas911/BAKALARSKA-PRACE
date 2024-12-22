@@ -25,10 +25,16 @@ export async function getSpendingsById(id: string): Promise<Spendings | null> {
 }
 
 export async function createSpendings(
-    spending: Spendings
+    spending: Spendings,
+    month: number,
+    year: number
 ): Promise<Spendings | null> {
     try {
-        const response = await axios.post(`${URL_API}/spendings`, spending);
+        const response = await axios.post(`${URL_API}/spendings`, {
+            spending,
+            month,
+            year,
+        });
 
         return response.data;
     } catch (error) {

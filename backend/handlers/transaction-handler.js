@@ -40,9 +40,17 @@ const handleGetTransactionById = async (req, res) => {
 
 const handleCreateTransaction = async (req, res) => {
     try {
-        let { name, amount, date, description, category } = req.body;
+        let { transaction, month, year } = req.body;
+        let { name, amount, date, description, category } = transaction;
+
         const user = await getUserById(req.user._id);
-        const personalBudget = user.personalBudget;
+        let personalBudget = await getBudgetByIdAndDate(
+            user._id,
+            month,
+            year,
+            true
+        );
+        personalBudget = personalBudget._id;
         const cat = await getCategoryById(category);
 
         if (cat.isExpense) {
@@ -71,7 +79,6 @@ const handleCreateTransaction = async (req, res) => {
         );
 
         //Add transaction._id to budget
-        //Add new spending to the budget
         let budget = await getBudgetById(personalBudget);
         if (!budget) {
             res.status(404).json({ message: "Rozpočet nebyl nalezen" });
@@ -199,13 +206,17 @@ const modifyBalanceAndSpendingsHelper = async (
 
     //Update spentAmount in spendings - family budget
     const user = await getUserById(pBudget.user);
-    let familyAccount = null;
     if (user.familyAccount) {
-        familyAccount = await getAccountById(user.familyAccount);
-        const fBudget = await getBudgetById(familyAccount.familyBudget);
+        const fBudget = await getBudgetByIdAndDate(
+            user.familyAccount,
+            pBudget.month,
+            pBudget.year,
+            false
+        );
         if (!fBudget) {
             res.status(404).json({ message: "Rozpočet nebyl nalezen" });
         }
+        console.log("Family budget found");
 
         //Add amount to income or expense of Family Budget
         if (isIncome) {

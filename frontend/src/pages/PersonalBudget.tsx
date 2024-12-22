@@ -116,7 +116,11 @@ const Personal = () => {
                 )
             );
         } else {
-            const rensponseSpendings = await createSpendings(newSpendings);
+            const rensponseSpendings = await createSpendings(
+                newSpendings,
+                month,
+                year
+            );
             if (rensponseSpendings) {
                 setPersonalSpendings((prevSpendings) => [
                     ...prevSpendings,
@@ -161,7 +165,9 @@ const Personal = () => {
             );
         } else {
             const rensponseTransaction = await createTransaction(
-                newTransaction
+                newTransaction,
+                month,
+                year
             );
             if (rensponseTransaction) {
                 setPersonalTransactions((prevTransaction) => [

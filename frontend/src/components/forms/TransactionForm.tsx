@@ -20,12 +20,10 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     const defaultTransaction = {
         name: "",
         amount: 0,
-        date: new Date(),
+        date: new Date(year, month - 1, 2),
         description: "",
         category: "DEFAULT",
     };
-
-    console.log(year + "-" + month + "-01");
 
     const [transaction, setTransaction] = useState<Transaction>(
         initialTransaction || defaultTransaction
@@ -84,7 +82,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                     value={
                         new Date(transaction.date).toISOString().split("T")[0]
                     }
-                    max={new Date().toISOString().split("T")[0]}
+                    max={new Date(year, month, 0).toISOString().split("T")[0]}
                     min={year + "-" + month + "-01"}
                     placeholder="Datum"
                 />

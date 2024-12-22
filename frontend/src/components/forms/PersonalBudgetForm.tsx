@@ -28,10 +28,6 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
         {}
     );
 
-    if (initialBudget) {
-        console.log("Initial Budget: " + JSON.stringify(initialBudget));
-    }
-
     const monthNames = [
         "Leden",
         "Únor",

@@ -27,13 +27,16 @@ export async function getTransactionById(
 }
 
 export async function createTransaction(
-    transaction: Transaction
+    transaction: Transaction,
+    month: number,
+    year: number
 ): Promise<Transaction | null> {
     try {
-        const response = await axios.post(
-            `${URL_API}/transactions`,
-            transaction
-        );
+        const response = await axios.post(`${URL_API}/transactions`, {
+            transaction,
+            month,
+            year,
+        });
 
         return response.data;
     } catch (error) {

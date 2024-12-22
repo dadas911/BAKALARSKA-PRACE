@@ -117,7 +117,11 @@ const Family = () => {
                 )
             );
         } else {
-            const rensponseSpendings = await createSpendings(newSpendings);
+            const rensponseSpendings = await createSpendings(
+                newSpendings,
+                month,
+                year
+            );
             if (rensponseSpendings) {
                 setFamilySpendings((prevSpendings) => [
                     ...prevSpendings,
@@ -297,18 +301,30 @@ const Family = () => {
             )}
             {(isProvider || isFamilyMember) && (
                 <div className="flex w-full space-x-4 mt-4">
-                    <button
-                        onClick={() => handleOpenSpendingsModal()}
-                        className="flex-1 bg-green-500 text-white px-4 py-2 rounded"
-                    >
-                        Přidat rodinný plán výdajů
-                    </button>
-                    <button
-                        onClick={() => handleOpenSmartSpendingsModal()}
-                        className="flex-1 bg-blue-500 text-white px-4 py-2 rounded"
-                    >
-                        Použít inteligentní vzorec
-                    </button>
+                    {year === date.getFullYear() &&
+                    month === date.getMonth() + 1 ? (
+                        <>
+                            <button
+                                onClick={() => handleOpenSpendingsModal()}
+                                className="flex-1 bg-green-500 text-white px-4 py-2 rounded"
+                            >
+                                Přidat rodinný plán výdajů
+                            </button>
+                            <button
+                                onClick={() => handleOpenSmartSpendingsModal()}
+                                className="flex-1 bg-blue-500 text-white px-4 py-2 rounded"
+                            >
+                                Použít inteligentní vzorec
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            onClick={() => handleOpenSpendingsModal()}
+                            className="flex-1 bg-green-500 text-white px-4 py-2 rounded"
+                        >
+                            Přidat rodinný plán výdajů
+                        </button>
+                    )}
                 </div>
             )}
 
