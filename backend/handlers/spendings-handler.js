@@ -4,6 +4,7 @@ import {
     createSpendings,
     deleteSpendings,
     updateSpendings,
+    getSpendingsByBudgetId,
 } from "../controllers/spendings-controller.js";
 
 import {
@@ -283,11 +284,7 @@ const handleGetPersonalSpendingsByMonth = async (req, res) => {
             true
         );
 
-        const spendings = await Promise.all(
-            pBudget.spendings.map(async (id) => {
-                return await getSpendingsById(id);
-            })
-        );
+        const spendings = await getSpendingsByBudgetId(pBudget._id);
 
         res.status(200).json(spendings);
     } catch (error) {
@@ -300,11 +297,7 @@ const handleGetFamilyMemberSpendingsByMonth = async (req, res) => {
         const { id, month, year } = req.body;
         const pBudget = await getBudgetByIdAndDate(id, month, year, true);
 
-        const spendings = await Promise.all(
-            pBudget.spendings.map(async (id) => {
-                return await getSpendingsById(id);
-            })
-        );
+        const spendings = await getSpendingsByBudgetId(pBudget._id);
 
         res.status(200).json(spendings);
     } catch (error) {
@@ -323,11 +316,7 @@ const handleGetFamilySpendingsByMonth = async (req, res) => {
             false
         );
 
-        const spendings = await Promise.all(
-            fBudget.spendings.map(async (id) => {
-                return await getSpendingsById(id);
-            })
-        );
+        const spendings = await getSpendingsByBudgetId(fBudget._id);
 
         res.status(200).json(spendings);
     } catch (error) {

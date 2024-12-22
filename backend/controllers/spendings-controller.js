@@ -31,6 +31,16 @@ const getSpendingsById = async (id) => {
     }
 };
 
+const getSpendingsByBudgetId = async (budgetId) => {
+    try {
+        const data = await SpendingsModel.find({ budget: budgetId });
+        return data;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
 const createSpendings = async (spending) => {
     try {
         const newData = await SpendingsModel.create(spending);
@@ -132,4 +142,5 @@ export {
     createSpendings,
     deleteSpendings,
     updateSpendings,
+    getSpendingsByBudgetId,
 };

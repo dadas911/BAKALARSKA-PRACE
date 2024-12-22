@@ -13,6 +13,7 @@ import {
     createTransaction,
     deleteTransaction,
     updateTransaction,
+    getTransactionByBudgetId,
 } from "../controllers/transaction-controller.js";
 import { getAccountById } from "../controllers/family-account-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
@@ -155,11 +156,7 @@ const handleGetTransactionsByMonth = async (req, res) => {
         const { month, year } = req.body;
         const user = await getUserById(req.user._id);
         const pBudget = await getBudgetByIdAndDate(user, month, year, true);
-        const transactions = await Promise.all(
-            pBudget.transactions.map(async (id) => {
-                return await getTransactionById(id);
-            })
-        );
+        const transactions = await getTransactionByBudgetId(pBudget._id);
         res.status(200).json(transactions);
     } catch (error) {
         res.status(error.statusCode || 500).json({ message: error.message });

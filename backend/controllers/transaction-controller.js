@@ -27,6 +27,16 @@ const getTransactionById = async (id) => {
     }
 };
 
+const getTransactionByBudgetId = async (budgetId) => {
+    try {
+        const data = await TransactionModel.find({ personalBudget: budgetId });
+        return data;
+    } catch (error) {
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
 const createTransaction = async (transaction) => {
     try {
         const newData = await TransactionModel.create(transaction);
@@ -81,4 +91,5 @@ export {
     createTransaction,
     deleteTransaction,
     updateTransaction,
+    getTransactionByBudgetId,
 };
