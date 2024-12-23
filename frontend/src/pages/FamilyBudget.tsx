@@ -329,8 +329,8 @@ const Family = () => {
             )}
 
             {isSpendingsModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96 overflow-y-auto max-h-screen">
                         <h3 className="text-xl font-semibold mb-4 text-center">
                             {updatingSpendings
                                 ? "Upravit plán výdajů"
@@ -353,8 +353,8 @@ const Family = () => {
             )}
 
             {isSmartSpendingsModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96 overflow-y-auto max-h-screen">
                         <h3 className="text-xl font-semibold mb-4 text-center">
                             Inteligentní plán výdajů
                         </h3>
@@ -394,8 +394,8 @@ const Family = () => {
                 </button>
             )}
             {isCategoryModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-96 overflow-y-auto max-h-screen">
                         <h3 className="text-xl font-semibold mb-4">
                             {updatingCategory
                                 ? "Upravit kategorii"

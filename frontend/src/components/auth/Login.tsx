@@ -3,6 +3,7 @@ import { useState } from "react";
 import { UserLogin } from "../../types/user-login";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useSimplifiedUIMode } from "../../SimplifiedModeContext";
 
 const Login = () => {
     const [user, setUser] = useState<UserLogin>({
@@ -10,6 +11,7 @@ const Login = () => {
         password: "",
     });
 
+    const { setIsUserLogged } = useSimplifiedUIMode();
     const navigate = useNavigate();
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -24,6 +26,7 @@ const Login = () => {
             axios.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${response.data}`;
+            setIsUserLogged(true);
             navigate("/home");
         } else {
             alert("Chyba při přihlašování: " + response.data);

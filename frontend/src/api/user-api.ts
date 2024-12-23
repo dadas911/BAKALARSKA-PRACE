@@ -102,3 +102,21 @@ export async function loginUser(user: UserLogin) {
         return { success: false, data: "Neznámá chyba při volání API" };
     }
 }
+
+export async function updateUserSimplifiedMode(
+    id: string,
+    simplifiedMode: boolean
+): Promise<User | null> {
+    try {
+        const response = await axios.put(`${URL_API}/users/${id}`, {
+            simplifiedMode,
+        });
+        return response.data;
+    } catch (error) {
+        console.error(
+            "Chyba při aktualizaci preference simplifiedMode:",
+            error
+        );
+        return null;
+    }
+}

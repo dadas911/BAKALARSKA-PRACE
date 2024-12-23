@@ -26,6 +26,84 @@
     }
 }
 
+.simplified-UI-mode * {
+    font-size: 1.25rem !important;
+    line-height: 1.75 !important;
+    font-weight: 600 !important;
+}
+
+.simplified-UI-mode h1 {
+    font-size: 2.5rem !important;
+}
+
+.simplified-UI-mode h2 {
+    font-size: 2rem !important;
+}
+
+.simplified-UI-mode h3 {
+    font-size: 1.75rem !important;
+}
+
+.simplified-UI-mode h4,
+.simplified-UI-mode h5,
+.simplified-UI-mode h6 {
+    font-size: 1.5rem !important;
+}
+
+.simplified-UI-mode nav a {
+    text-decoration: none !important;
+}
+
+.simplified-UI-mode button {
+    padding: 1rem 1.5rem !important;
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    border-radius: 0.5rem !important;
+}
+
+.simplified-UI-mode input,
+.simplified-UI-mode select,
+.simplified-UI-mode textarea {
+    font-size: 1.25rem !important;
+    padding: 0.75rem !important;
+    border: 2px solid black !important;
+    border-radius: 0.5rem !important;
+}
+
+.simplified-UI-mode nav {
+    font-size: 1.25rem !important;
+}
+
+.simplified-UI-mode table {
+    font-size: 1.25rem !important;
+    border-collapse: collapse;
+}
+
+.simplified-UI-mode th,
+.simplified-UI-mode td {
+    padding: 1rem !important;
+    border: 1px solid black !important;
+}
+
+.simplified-UI-mode ul,
+.simplified-UI-mode ol {
+    font-size: 1.25rem !important;
+    padding-left: 2rem !important;
+}
+
+.simplified-UI-mode li {
+    margin-bottom: 0.5rem !important;
+}
+
+.simplified-UI-mode .navbar-icon {
+    display: none;
+}
+
+.simplified-UI-mode .navbar-title {
+    font-size: 2rem !important;
+    font-weight: bold;
+}
+
 /*:root {
     
      font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

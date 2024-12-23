@@ -10,7 +10,7 @@ type Page = {
     key: string;
     name: string;
     path: string;
-    icon: JSX.Element; // Ikony jako React komponenty
+    icon: JSX.Element;
 };
 
 export const pageList: Page[] = [

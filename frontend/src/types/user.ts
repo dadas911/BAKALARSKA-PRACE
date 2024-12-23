@@ -8,4 +8,5 @@ export interface User {
     role: Array<"živitel" | "člen domácnosti" | "student" | "senior">;
     familyAccount?: string | null;
     personalBudget?: string | null;
+    simplifiedMode?: boolean | null;
 }

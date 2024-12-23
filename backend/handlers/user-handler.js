@@ -53,6 +53,7 @@ const handleCreateUser = async (req, res) => {
             email,
             role,
             familyAccount,
+            simplifiedMode,
         } = req.body;
 
         const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS));
@@ -66,6 +67,7 @@ const handleCreateUser = async (req, res) => {
             email,
             role,
             familyAccount,
+            simplifiedMode,
         });
 
         //User has familyAcc -> add his _id to the acc

@@ -26,6 +26,7 @@ const UserSchema = new mongoose.Schema({
         ref: "PersonalBudget",
         default: null,
     },
+    simplifiedMode: { type: Boolean, default: false },
 });
 
 export const UserModel = mongoose.model("User", UserSchema);

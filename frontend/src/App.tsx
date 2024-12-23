@@ -13,6 +13,8 @@ import Layout from "./components/layout/Layout";
 import { useLayoutEffect } from "react";
 import axios from "axios";
 
+import { SimplifiedUIModeProvider } from "./SimplifiedModeContext";
+
 function App() {
     useLayoutEffect(() => {
         async function setToken() {
@@ -28,30 +30,38 @@ function App() {
     }, []);
 
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route element={<Layout />}>
-                    <Route path="/home" element={<Home />} />
-                    <Route path="/familybudget" element={<FamilyBudget />} />
-                    <Route
-                        path="/personalbudget"
-                        element={<PersonalBudget />}
-                    />
-                    <Route
-                        path="/familymemberbudget"
-                        element={<FamilyMemberBudget />}
-                    />
-                    <Route path="/user" element={<User />} />
-                    <Route
-                        path="/financialgoals"
-                        element={<FinancialGoals />}
-                    />
-                    <Route path="/scholarships" element={<Scholarships />} />
-                    <Route path="/analysis" element={<Analysis />} />
-                </Route>
-            </Routes>
-        </Router>
+        <SimplifiedUIModeProvider>
+            <Router>
+                <Routes>
+                    <Route path="/" element={<Landing />} />
+                    <Route element={<Layout />}>
+                        <Route path="/home" element={<Home />} />
+                        <Route
+                            path="/familybudget"
+                            element={<FamilyBudget />}
+                        />
+                        <Route
+                            path="/personalbudget"
+                            element={<PersonalBudget />}
+                        />
+                        <Route
+                            path="/familymemberbudget"
+                            element={<FamilyMemberBudget />}
+                        />
+                        <Route path="/user" element={<User />} />
+                        <Route
+                            path="/financialgoals"
+                            element={<FinancialGoals />}
+                        />
+                        <Route
+                            path="/scholarships"
+                            element={<Scholarships />}
+                        />
+                        <Route path="/analysis" element={<Analysis />} />
+                    </Route>
+                </Routes>
+            </Router>
+        </SimplifiedUIModeProvider>
     );
 }
 
