@@ -53,7 +53,7 @@ const startServer = async () => {
         connectDB(process.env.URL_DB);
 
         app.listen(process.env.PORT, () =>
-            console.log("Backend server started")
+            console.log("Backend server started!")
         );
     } catch (error) {
         console.log(error);
