@@ -12,7 +12,7 @@ import {
     updateAccount,
 } from "../controllers/family-account-controller.js";
 import { deletePersonalBudget } from "../controllers/personal-budget-controller.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const handleGetAllUsers = async (req, res) => {
@@ -45,7 +45,6 @@ const handleGetUser = async (req, res) => {
 
 const handleCreateUser = async (req, res) => {
     try {
-        console.log("Handle create user done");
         let {
             username,
             firstName,
@@ -84,7 +83,6 @@ const handleCreateUser = async (req, res) => {
 
         res.status(200).json(newData);
     } catch (error) {
-        console.log("Error creating user: " + JSON.stringify(error.message));
         res.status(error.statusCode || 500).json({ message: error.message });
     }
 };
