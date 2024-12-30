@@ -52,11 +52,7 @@ const startServer = async () => {
     try {
         connectDB(process.env.URL_DB);
 
-        app.listen(process.env.PORT, () =>
-            console.log(
-                "Server started on http://localhost:" + process.env.PORT
-            )
-        );
+        app.listen(process.env.PORT, () => console.log("Server started"));
     } catch (error) {
         console.log(error);
     }
