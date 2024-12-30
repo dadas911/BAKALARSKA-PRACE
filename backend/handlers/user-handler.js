@@ -45,6 +45,7 @@ const handleGetUser = async (req, res) => {
 
 const handleCreateUser = async (req, res) => {
     try {
+        console.log("Handle create user done");
         let {
             username,
             firstName,
@@ -83,6 +84,7 @@ const handleCreateUser = async (req, res) => {
 
         res.status(200).json(newData);
     } catch (error) {
+        console.log("Error creating user: " + JSON.stringify(error.message));
         res.status(error.statusCode || 500).json({ message: error.message });
     }
 };
