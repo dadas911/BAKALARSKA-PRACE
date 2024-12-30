@@ -61,6 +61,7 @@ const handleCreateScholarship = async (req, res) => {
             personalBudget,
         });
 
+        //Connect new scholarship to budget
         budgetData.scholarships.push(newData._id);
         await updatePersonalBudget(personalBudget, budgetData);
 
@@ -77,6 +78,7 @@ const handleDeleteScholarship = async (req, res) => {
         const { id } = req.params;
         const deletedData = await deleteScholarship(id);
 
+        //Remove scholarship from personal budget
         if (deletedData.personalBudget) {
             let budget = await getBudgetById(deletedData.personalBudget);
             budget.scholarships = budget.scholarships.filter(

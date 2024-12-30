@@ -98,6 +98,7 @@ const handleGetAllFamilyCategories = async (req, res) => {
         const user = await getUserById(req.user._id);
         const globalCategories = await getAllGlobalCategories();
         let familyCategories = [];
+        //If user is part of family account -> return all categories
         if (user.familyAccount) {
             const familyAccount = await getAccountById(user.familyAccount);
             if (familyAccount.familyBudget) {

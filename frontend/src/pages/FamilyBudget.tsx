@@ -32,6 +32,7 @@ import { checkUserRole } from "../api/user-api";
 import SmartSpendingsForm from "../components/forms/SmartSpendingsForm";
 
 const Family = () => {
+    //Setting up all needed hok
     const [refresh, setRefresh] = useState(false);
 
     const [hasFamilyAccount, setHasFamilyAccount] = useState<boolean>(false);
@@ -63,6 +64,7 @@ const Family = () => {
     const [isSmartSpendingsModalOpen, setIsSmartSpendingsModalOpen] =
         useState<boolean>(false);
 
+    //Function for getting all family budget info
     const getFamilyBudgetInfo = async () => {
         const familyAccountStatus = await getHasFamilyAccount();
         setHasFamilyAccount(familyAccountStatus);
@@ -97,6 +99,7 @@ const Family = () => {
         setIsSpendingsModalOpen(false);
     };
 
+    //Function for handling add/update spending
     const handleAddSpendings = async (newSpendings: Spendings) => {
         if (updatingSpendings) {
             updateSpendings(newSpendings._id || "No id", newSpendings);
@@ -124,6 +127,7 @@ const Family = () => {
         handleCloseSpendingsModal();
     };
 
+    //Function for handling delete spendings
     const handleDeleteSpendings = async (id: string) => {
         try {
             await deleteSpendings(id);
@@ -145,6 +149,7 @@ const Family = () => {
         setIsCategoryModalOpen(false);
     };
 
+    //Function for handling add/update category
     const handleAddCategory = async (newCategory: Category) => {
         if (updatingCategory) {
             updateCategory(newCategory._id || "No id", newCategory);
@@ -167,6 +172,7 @@ const Family = () => {
         handleCloseCategoryModal();
     };
 
+    //Function for handling delete category
     const handleDeleteCategory = async (id: string) => {
         try {
             await deleteCategory(id);
@@ -190,6 +196,7 @@ const Family = () => {
         setIsSmartSpendingsModalOpen(false);
     };
 
+    //Function for calculating and creating personal and family spendings based on "smart" formula
     const handleCalculateSmartSpendings = async (spendingsPerCategory: {
         [key: string]: number;
     }) => {
@@ -209,6 +216,7 @@ const Family = () => {
         }
     };
 
+    //Get all family budget info while displaying loading
     useEffect(() => {
         const getData = async () => {
             setLoading(true);
@@ -231,6 +239,7 @@ const Family = () => {
         return <Loading />;
     }
 
+    //No family account -> display message
     if (!hasFamilyAccount) {
         return (
             <div className="flex justify-center items-center">
@@ -244,6 +253,7 @@ const Family = () => {
         );
     }
 
+    //No family budget -> display family budget form
     if (!hasFamilyBudget) {
         return (
             <FamilyBudgetForm
@@ -255,6 +265,7 @@ const Family = () => {
         );
     }
 
+    //Display all needed components based on hooks and states
     return (
         <div className="flex flex-col gap-4">
             <DatePicker

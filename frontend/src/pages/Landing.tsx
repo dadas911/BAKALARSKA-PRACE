@@ -7,6 +7,7 @@ const Landing = () => {
 
     const switchDisplay = () => setDisplayLogin((prev) => !prev);
 
+    //Display Registration or Login component based on hook
     return (
         <div className="min-h-screen flex items-center justify-center bg-neutral-100">
             <div className="p-8 shadow-md bg-white rounded-lg w-full max-w-md">

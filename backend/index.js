@@ -48,6 +48,7 @@ app.use("/api/scholarships", scholarshipRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/analysis", analysisRouter);
 
+//Starting backend server
 const startServer = async () => {
     try {
         connectDB(process.env.URL_DB);

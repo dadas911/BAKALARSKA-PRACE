@@ -41,6 +41,7 @@ const NavigationBar = () => {
         "flex item-center gap-2 font-light px-3 py-2 hover:bg-green-600 hover:no-underline active:bg-green-600 rounded-sm text-base";
     const classLinkActive = "bg-green-600 text-white";
 
+    //Display all pages based on page-list
     return (
         <div className="fixed h-full flex flex-col bg-neutral-700 w-60 p-3 invisible sm:visible overflow-y-auto">
             <div className="flex item-center gap-5 px-3 py-3">

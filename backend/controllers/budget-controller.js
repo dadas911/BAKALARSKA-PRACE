@@ -33,13 +33,16 @@ const getBudgetById = async (id) => {
 const getBudgetByIdAndDate = async (id, month, year, isPersonalBudget) => {
     try {
         let data = null;
+        //Get personal budget
         if (isPersonalBudget) {
             data = await PersonalBudgetModel.findOne({
                 user: id,
                 month: month,
                 year: year,
             });
-        } else {
+        }
+        //Get family budget
+        else {
             data = await FamilyBudgetModel.findOne({
                 account: id,
                 month: month,

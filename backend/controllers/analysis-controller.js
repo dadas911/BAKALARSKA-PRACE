@@ -1,6 +1,7 @@
 import { getCategoryById } from "./category-controller.js";
 import { getSpendingsById } from "./spendings-controller.js";
 
+//Saving tips for every "default"
 const savingsTipsPerCategory = {
     Bydlení: [
         "Zvažte možnost snížení nákladů na energie (např. úsporné spotřebiče, LED osvětlení).",
@@ -37,6 +38,7 @@ const savingsTipsPerCategory = {
     ],
 };
 
+//Functions for analysing financial risk based on reserve and monthly expense
 const analyzeFinancialRisk = async (reserve, monthlyExpenses) => {
     //Recommended reserve = 3 * monthly expenses
     const recommendedReserve = monthlyExpenses * 3;
@@ -65,6 +67,7 @@ const analyzeFinancialRisk = async (reserve, monthlyExpenses) => {
     };
 };
 
+//Function for analysing spendings and their posible reduction
 const analyzeSpendingsReduction = async (budgets) => {
     const categoryInformation = {};
     //Go through budgets
@@ -123,6 +126,7 @@ const analyzeSpendingsReduction = async (budgets) => {
     return result;
 };
 
+//Function for analysing financial goal
 const analyzeFinancialGoal = async (goal, contribution) => {
     // Calculate month to achieve goal
     const remainingAmount = goal.neededAmount - goal.currentAmount;
@@ -320,6 +324,7 @@ const analyzeSpendingsDistribution = async (budget) => {
     return { distributionPerCategory, summary, recommendation };
 };
 
+//Get saving tips for all "Default" categories
 const analyzeTips = async () => {
     return savingsTipsPerCategory;
 };

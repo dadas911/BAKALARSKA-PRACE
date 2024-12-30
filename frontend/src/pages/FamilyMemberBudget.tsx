@@ -11,6 +11,7 @@ import Loading from "../components/common/Loading";
 import { getAllAccountUsers } from "../api/family-account-api";
 
 const FamilyMemberBudget = () => {
+    //Setting up all needed hooks
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [familyMemberBudget, setFamilyMemberBudget] = useState<any>(null);
@@ -32,11 +33,11 @@ const FamilyMemberBudget = () => {
         setMonth(Number(e.target.value));
     };
 
-    // Funkce pro změnu roku
     const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setYear(Number(e.target.value));
     };
 
+    //Function for getting budget data of selected family member
     const getFamilyMemberBudgetData = async () => {
         if (selectedUser) {
             const memberBudget = await getFamilyMemberBudgetByMonth(
@@ -58,6 +59,7 @@ const FamilyMemberBudget = () => {
         }
     };
 
+    //Getting all needed data when displaying loading
     useEffect(() => {
         const getData = async () => {
             setLoading(true);
@@ -74,6 +76,7 @@ const FamilyMemberBudget = () => {
         return <Loading />;
     }
 
+    //Display all needed components based on hooks and states
     return (
         <div className="p-4">
             <UserPicker

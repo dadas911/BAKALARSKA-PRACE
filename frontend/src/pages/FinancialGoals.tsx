@@ -16,6 +16,7 @@ import FinancialGoalForm from "../components/forms/FinancialGoalForm";
 import { checkUserRole } from "../api/user-api";
 
 const FinancialGoals = () => {
+    //Setting up all needed hooks
     const [personalGoals, setPersonalGoals] = useState<FinancialGoal[]>([]);
     const [familyGoals, setFamilyGoals] = useState<FinancialGoal[]>([]);
     const [loading, setLoading] = useState(true);
@@ -39,6 +40,7 @@ const FinancialGoals = () => {
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
 
+    //Function for getting financial goal info
     const getFinancialGoalsInfo = async () => {
         const personalBudgetStatus = await getHasPersonalBudget(month, year);
         setHasPersonalBudget(personalBudgetStatus);
@@ -68,6 +70,7 @@ const FinancialGoals = () => {
         }
     };
 
+    //Get all financial goal info while displaying loading
     useEffect(() => {
         const getData = async () => {
             setLoading(true);
@@ -102,6 +105,7 @@ const FinancialGoals = () => {
         setIsFamilyFinancialGoalModalOpen(false);
     };
 
+    //Function for handling add/update personal financial goal
     const handleAddPersonalFinancialGoal = async (
         newFinancialGoal: FinancialGoal
     ) => {
@@ -132,6 +136,7 @@ const FinancialGoals = () => {
         handleClosePersonalFinancialGoalModal();
     };
 
+    //Function for handling add/update family financial goal
     const handleAddFamilyFinancialGoal = async (
         newFinancialGoal: FinancialGoal
     ) => {
@@ -162,6 +167,7 @@ const FinancialGoals = () => {
         handleCloseFamilyFinancialGoalModal();
     };
 
+    //Function for handling delete personal financial goal
     const handleDeletePersonalFinancialGoal = async (id: string) => {
         try {
             await deleteFinancialGoal(id);
@@ -175,6 +181,7 @@ const FinancialGoals = () => {
         }
     };
 
+    //Function for handling delete family financial goal
     const handleDeleteFamilyFinancialGoal = async (id: string) => {
         try {
             await deleteFinancialGoal(id);
@@ -192,6 +199,7 @@ const FinancialGoals = () => {
         return <Loading />;
     }
 
+    //Display all needed components based on hooks and states
     return (
         <div className="flex flex-col gap-4">
             <h2 className="text-3xl font-semibold text-neutral-700 text-center">

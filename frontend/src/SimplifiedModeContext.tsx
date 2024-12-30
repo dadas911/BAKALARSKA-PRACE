@@ -20,11 +20,13 @@ const SimplifiedUIModeContext = createContext<SimplifiedUIModeContextType>({
 export const SimplifiedUIModeProvider: React.FC<{
     children: React.ReactNode;
 }> = ({ children }) => {
+    //Setting up all needed hooks
     const [isSimplifiedUIMode, setIsSimplifiedUIMode] = useState(false);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
     const [isUserLogged, setIsUserLogged] = useState<boolean>(false);
 
+    //Function for toggle simplified mode on/off
     const toggleSimplifiedUIMode = () => {
         const currSimplifiedMode = isSimplifiedUIMode;
         setIsSimplifiedUIMode(!currSimplifiedMode);
@@ -32,6 +34,7 @@ export const SimplifiedUIModeProvider: React.FC<{
         updateUserSimplifiedMode(user?._id || "no id", !currSimplifiedMode);
     };
 
+    //Function for updating simplified mode
     const updateSimplifiedMode = (simplifiedMode: boolean) => {
         if (simplifiedMode) {
             document.body.classList.add("simplified-UI-mode");
@@ -40,6 +43,7 @@ export const SimplifiedUIModeProvider: React.FC<{
         }
     };
 
+    //Get all needed data and set up simplified mode based on DB value
     useEffect(() => {
         const getData = async () => {
             if (isUserLogged) {

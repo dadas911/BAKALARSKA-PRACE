@@ -53,7 +53,6 @@ const handleCreatePersonalBudget = async (req, res) => {
         let scholarships = [];
         let financialGoals = [];
 
-        //Searching for previous month budget
         //Setting previous budget month + year
         if (month === 1) {
             prevMonth = 12;
@@ -63,7 +62,7 @@ const handleCreatePersonalBudget = async (req, res) => {
             prevYear = year;
         }
 
-        // Zjištění předchozího rozpočtu
+        //Searching for previous month budget
         let prevBudget;
         try {
             prevBudget = await getBudgetByIdAndDate(
@@ -74,7 +73,7 @@ const handleCreatePersonalBudget = async (req, res) => {
             );
         } catch (error) {}
 
-        //previous budget exits
+        //previous budget exits -> get existing scholarships and financial goals
         if (prevBudget) {
             scholarships = prevBudget.scholarships;
             financialGoals = prevBudget.financialGoals;

@@ -8,12 +8,14 @@ const Layout = () => {
     let user = sessionStorage.getItem("User");
     const navigate = useNavigate();
 
+    //If user is not in session storage -> navigate to landing page
     useEffect(() => {
         if (!user) {
             navigate("/");
         }
     }, [user]);
 
+    //Return structured layout - Navbar + Header + Outlet (pages)
     return (
         <div className="flex flex-row bg-neutral-200 h-screen w-screen overflow-x-hidden">
             <NavigationBar />

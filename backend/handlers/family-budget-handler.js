@@ -44,7 +44,7 @@ const handleCreateFamilyBudget = async (req, res) => {
         let prevMonth;
         let prevYear;
         let financialGoals = [];
-        //Searching for previous month budget
+
         //Setting previous budget month + year
         if (month === 1) {
             prevMonth = 12;
@@ -54,6 +54,7 @@ const handleCreateFamilyBudget = async (req, res) => {
             prevYear = year;
         }
 
+        //Searching for previous month budget
         let prevBudget;
         try {
             prevBudget = await getBudgetByIdAndDate(
@@ -64,7 +65,7 @@ const handleCreateFamilyBudget = async (req, res) => {
             );
         } catch (error) {}
 
-        //previous budget exits
+        //previous budget exits -> connect financial goals
         if (prevBudget) {
             financialGoals = prevBudget.financialGoals;
         }
@@ -79,6 +80,7 @@ const handleCreateFamilyBudget = async (req, res) => {
             financialGoals,
         });
 
+        //Some financial goals exists -> connect it to new budget
         if (financialGoals.length > 0) {
             for (const financialGoalId of financialGoals) {
                 const currFinancialGoal = await getFinancialGoalById(
@@ -153,7 +155,7 @@ const handleHasFamilyBudget = async (req, res) => {
     try {
         const user = await getUserById(req.user._id);
         const familyAccount = await getAccountById(user.familyAccount);
-        const result = !!familyAccount.familyBudget;
+        const result = familyAccount.familyBudget;
 
         res.status(200).json(result);
     } catch (error) {

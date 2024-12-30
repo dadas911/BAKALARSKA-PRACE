@@ -13,6 +13,7 @@ import FinancialGoalAnalysis from "../components/analysis/FinancialGoalAnalysis"
 import BudgetAnalysis from "../components/analysis/BudgetAnalysis";
 
 const Analysis = () => {
+    //Setting up all needed hooks
     const [hasFamilyAccount, setHasFamilyAccount] = useState<boolean>(false);
 
     const [loading, setLoading] = useState(true);
@@ -28,6 +29,7 @@ const Analysis = () => {
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
 
+    //Function for getting all financial goals
     const getFinancialGoalsInfo = async () => {
         const personalBudgetStatus = await getHasPersonalBudget(month, year);
 
@@ -51,6 +53,7 @@ const Analysis = () => {
         }
     };
 
+    //Getting all needed info while displaying loading
     useEffect(() => {
         const getData = async () => {
             setLoading(true);
@@ -65,6 +68,7 @@ const Analysis = () => {
         return <Loading />;
     }
 
+    //Display all needed components based on hooks and states
     return (
         <div className="flex flex-col gap-8">
             <RiskAnalysis hasFamilyAccount={hasFamilyAccount} />

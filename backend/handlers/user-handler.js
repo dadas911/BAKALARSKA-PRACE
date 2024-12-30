@@ -56,6 +56,7 @@ const handleCreateUser = async (req, res) => {
             simplifiedMode,
         } = req.body;
 
+        //Using bcryptjs to hash password using SALT_ROUNDS
         const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS));
         password = await bcrypt.hash(password, salt);
 
@@ -140,8 +141,10 @@ const handleLoginUser = async (req, res) => {
         const { email, password } = req.body;
 
         const data = await getUserByEmail(email);
+        //Checking password by hashing entered password and compare it to DB password
         const checkPassword = await bcrypt.compare(password, data.password);
 
+        //If password is the same -> login user
         if (checkPassword) {
             const payload = {
                 _id: data._id,
@@ -154,6 +157,7 @@ const handleLoginUser = async (req, res) => {
                 familyAccount: data.familyAccount,
                 personalBudget: data.personalBudget,
             };
+            //Create JWT token that expired in 12h using SECRET_KEY
             const token = jwt.sign(payload, process.env.SECRET_KEY, {
                 expiresIn: "12h",
             });

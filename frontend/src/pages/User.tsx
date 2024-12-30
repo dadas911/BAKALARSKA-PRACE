@@ -13,6 +13,7 @@ import Loading from "../components/common/Loading";
 import FamilyAccountForm from "../components/forms/FamilyAccountForm";
 
 const Account = () => {
+    //Setting up all needed hooks
     const [refresh, setRefresh] = useState(false);
 
     const [user, setUser] = useState<User | null>(null);
@@ -27,6 +28,7 @@ const Account = () => {
     const [roles, setRoles] = useState<string[]>([]);
     const [isProvider, setIsProvider] = useState<boolean>(false);
 
+    //Function for getting user info
     const getUserInfo = async () => {
         const userData = await getUser();
         setUser(userData);
@@ -47,6 +49,7 @@ const Account = () => {
         setNewEmail(e.target.value);
     };
 
+    //Function for adding new user to family
     const handleAddUserSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (roles.length < 1) {
@@ -72,6 +75,7 @@ const Account = () => {
         );
     };
 
+    //Function for removing user from family account
     const handleRemoveUserFromAccount = async (email: string) => {
         await removeUserFromAccount(email);
         const newUsers = accountUsers.filter((user) => user.email !== email);
@@ -82,6 +86,7 @@ const Account = () => {
         setRefresh((prev) => !prev);
     };
 
+    //Getting all user info while displaying loading
     useEffect(() => {
         const getData = async () => {
             setLoading(true);
@@ -96,6 +101,7 @@ const Account = () => {
         return <Loading />;
     }
 
+    //Display all needed components based on hooks and states
     return (
         <div className="flex flex-col gap-8">
             <div className="p-4 shadow-md sm:rounded-lg bg-white">

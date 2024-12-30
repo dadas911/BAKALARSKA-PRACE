@@ -97,12 +97,15 @@ const checkScholarshipsNotifyDate = async () => {
         const currMonth = currDate.getMonth() + 1;
         const currYear = currDate.getFullYear();
 
+        //Go through all sholarships
         for (const scholarship of scholarships) {
+            //If sholarship has notify date -> check it
             if (scholarship.notifyDate) {
                 const notifyDate = new Date(scholarship.notifyDate);
                 const day = notifyDate.getDate();
                 const month = notifyDate.getMonth() + 1;
                 const year = notifyDate.getFullYear();
+                //If the date is today -> create notification for user
                 if (
                     day === currDay &&
                     month === currMonth &&

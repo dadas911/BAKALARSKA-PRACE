@@ -29,6 +29,7 @@ const handleGetPersonalFinancialGoals = async (req, res) => {
         const currMonth = currDate.getMonth() + 1;
         const currYear = currDate.getFullYear();
 
+        //Get personal budget
         const pBudget = await getBudgetByIdAndDate(
             req.user._id,
             currMonth,
@@ -51,6 +52,7 @@ const handleGetFamilyFinancialGoals = async (req, res) => {
         const currYear = currDate.getFullYear();
         const user = await getUserById(req.user._id);
 
+        //Get family budget
         const fBudget = await getBudgetByIdAndDate(
             user.familyAccount,
             currMonth,
@@ -72,6 +74,8 @@ const handleCreateFinancialGoal = async (req, res) => {
             req.body;
         const user = await getUserById(req.user._id);
         let budget = "";
+
+        //Find personal or family budget
         if (isPersonal) {
             budget = user.personalBudget;
         } else {
@@ -106,6 +110,7 @@ const handleDeleteFinancialGoal = async (req, res) => {
     try {
         const { id } = req.params;
         const deletedData = await deleteFinancialGoal(id);
+        //Remove deleted financial goal from budget
         if (deletedData.budget) {
             let budget = await getBudgetById(deletedData.budget);
             budget.financialGoals = budget.financialGoals.filter(

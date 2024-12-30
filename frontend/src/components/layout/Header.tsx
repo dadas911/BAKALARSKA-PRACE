@@ -23,6 +23,7 @@ const Header = () => {
     const currentTitle = page?.name || "Neznámá stránka";
     const username = user?.username || "Nepřihlášený";
 
+    //Get user and notification info
     useEffect(() => {
         const getData = async () => {
             const user = await getUser();
@@ -37,6 +38,7 @@ const Header = () => {
 
         getData();
 
+        //Function for handling click outside of notification modal window
         const handleClickOutside = (event: MouseEvent) => {
             const dropdownElement = document.getElementById(
                 "notificationDropdown"
@@ -66,6 +68,7 @@ const Header = () => {
         setShowNotificationModal(false);
     };
 
+    //Function for handling delete notification
     const handleDeleteNotification = async (id: string) => {
         try {
             await deleteNotifications(id);

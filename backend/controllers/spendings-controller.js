@@ -90,6 +90,7 @@ const updateSpendings = async (id, newData) => {
                 const currCategory = await getCategoryById(
                     updatedData.category
                 );
+                //Create notification
                 await createNotification({
                     name: "Překročení osobního výdajového plánu",
                     text:

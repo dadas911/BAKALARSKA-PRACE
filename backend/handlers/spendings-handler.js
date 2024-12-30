@@ -45,6 +45,7 @@ const handleCreateSpendings = async (req, res) => {
 
         let budgetId = "";
 
+        //Connect spending to personal or family budget
         if (isPersonal) {
             budgetId = await getBudgetByIdAndDate(
                 req.user._id,
@@ -92,7 +93,7 @@ const handleCreateSmartSpendings = async (req, res) => {
         const allFamilySpendings = [];
         const allPersonalSpendings = [];
 
-        //total allocated amount of all categories
+        //Total allocated amount of all categories
         let allTotalAmounts = 0;
 
         //Create spending for family budget -> no computing needed
@@ -104,6 +105,7 @@ const handleCreateSmartSpendings = async (req, res) => {
                 continue;
             }
             const category = await getCategoryById(categoryId);
+            //Push "spendings" structure to array
             const name = `Plán výdajů - ${category.name}`;
             allFamilySpendings.push({
                 name,
@@ -190,7 +192,7 @@ const handleCreateSmartSpendings = async (req, res) => {
                 });
             }
 
-            // Alokace rozpočtu na základě podílu příjmu
+            //Allocation based on income per user
             for (const { user, modifiedIncome } of modifiedIncomesPerUser) {
                 const allocatedAmount =
                     Math.round(
@@ -198,7 +200,7 @@ const handleCreateSmartSpendings = async (req, res) => {
                             totalSpendings) /
                             10
                     ) * 10;
-                // Vytvoření výdajového plánu pro uživatele
+                //Pushing "spendings" structure into array
                 const name = `Plán výdajů - ${category.name} (${user.username})`;
                 allPersonalSpendings.push({
                     name,
@@ -213,6 +215,7 @@ const handleCreateSmartSpendings = async (req, res) => {
             }
         }
 
+        //Go through array and create all family spendings
         for (const familySpending of allFamilySpendings) {
             const createdSpending = await helperCreateSpendings(
                 familySpending.name,
@@ -226,6 +229,7 @@ const handleCreateSmartSpendings = async (req, res) => {
             }
         }
 
+        //Go through array and create all personal spendings
         for (const personalSpending of allPersonalSpendings) {
             await helperCreateSpendings(
                 personalSpending.name,
@@ -295,8 +299,8 @@ const handleGetPersonalSpendingsByMonth = async (req, res) => {
 const handleGetFamilyMemberSpendingsByMonth = async (req, res) => {
     try {
         const { id, month, year } = req.body;
+        //Get personal budget from requested month and year
         const pBudget = await getBudgetByIdAndDate(id, month, year, true);
-
         const spendings = await getSpendingsByBudgetId(pBudget._id);
 
         res.status(200).json(spendings);
@@ -309,6 +313,7 @@ const handleGetFamilySpendingsByMonth = async (req, res) => {
     try {
         const { month, year } = req.body;
         const user = await getUserById(req.user._id);
+        //Get family budget from requested month and year
         const fBudget = await getBudgetByIdAndDate(
             user.familyAccount,
             month,
@@ -328,8 +333,10 @@ const helperGetSpentAmount = async (pBudgetId, categoryId) => {
     //Check for already existing transactions in same category
     let spentAmount = 0;
     const pBudget = await getPersonalBudgetById(pBudgetId);
+    //Go through all transaction of personal budget
     for (const transactionId of pBudget.transactions) {
         const transaction = await getTransactionById(transactionId);
+        //If it is the same category as spending -> add it to "spentAmount"
         if (transaction.category == categoryId) {
             spentAmount += Math.abs(transaction.amount);
         }
@@ -340,6 +347,7 @@ const helperGetSpentAmount = async (pBudgetId, categoryId) => {
 
 // -------------- Helper functions for create spendings -> reused in 2 handlers ---------------------
 
+//Creates notifications if spentAmount > totalAmount
 const helperCreateNotification = async (
     name,
     totalAmount,
@@ -350,6 +358,7 @@ const helperCreateNotification = async (
 ) => {
     if (spentAmount > totalAmount) {
         const currCategory = await getCategoryById(category);
+        //Creating presonal notification
         if (isPersonal) {
             await createNotification({
                 name: "Překročení osobního výdajového plánu",
@@ -365,7 +374,9 @@ const helperCreateNotification = async (
                     ".",
                 user: userId,
             });
-        } else {
+        }
+        //Creating family notification
+        else {
             await createNotification({
                 name: "Překročení rodinného výdajového plánu",
                 text:
@@ -384,6 +395,7 @@ const helperCreateNotification = async (
     }
 };
 
+//Functions that handles getting spent amount and creating notification
 const helperSpentAmountAndNotification = async (
     name,
     totalAmount,
@@ -426,6 +438,7 @@ const helperSpentAmountAndNotification = async (
         } else {
             budget = budgetId;
         }
+        //Get spentAmount from all family users
         for (const userId of account.users) {
             const user = await getUserById(userId);
             try {

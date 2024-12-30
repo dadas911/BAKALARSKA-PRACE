@@ -16,6 +16,7 @@ import axios from "axios";
 import { SimplifiedUIModeProvider } from "./SimplifiedModeContext";
 
 function App() {
+    //Add Authorization header to all requests if in session storage
     useLayoutEffect(() => {
         async function setToken() {
             const token = sessionStorage.getItem("User");
@@ -30,6 +31,7 @@ function App() {
     }, []);
 
     return (
+        //Add simplified mode + router
         <SimplifiedUIModeProvider>
             <Router>
                 <Routes>

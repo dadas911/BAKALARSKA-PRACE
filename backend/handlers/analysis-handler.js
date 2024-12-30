@@ -8,11 +8,10 @@ import {
     analyzeSpendingsReduction,
 } from "../controllers/analysis-controller.js";
 import { getBudgetByIdAndDate } from "../controllers/budget-controller.js";
-import { getCategoryById } from "../controllers/category-controller.js";
 import { getFinancialGoalById } from "../controllers/financial-goal-controller.js";
-import { getSpendingsById } from "../controllers/spendings-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
 
+//Function for analysing personal financial risk
 const handlePersonalRiskAnalysis = async (req, res) => {
     try {
         const { reserve } = req.body;
@@ -86,6 +85,7 @@ const handlePersonalRiskAnalysis = async (req, res) => {
     }
 };
 
+//Function for analysing family financial risk
 const handleFamilyRiskAnalysis = async (req, res) => {
     try {
         const { reserve } = req.body;
@@ -161,6 +161,7 @@ const handleFamilyRiskAnalysis = async (req, res) => {
     }
 };
 
+//Function for analysing personal financial goal
 const handlePersonalFinancialGoalAnalysis = async (req, res) => {
     try {
         const { goalId, contribution } = req.body;
@@ -247,6 +248,7 @@ const handlePersonalFinancialGoalAnalysis = async (req, res) => {
     }
 };
 
+//Function for analysing family financial goal
 const handleFamilyFinancialGoalAnalysis = async (req, res) => {
     try {
         const { goalId, contribution } = req.body;
@@ -333,6 +335,7 @@ const handleFamilyFinancialGoalAnalysis = async (req, res) => {
     }
 };
 
+//Function returns budget based on id and isPersonal boolean value
 const helperGetBudgets = async (id, isPersonal) => {
     const currDate = new Date();
     let currMonth = currDate.getMonth() + 1;
@@ -374,6 +377,7 @@ const helperGetBudgets = async (id, isPersonal) => {
     return budgets;
 };
 
+//Function for analysing personal monthly budget
 const handlePersonalBudgetAnalysis = async (req, res) => {
     try {
         //Getting previous months budget
@@ -429,6 +433,7 @@ const handlePersonalBudgetAnalysis = async (req, res) => {
     }
 };
 
+//Function for analysing family monthly budget
 const handleFamilyBudgetAnalysis = async (req, res) => {
     try {
         //Getting previous months budget

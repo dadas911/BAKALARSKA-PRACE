@@ -32,6 +32,7 @@ import TransactionForm from "../components/forms/TransactionForm";
 import PersonalBudgetForm from "../components/forms/PersonalBudgetForm";
 
 const Personal = () => {
+    //Setting up all needed hooks
     const [refresh, setRefresh] = useState(false);
 
     const [hasPersonalBudget, setHasPersonalBudget] = useState<boolean>(false);
@@ -70,6 +71,7 @@ const Personal = () => {
         setIsEditBudgetOpen(false);
     };
 
+    //Function for getting personal budget info
     const getPersonalBudgetInfo = async () => {
         const personalBudgetStatus = await getHasPersonalBudget(month, year);
         setHasPersonalBudget(personalBudgetStatus);
@@ -87,6 +89,7 @@ const Personal = () => {
         setFamilyCategories(category);
     };
 
+    //Handler functions
     const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setMonth(Number(e.target.value));
     };
@@ -105,6 +108,7 @@ const Personal = () => {
         setIsSpendingsModalOpen(false);
     };
 
+    //Function for handling add/update new spending
     const handleAddSpendings = async (newSpendings: Spendings) => {
         if (updatingSpendings) {
             await updateSpendings(newSpendings._id || "No id", newSpendings);
@@ -132,6 +136,7 @@ const Personal = () => {
         handleCloseSpendingsModal();
     };
 
+    //Function for handling delete spending
     const handleDeleteSpendings = async (id: string) => {
         try {
             await deleteSpendings(id);
@@ -153,6 +158,7 @@ const Personal = () => {
         setIsTransactionModalOpen(false);
     };
 
+    //Function for handling add/update transaction
     const handleAddTransaction = async (newTransaction: Transaction) => {
         if (updatingTransaction) {
             updateTransaction(newTransaction._id || "No id", newTransaction);
@@ -181,6 +187,7 @@ const Personal = () => {
         handleRefresh();
     };
 
+    //Function for handling delete transaction
     const handleDeleteTransaction = async (id: string) => {
         try {
             await deleteTransaction(id);
@@ -193,6 +200,7 @@ const Personal = () => {
         }
     };
 
+    //Function for creating new personal budget
     const handleCreatePersonalBudget = async (
         newPersonalBudget: PersonalBudget
     ) => {
@@ -208,6 +216,7 @@ const Personal = () => {
         }
     };
 
+    //Function for updating personal budget
     const handleUpdatePersonalBudget = async (
         updatedBudget: PersonalBudget
     ) => {
@@ -227,6 +236,7 @@ const Personal = () => {
         setRefresh((prev) => !prev);
     };
 
+    //Getting all personal budget info while diplaying loading
     useEffect(() => {
         const getData = async () => {
             setLoading(true);
@@ -240,6 +250,7 @@ const Personal = () => {
         return <Loading />;
     }
 
+    //No personal budget for this month and year -> display personal budget form
     if (!hasPersonalBudget) {
         return (
             <PersonalBudgetForm
@@ -252,6 +263,7 @@ const Personal = () => {
         );
     }
 
+    //Editing personal budget -> display form
     if (isEditBudgetOpen && personalBudget) {
         return (
             <PersonalBudgetForm
@@ -265,6 +277,7 @@ const Personal = () => {
         );
     }
 
+    //Display all needed components based on hooks and states
     return (
         <div className="flex flex-col gap-4">
             <DatePicker

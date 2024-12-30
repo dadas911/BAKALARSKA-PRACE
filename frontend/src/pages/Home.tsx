@@ -19,6 +19,7 @@ import BudgetSpendings from "../components/budget/Spendings";
 import Loading from "../components/common/Loading";
 
 const Home = () => {
+    //Initialize all needed hooks
     const [hasPersonalBudget, setHasPersonalBudget] = useState<boolean>(false);
     const [personalBudget, setPersonalBudget] = useState<PersonalBudget | null>(
         null
@@ -37,6 +38,7 @@ const Home = () => {
     const [month, setMonth] = useState<number>(date.getMonth() + 1);
     const [year, setYear] = useState<number>(date.getFullYear());
 
+    //Function for getting all personal budget info
     const getPersonalBudgetInfo = async () => {
         const personalBudgetStatus = await getHasPersonalBudget(month, year);
         setHasPersonalBudget(personalBudgetStatus);
@@ -49,6 +51,7 @@ const Home = () => {
         }
     };
 
+    //Function for getting all family budget info
     const getFamilyBudgetInfo = async () => {
         const familyAccountStatus = await getHasFamilyAccount();
         setHasFamilyAccount(familyAccountStatus);
@@ -66,6 +69,7 @@ const Home = () => {
         }
     };
 
+    //Get personal and family budget info while loading is displayed
     useEffect(() => {
         const getData = async () => {
             setLoading(true);
@@ -89,6 +93,7 @@ const Home = () => {
         return <Loading />;
     }
 
+    //Display all needed components based on hooks and states
     return (
         <div className="flex flex-col gap-4">
             <DatePicker

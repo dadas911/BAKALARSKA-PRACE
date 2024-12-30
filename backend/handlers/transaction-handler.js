@@ -15,7 +15,6 @@ import {
     updateTransaction,
     getTransactionByBudgetId,
 } from "../controllers/transaction-controller.js";
-import { getAccountById } from "../controllers/family-account-controller.js";
 import { getUserById } from "../controllers/user-controller.js";
 import { updatePersonalBudget } from "../controllers/personal-budget-controller.js";
 import { getCategoryById } from "../controllers/category-controller.js";
@@ -45,6 +44,7 @@ const handleCreateTransaction = async (req, res) => {
         let { name, amount, date, description, category } = transaction;
 
         const user = await getUserById(req.user._id);
+
         let personalBudget = await getBudgetByIdAndDate(
             user._id,
             month,
@@ -84,6 +84,7 @@ const handleCreateTransaction = async (req, res) => {
         if (!budget) {
             res.status(404).json({ message: "Rozpočet nebyl nalezen" });
         }
+        //Add transaction to budget
         budget.transactions.push(newData._id);
         await updatePersonalBudget(personalBudget, budget);
 
@@ -103,6 +104,7 @@ const handleDeleteTransaction = async (req, res) => {
             isIncome = false;
         }
 
+        //Update budget balance and spending (only same category) based on transaction
         await modifyBalanceAndSpendingsHelper(
             deletedData.personalBudget,
             -deletedData.amount,
@@ -133,11 +135,13 @@ const handleUpdateTransaction = async (req, res) => {
         const oldData = await getTransactionById(id);
         const updatedData = await updateTransaction(id, newData);
 
+        //Set isIncome based on amount
         let isIncome = true;
         if (updatedData.amount < 0) {
             isIncome = false;
         }
 
+        //Update budget balance and spending (only same category) based on transaction
         await modifyBalanceAndSpendingsHelper(
             updatedData.personalBudget,
             updatedData.amount - oldData.amount,
@@ -187,6 +191,7 @@ const modifyBalanceAndSpendingsHelper = async (
 
     let personalSpending = null;
 
+    //Update amount in personal spending
     for (const spending_id of pBudget.spendings) {
         let curr_spending = await getSpendingsById(spending_id);
         if (curr_spending.category.toString() === category) {
@@ -226,6 +231,7 @@ const modifyBalanceAndSpendingsHelper = async (
 
         let familySpending = null;
 
+        //Update amount in family spending
         for (const spending_id of fBudget.spendings) {
             let curr_spending = await getSpendingsById(spending_id);
             if (curr_spending.category.toString() === category) {

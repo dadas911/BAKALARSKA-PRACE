@@ -12,6 +12,7 @@ import Scholarships from "../components/personal/Scholarships";
 import ScholarshipForm from "../components/forms/ScholarshipForm";
 
 const ScholarshipsPage = () => {
+    //etting up all needed hooks
     const [scholarships, setScholarships] = useState<Scholarship[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -25,6 +26,7 @@ const ScholarshipsPage = () => {
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
 
+    //Function for getting scholarship info
     const getScholarshipInfo = async () => {
         const personalBudgetStatus = await getHasPersonalBudget(month, year);
         setHasPersonalBudget(personalBudgetStatus);
@@ -37,6 +39,7 @@ const ScholarshipsPage = () => {
         }
     };
 
+    //Get all scholarship data while displaying loading
     useEffect(() => {
         const getData = async () => {
             setLoading(true);
@@ -57,6 +60,7 @@ const ScholarshipsPage = () => {
         setIsScholarshipModalOpen(false);
     };
 
+    //Function for add/update scholarship
     const handleAddScholarship = async (newScholarship: Scholarship) => {
         if (updatingScholarship) {
             await updateScholarship(
@@ -85,6 +89,7 @@ const ScholarshipsPage = () => {
         handleCloseScholarshipModal();
     };
 
+    //Function for delete scholarship
     const handleDeleteScholarship = async (id: string) => {
         try {
             await deleteScholarship(id);
@@ -100,6 +105,7 @@ const ScholarshipsPage = () => {
         return <Loading />;
     }
 
+    //Display all needed components based on hooks and states
     return (
         <div className="flex flex-col gap-4">
             <h2 className="text-3xl font-semibold text-neutral-700 text-center">

@@ -100,6 +100,7 @@ const handleAddUserToAccount = async (req, res) => {
         const { email, roles } = req.body;
         const sender = await getUserById(req.user._id);
         const user = await getUserByEmail(email);
+        //User is already part of some family account
         if (user.familyAccount) {
             res.status(404).json({
                 message: "Uživatel je již členem rodinného účtu",
@@ -109,6 +110,7 @@ const handleAddUserToAccount = async (req, res) => {
         const familyAccount = await getAccountById(req.user.familyAccount);
         familyAccount.users.push(user._id);
 
+        //Set family account + roles
         user.familyAccount = sender.familyAccount;
         user.role = roles;
         await updateAccount(familyAccount._id, familyAccount);
@@ -131,13 +133,14 @@ const handleDeleteUserFromAccount = async (req, res) => {
             });
         }
 
+        //Remove connection between user and family account + reset roles
         const familyAccount = await getAccountById(req.user.familyAccount);
         familyAccount.users = familyAccount.users.filter(
             (id) => id !== user._id
         );
 
         user.familyAccount = null;
-        user.role = [];
+        user.role = ["živitel", "člen domácnosti", "student", "senior"];
         await updateAccount(familyAccount._id, familyAccount);
         await updateUser(user._id, user);
         const result = true;
