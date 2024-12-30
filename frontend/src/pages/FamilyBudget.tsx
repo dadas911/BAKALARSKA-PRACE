@@ -12,10 +12,7 @@ import {
     getFamilySpendingsByMonth,
     updateSpendings,
 } from "../api/spendings-api";
-import {
-    getFamilyAccount,
-    getHasFamilyAccount,
-} from "../api/family-account-api";
+import { getHasFamilyAccount } from "../api/family-account-api";
 import { Category } from "../types/category";
 import {
     createCategory,
@@ -23,7 +20,6 @@ import {
     getAllFamilyCategories,
     updateCategory,
 } from "../api/category-api";
-import { FamilyAccount } from "../types/family-account";
 import DatePicker from "../components/common/DatePicker";
 import Loading from "../components/common/Loading";
 import FamilyCategory from "../components/family/FamilyCategory";
@@ -41,9 +37,6 @@ const Family = () => {
     const [hasFamilyAccount, setHasFamilyAccount] = useState<boolean>(false);
     const [hasFamilyBudget, setHasFamilyBudget] = useState<boolean>(false);
 
-    const [familyAccount, setFamilyAccount] = useState<FamilyAccount | null>(
-        null
-    );
     const [familyBudget, setFamilyBudget] = useState<FamilyBudget | null>(null);
     const [familySpendings, setFamilySpendings] = useState<Spendings[]>([]);
 
@@ -75,8 +68,6 @@ const Family = () => {
         setHasFamilyAccount(familyAccountStatus);
 
         if (familyAccountStatus) {
-            const familyAccount = await getFamilyAccount();
-            setFamilyAccount(familyAccount);
             const familyBudgetStatus = await getHasFamilyBudget(month, year);
             setHasFamilyBudget(familyBudgetStatus);
 

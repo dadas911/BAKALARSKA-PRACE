@@ -388,7 +388,6 @@ const FinancialGoalAnalysis: React.FC<FinancialGoalAnalysisProps> = ({
                                     </tbody>
                                 </table>
 
-                                {/* Pokud jsou tipy, vykreslíme je jako seznam */}
                                 {financialGoalAnalysisResult.spendingReduction.some(
                                     (item) => item.tips.length > 0
                                 ) && (

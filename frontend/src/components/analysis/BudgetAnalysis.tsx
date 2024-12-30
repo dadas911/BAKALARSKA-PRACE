@@ -9,7 +9,6 @@ import { getFamilyBudgetByMonth } from "../../api/family-budget-api";
 const buttonClass =
     "px-6 py-2 bg-blue-600 text-white font-medium rounded-md shadow hover:bg-blue-700 transition w-full sm:w-auto";
 const dangerClass = "text-red-600";
-const warningClass = "text-yellow-600";
 const successClass = "text-green-600";
 const bubbleClass = "p-4 border rounded-lg bg-white shadow-md";
 const textClass = "text-neutral-700";
@@ -560,6 +559,16 @@ const BudgetAnalysis: React.FC<BudgetAnalysisProps> = ({
                                 )}
                             </div>
                         </div>
+                    </div>
+                )}
+                {error && (
+                    <div className="mt-6">
+                        <h2 className="text-lg font-medium mb-2 text-center">
+                            Chyba při analýze
+                        </h2>
+                        <p className="text-neutral-700 leading-relaxed text-center text-red-600">
+                            {message}
+                        </p>
                     </div>
                 )}
             </div>

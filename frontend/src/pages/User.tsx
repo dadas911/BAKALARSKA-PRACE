@@ -16,7 +16,6 @@ const Account = () => {
     const [refresh, setRefresh] = useState(false);
 
     const [user, setUser] = useState<User | null>(null);
-    const [hasFamilyAccount, setHasFamilyAccount] = useState<boolean>(false);
 
     const [familyAccount, setFamilyAccount] = useState<FamilyAccount | null>(
         null
@@ -33,7 +32,6 @@ const Account = () => {
         setUser(userData);
         if (userData) {
             const familyAccountStatus = await getHasFamilyAccount();
-            setHasFamilyAccount(familyAccountStatus);
             if (familyAccountStatus) {
                 const accountData = await getFamilyAccount();
                 setFamilyAccount(accountData);
