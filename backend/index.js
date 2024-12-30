@@ -52,7 +52,9 @@ const startServer = async () => {
     try {
         connectDB(process.env.URL_DB);
 
-        app.listen(process.env.PORT, () => console.log("Server started"));
+        app.listen(process.env.PORT, () =>
+            console.log("Backend server started")
+        );
     } catch (error) {
         console.log(error);
     }
