@@ -253,13 +253,21 @@ const Personal = () => {
     //No personal budget for this month and year -> display personal budget form
     if (!hasPersonalBudget) {
         return (
-            <PersonalBudgetForm
-                month={month}
-                year={year}
-                familyCategories={familyCategories}
-                onCreateBudget={handleCreatePersonalBudget}
-                onRefresh={handleRefresh}
-            />
+            <div className="flex flex-col gap-4">
+                <DatePicker
+                    month={month}
+                    year={year}
+                    onMonthChange={handleMonthChange}
+                    onYearChange={handleYearChange}
+                />
+                <PersonalBudgetForm
+                    month={month}
+                    year={year}
+                    familyCategories={familyCategories}
+                    onCreateBudget={handleCreatePersonalBudget}
+                    onRefresh={handleRefresh}
+                />
+            </div>
         );
     }
 

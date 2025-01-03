@@ -256,12 +256,20 @@ const Family = () => {
     //No family budget -> display family budget form
     if (!hasFamilyBudget) {
         return (
-            <FamilyBudgetForm
-                month={month}
-                year={year}
-                onCreateBudget={setFamilyBudget}
-                refresh={handleRefresh}
-            />
+            <div className="flex flex-col gap-4">
+                <DatePicker
+                    month={month}
+                    year={year}
+                    onMonthChange={handleMonthChange}
+                    onYearChange={handleYearChange}
+                />
+                <FamilyBudgetForm
+                    month={month}
+                    year={year}
+                    onCreateBudget={setFamilyBudget}
+                    refresh={handleRefresh}
+                />
+            </div>
         );
     }
 

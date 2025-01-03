@@ -55,6 +55,8 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
         weight: defaultWeight,
     };
 
+    console.log("Weights: " + JSON.stringify(defaultWeight));
+
     const [newPersonalBudget, setNewPersonalBudget] = useState<PersonalBudget>(
         initialBudget || defaultPersonalBudget
     );
@@ -197,7 +199,7 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
                     </label>
                     <input
                         type="number"
-                        name={`weight-${category._id}`}
+                        name={`weight-${category.name}`}
                         value={
                             newPersonalBudget.weight[category.name || "no id"]
                         }

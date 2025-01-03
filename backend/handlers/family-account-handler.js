@@ -107,7 +107,7 @@ const handleAddUserToAccount = async (req, res) => {
             });
         }
 
-        const familyAccount = await getAccountById(req.user.familyAccount);
+        const familyAccount = await getAccountById(sender.familyAccount);
         familyAccount.users.push(user._id);
 
         //Set family account + roles
@@ -116,7 +116,6 @@ const handleAddUserToAccount = async (req, res) => {
         await updateAccount(familyAccount._id, familyAccount);
         await updateUser(user._id, user);
         const result = true;
-
         res.status(200).json(result);
     } catch (error) {
         res.status(error.statusCode || 500).json({ message: error.message });
@@ -134,7 +133,7 @@ const handleDeleteUserFromAccount = async (req, res) => {
         }
 
         //Remove connection between user and family account + reset roles
-        const familyAccount = await getAccountById(req.user.familyAccount);
+        const familyAccount = await getAccountById(user.familyAccount);
         familyAccount.users = familyAccount.users.filter(
             (id) => id !== user._id
         );

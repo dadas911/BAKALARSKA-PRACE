@@ -43,6 +43,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                     className="p-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                     <option value={2024}>2024</option>
+                    <option value={2025}>2025</option>
                 </select>
             </div>
         </div>
