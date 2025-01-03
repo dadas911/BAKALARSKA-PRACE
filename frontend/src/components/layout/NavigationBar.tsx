@@ -47,7 +47,7 @@ const NavigationBar = () => {
             <div className="flex item-center gap-5 px-3 py-3">
                 <FcBarChart className="navbar-icon" fontSize={24} />{" "}
                 <span className="text-green-400 text-xl navbar-title">
-                    MoneyS3
+                    FinFamily
                 </span>
             </div>
             <div className="flex-1 gap-0.5 py-8 flex-col flex">
