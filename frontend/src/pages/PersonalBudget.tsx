@@ -312,7 +312,7 @@ const Personal = () => {
                         />
                     ) : (
                         <h3 className="text-2xl font-semibold text-red-700 text-center pl-4 py-2">
-                            Výdaje nejsou k dispozici.
+                            Výdajové plány nejsou k dispozici.
                         </h3>
                     )}
                 </>

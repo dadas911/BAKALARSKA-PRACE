@@ -43,6 +43,16 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         onAddTransaction(transaction);
     };
 
+    console.log(
+        "Max date: " +
+            new Date(year, month, 0).toISOString().split("T")[0] +
+            ", min date: " +
+            year +
+            "-" +
+            month +
+            "-01"
+    );
+
     return (
         <form onSubmit={handleTransactionSubmit}>
             <div className="mb-4">
@@ -83,7 +93,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                         new Date(transaction.date).toISOString().split("T")[0]
                     }
                     max={new Date(year, month, 0).toISOString().split("T")[0]}
-                    min={year + "-" + month + "-01"}
+                    min={year + "-" + String(month).padStart(2, "0") + "-01"}
                     placeholder="Datum"
                 />
             </div>

@@ -31,6 +31,7 @@ const Account = () => {
     //Function for getting user info
     const getUserInfo = async () => {
         const userData = await getUser();
+        console.log("UserData: " + JSON.stringify(userData));
         setUser(userData);
         if (userData) {
             const familyAccountStatus = await getHasFamilyAccount();
@@ -78,6 +79,7 @@ const Account = () => {
     //Function for removing user from family account
     const handleRemoveUserFromAccount = async (email: string) => {
         await removeUserFromAccount(email);
+        handleRefresh();
         const newUsers = accountUsers.filter((user) => user.email !== email);
         setAccountUsers(newUsers);
     };
@@ -237,7 +239,9 @@ const Account = () => {
                                             <td className="px-6 py-4 text-center">
                                                 {currUser._id !==
                                                 familyAccount.owner ? (
-                                                    isProvider ? (
+                                                    isProvider ||
+                                                    currUser._id ===
+                                                        user?._id ? (
                                                         <button
                                                             onClick={() =>
                                                                 handleRemoveUserFromAccount(
