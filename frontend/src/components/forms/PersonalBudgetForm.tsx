@@ -185,6 +185,10 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
                     required
                     className="w-full px-3 py-2 border rounded"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                    Procento příjmu, které chcete alokovat pro rodinné výdaje (1
+                    = 100%, 0 = 0%)
+                </p>
             </div>
 
             <h4 className="text-lg font-semibold mb-4">
