@@ -135,7 +135,7 @@ const handleDeleteUserFromAccount = async (req, res) => {
         //Remove connection between user and family account + reset roles
         const familyAccount = await getAccountById(user.familyAccount);
         familyAccount.users = familyAccount.users.filter(
-            (id) => id !== user._id
+            (id) => id.toString() !== user._id.toString()
         );
 
         user.familyAccount = null;
