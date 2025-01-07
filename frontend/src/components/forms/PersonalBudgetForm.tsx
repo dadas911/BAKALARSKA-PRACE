@@ -24,7 +24,10 @@ const PersonalBudgetForm: React.FC<PersonalBudgetFormProps> = ({
     );
 
     const defaultWeight = expenseCategories.reduce(
-        (acc, category) => ({ ...acc, [category.name]: 1 }),
+        (acc, category) => ({
+            ...acc,
+            [category._id?.toString() || "noid"]: 1,
+        }),
         {}
     );
 
