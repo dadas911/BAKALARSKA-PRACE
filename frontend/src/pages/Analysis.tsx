@@ -60,7 +60,6 @@ const Analysis = () => {
             await getFinancialGoalsInfo();
             setLoading(false);
         };
-        console.log("use effect in analysis");
         getData();
     }, []);
 

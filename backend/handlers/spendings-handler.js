@@ -201,17 +201,19 @@ const handleCreateSmartSpendings = async (req, res) => {
                             10
                     ) * 10;
                 //Pushing "spendings" structure into array
-                const name = `Plán výdajů - ${category.name} (${user.username})`;
-                allPersonalSpendings.push({
-                    name,
-                    totalAmount: allocatedAmount,
-                    categoryId,
-                    isPersonal: true,
-                    senderId: user._id,
-                    budgetId: null,
-                    month: null,
-                    year: null,
-                });
+                if (allocatedAmount > 0) {
+                    const name = `Plán výdajů - ${category.name} (${user.username})`;
+                    allPersonalSpendings.push({
+                        name,
+                        totalAmount: allocatedAmount,
+                        categoryId,
+                        isPersonal: true,
+                        senderId: user._id,
+                        budgetId: null,
+                        month: null,
+                        year: null,
+                    });
+                }
             }
         }
 

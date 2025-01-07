@@ -31,7 +31,6 @@ const Account = () => {
     //Function for getting user info
     const getUserInfo = async () => {
         const userData = await getUser();
-        console.log("UserData: " + JSON.stringify(userData));
         setUser(userData);
         if (userData) {
             const familyAccountStatus = await getHasFamilyAccount();

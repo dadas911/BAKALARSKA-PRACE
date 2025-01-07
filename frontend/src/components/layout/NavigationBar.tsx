@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { pageList } from "./page-list";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FcBarChart } from "react-icons/fc";
 import { CiLogout } from "react-icons/ci";
 import { useState, useEffect } from "react";
 import { checkUserRole } from "../../api/user-api";
 import { getHasFamilyAccount } from "../../api/family-account-api";
 import { useSimplifiedUIMode } from "../../SimplifiedModeContext";
+import { GiNestBirds } from "react-icons/gi";
 
 const NavigationBar = () => {
     const navigate = useNavigate();
@@ -45,9 +45,12 @@ const NavigationBar = () => {
     return (
         <div className="fixed h-full flex flex-col bg-neutral-700 w-60 p-3 invisible sm:visible overflow-y-auto">
             <div className="flex item-center gap-5 px-3 py-3">
-                <FcBarChart className="navbar-icon" fontSize={24} />{" "}
+                <GiNestBirds
+                    className="text-green-500 navbar-icon"
+                    fontSize={30}
+                />{" "}
                 <span className="text-green-400 text-xl navbar-title">
-                    FinFamily
+                    BudgetNest
                 </span>
             </div>
             <div className="flex-1 gap-0.5 py-8 flex-col flex">
