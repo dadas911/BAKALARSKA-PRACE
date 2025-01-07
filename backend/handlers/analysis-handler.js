@@ -205,8 +205,6 @@ const handlePersonalFinancialGoalAnalysis = async (req, res) => {
             requiredMonthlyContribution,
         } = await analyzeFinancialGoal(financialGoal, contribution);
 
-        console.log("monthsToAchieveGoal: " + monthsToAchieveGoal);
-
         let summary = "";
         if (financialGoalStatus === "Dosáhnete") {
             summary =

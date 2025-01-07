@@ -259,8 +259,8 @@ const analyzeExceededSpendings = async (budget) => {
 
 //Setting up recommended % of income per category
 const recommendedSpendingsDistribution = {
-    Bydlení: 5,
-    Jídlo: 10,
+    Bydlení: 30,
+    Jídlo: 15,
     Doprava: 10,
     Oblečení: 10,
     Zábava: 10,

@@ -86,9 +86,6 @@ const FinancialGoalAnalysis: React.FC<FinancialGoalAnalysisProps> = ({
                 contribution
             );
 
-            console.log(
-                "personalFinancialGoalAnalysis: " + JSON.stringify(response)
-            );
             if (response.success) {
                 setError(false);
                 const {
